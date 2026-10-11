@@ -20,7 +20,10 @@ import {
   Receipt,
   CloudSun,
   BookOpen,
-  Bot
+  Bot,
+  Plane,
+  Train,
+  Leaf
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { saveTrip, isTripSaved, exportTripToJson } from '@/lib/storage';
@@ -35,6 +38,9 @@ import ExpenseTracker from './ExpenseTracker';
 import WeatherWidget from './WeatherWidget';
 import TravelGuidebook from './TravelGuidebook';
 import AIConciergeModal from './AIConciergeModal';
+import FlightHotelFinder from './FlightHotelFinder';
+import DayTripSuggester from './DayTripSuggester';
+import CarbonFootprint from './CarbonFootprint';
 
 interface TripViewProps {
   trip: TripPlan;
@@ -50,7 +56,10 @@ type TabType =
   | 'budget'
   | 'expenses'
   | 'weather'
-  | 'guidebook';
+  | 'guidebook'
+  | 'booking'
+  | 'excursions'
+  | 'eco';
 
 export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPlanClick }: TripViewProps) {
   const [trip, setTrip] = useState<TripPlan>(initialTrip);
@@ -95,6 +104,20 @@ export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPl
       saveTrip(updatedTrip);
       if (onTripSavedChange) onTripSavedChange();
     }
+  };
+
+  const handleAddDayTrip = (newDay: ItineraryDay) => {
+    const updatedTrip: TripPlan = {
+      ...trip,
+      duration: trip.duration + 1,
+      itinerary: [...trip.itinerary, newDay],
+    };
+    setTrip(updatedTrip);
+    if (isSaved) {
+      saveTrip(updatedTrip);
+      if (onTripSavedChange) onTripSavedChange();
+    }
+    setActiveTab('itinerary');
   };
 
   const handleShare = () => {
@@ -294,7 +317,7 @@ export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPl
       <div className="sticky top-16 z-30 bg-white/90 backdrop-blur-md p-2 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-1.5 overflow-x-auto scrollbar-none">
         <button
           onClick={() => setActiveTab('itinerary')}
-          className={`flex-1 min-w-[105px] py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
+          className={`flex-1 min-w-[95px] py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
             activeTab === 'itinerary'
               ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
               : 'text-slate-600 hover:bg-slate-100'
@@ -306,7 +329,7 @@ export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPl
 
         <button
           onClick={() => setActiveTab('map')}
-          className={`flex-1 min-w-[105px] py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
+          className={`flex-1 min-w-[95px] py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
             activeTab === 'map'
               ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
               : 'text-slate-600 hover:bg-slate-100'
@@ -318,7 +341,7 @@ export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPl
 
         <button
           onClick={() => setActiveTab('places')}
-          className={`flex-1 min-w-[105px] py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
+          className={`flex-1 min-w-[95px] py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
             activeTab === 'places'
               ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
               : 'text-slate-600 hover:bg-slate-100'
@@ -330,7 +353,7 @@ export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPl
 
         <button
           onClick={() => setActiveTab('restaurants')}
-          className={`flex-1 min-w-[105px] py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
+          className={`flex-1 min-w-[95px] py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
             activeTab === 'restaurants'
               ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
               : 'text-slate-600 hover:bg-slate-100'
@@ -341,20 +364,44 @@ export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPl
         </button>
 
         <button
+          onClick={() => setActiveTab('excursions')}
+          className={`flex-1 min-w-[95px] py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
+            activeTab === 'excursions'
+              ? 'bg-teal-600 text-white shadow-md shadow-teal-600/20'
+              : 'text-slate-600 hover:bg-slate-100'
+          }`}
+        >
+          <Train className="w-4 h-4" />
+          <span>Day Trips</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('booking')}
+          className={`flex-1 min-w-[95px] py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
+            activeTab === 'booking'
+              ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
+              : 'text-slate-600 hover:bg-slate-100'
+          }`}
+        >
+          <Plane className="w-4 h-4" />
+          <span>Bookings</span>
+        </button>
+
+        <button
           onClick={() => setActiveTab('budget')}
-          className={`flex-1 min-w-[105px] py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
+          className={`flex-1 min-w-[95px] py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
             activeTab === 'budget'
               ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
               : 'text-slate-600 hover:bg-slate-100'
           }`}
         >
           <DollarSign className="w-4 h-4" />
-          <span>Budget & Tips</span>
+          <span>Budget</span>
         </button>
 
         <button
           onClick={() => setActiveTab('expenses')}
-          className={`flex-1 min-w-[105px] py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
+          className={`flex-1 min-w-[95px] py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
             activeTab === 'expenses'
               ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
               : 'text-slate-600 hover:bg-slate-100'
@@ -366,7 +413,7 @@ export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPl
 
         <button
           onClick={() => setActiveTab('weather')}
-          className={`flex-1 min-w-[105px] py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
+          className={`flex-1 min-w-[95px] py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
             activeTab === 'weather'
               ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
               : 'text-slate-600 hover:bg-slate-100'
@@ -378,14 +425,26 @@ export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPl
 
         <button
           onClick={() => setActiveTab('guidebook')}
-          className={`flex-1 min-w-[105px] py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
+          className={`flex-1 min-w-[95px] py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
             activeTab === 'guidebook'
               ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
               : 'text-slate-600 hover:bg-slate-100'
           }`}
         >
           <BookOpen className="w-4 h-4" />
-          <span>Guidebook</span>
+          <span>Guide</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('eco')}
+          className={`flex-1 min-w-[95px] py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
+            activeTab === 'eco'
+              ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/20'
+              : 'text-slate-600 hover:bg-slate-100'
+          }`}
+        >
+          <Leaf className="w-4 h-4" />
+          <span>Eco</span>
         </button>
       </div>
 
@@ -430,6 +489,22 @@ export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPl
           />
         )}
 
+        {activeTab === 'excursions' && (
+          <DayTripSuggester
+            destination={trip.destination}
+            onAddDayTrip={handleAddDayTrip}
+            currentDayCount={trip.duration}
+          />
+        )}
+
+        {activeTab === 'booking' && (
+          <FlightHotelFinder
+            destination={trip.destination}
+            duration={trip.duration}
+            budget={trip.budget}
+          />
+        )}
+
         {activeTab === 'budget' && (
           <BudgetBreakdown
             budget={trip.estimatedBudget}
@@ -457,6 +532,14 @@ export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPl
           <TravelGuidebook
             destination={trip.destination}
             country={trip.country}
+          />
+        )}
+
+        {activeTab === 'eco' && (
+          <CarbonFootprint
+            destination={trip.destination}
+            duration={trip.duration}
+            budget={trip.budget}
           />
         )}
       </div>

@@ -13,8 +13,11 @@ import {
   Plus,
   Trash2,
   X,
-  Check
+  Check,
+  Route,
+  Sparkles
 } from 'lucide-react';
+import RouteOptimizerModal from './RouteOptimizerModal';
 
 interface DayItineraryProps {
   itinerary: ItineraryDay[];
@@ -38,6 +41,9 @@ export default function DayItinerary({
   const [newSlot, setNewSlot] = useState<ItineraryActivity['timeSlot']>('Morning');
   const [newCost, setNewCost] = useState('Free');
   const [newDesc, setNewDesc] = useState('');
+
+  // Route optimizer state
+  const [optimizingDay, setOptimizingDay] = useState<ItineraryDay | null>(null);
 
   const activeDayData = itinerary.find((d) => d.day === selectedDay) || itinerary[0];
 
@@ -99,6 +105,20 @@ export default function DayItinerary({
     setNewTitle('');
     setNewLocation('');
     setNewDesc('');
+  };
+
+  const handleApplyRouteOptimization = (dayNum: number, optimizedActivities: ItineraryActivity[]) => {
+    if (!onUpdateItinerary) return;
+    const updated = itinerary.map((d) => {
+      if (d.day === dayNum) {
+        return {
+          ...d,
+          schedule: optimizedActivities,
+        };
+      }
+      return d;
+    });
+    onUpdateItinerary(updated);
   };
 
   return (
@@ -163,15 +183,26 @@ export default function DayItinerary({
                 </h3>
               </div>
 
-              {onUpdateItinerary && (
+              <div className="flex items-center gap-2">
                 <button
-                  onClick={() => setIsAddingActivityForDay(day.day)}
-                  className="px-3.5 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold rounded-xl border border-indigo-200/80 transition-colors flex items-center gap-1.5 shadow-2xs"
+                  onClick={() => setOptimizingDay(day)}
+                  className="px-3.5 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold rounded-xl border border-emerald-200/80 transition-colors flex items-center gap-1.5 shadow-2xs"
+                  title="Optimize stop order to minimize transit distance"
                 >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>Add Stop</span>
+                  <Route className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Optimize Route</span>
                 </button>
-              )}
+
+                {onUpdateItinerary && (
+                  <button
+                    onClick={() => setIsAddingActivityForDay(day.day)}
+                    className="px-3.5 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold rounded-xl border border-indigo-200/80 transition-colors flex items-center gap-1.5 shadow-2xs"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Add Stop</span>
+                  </button>
+                )}
+              </div>
             </div>
 
             {/* Timeline Activities */}
@@ -241,7 +272,7 @@ export default function DayItinerary({
                             }
                             className="text-[11px] text-indigo-600 hover:text-indigo-800 underline font-semibold flex items-center gap-1"
                           >
-                            <Compass className="w-3 h-3" />
+                            <Compass className="w-3.5 h-3.5" />
                             <span>Locate on Map</span>
                           </button>
                         )}
@@ -289,6 +320,16 @@ export default function DayItinerary({
           </div>
         ))}
       </div>
+
+      {/* Route Distance Optimizer Modal */}
+      {optimizingDay && (
+        <RouteOptimizerModal
+          isOpen={Boolean(optimizingDay)}
+          onClose={() => setOptimizingDay(null)}
+          day={optimizingDay}
+          onApplyOptimization={handleApplyRouteOptimization}
+        />
+      )}
 
       {/* Inline Modal to Add New Activity */}
       {isAddingActivityForDay && (
