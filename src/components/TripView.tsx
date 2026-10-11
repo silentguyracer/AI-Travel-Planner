@@ -17,7 +17,10 @@ import {
   Check,
   CalendarPlus,
   Coins,
-  Receipt
+  Receipt,
+  CloudSun,
+  BookOpen,
+  Bot
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { saveTrip, isTripSaved, exportTripToJson } from '@/lib/storage';
@@ -29,6 +32,9 @@ import RestaurantsList from './RestaurantsList';
 import GoogleMapView from './GoogleMapView';
 import BudgetBreakdown from './BudgetBreakdown';
 import ExpenseTracker from './ExpenseTracker';
+import WeatherWidget from './WeatherWidget';
+import TravelGuidebook from './TravelGuidebook';
+import AIConciergeModal from './AIConciergeModal';
 
 interface TripViewProps {
   trip: TripPlan;
@@ -36,13 +42,22 @@ interface TripViewProps {
   onNewPlanClick: () => void;
 }
 
-type TabType = 'itinerary' | 'map' | 'places' | 'restaurants' | 'budget' | 'expenses';
+type TabType =
+  | 'itinerary'
+  | 'map'
+  | 'places'
+  | 'restaurants'
+  | 'budget'
+  | 'expenses'
+  | 'weather'
+  | 'guidebook';
 
 export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPlanClick }: TripViewProps) {
   const [trip, setTrip] = useState<TripPlan>(initialTrip);
   const [activeTab, setActiveTab] = useState<TabType>('itinerary');
   const [isSaved, setIsSaved] = useState<boolean>(() => isTripSaved(initialTrip.id));
   const [currency, setCurrency] = useState<SupportedCurrency>('USD');
+  const [isConciergeOpen, setIsConciergeOpen] = useState<boolean>(false);
   const [selectedMapLocation, setSelectedMapLocation] = useState<{
     lat: number;
     lng: number;
@@ -108,7 +123,7 @@ export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPl
   const convertedTotalEstimate = convertAmount(rawTotalEstimateUsd, currency);
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-300">
+    <div className="space-y-8 animate-in fade-in duration-300 relative">
       {/* 1. Trip Hero Header Banner */}
       <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-6 sm:p-10 text-white shadow-2xl relative overflow-hidden">
         {/* Subtle background effects */}
@@ -141,6 +156,15 @@ export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPl
                   ))}
                 </select>
               </div>
+
+              {/* Concierge Button in Hero */}
+              <button
+                onClick={() => setIsConciergeOpen(true)}
+                className="flex items-center gap-1.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-bold px-3 py-1 rounded-full shadow-sm text-xs transition-all"
+              >
+                <Bot className="w-3.5 h-3.5" />
+                <span>Ask AI Concierge</span>
+              </button>
             </div>
 
             {/* Destination Title */}
@@ -270,7 +294,7 @@ export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPl
       <div className="sticky top-16 z-30 bg-white/90 backdrop-blur-md p-2 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-1.5 overflow-x-auto scrollbar-none">
         <button
           onClick={() => setActiveTab('itinerary')}
-          className={`flex-1 min-w-[110px] py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-2 ${
+          className={`flex-1 min-w-[105px] py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
             activeTab === 'itinerary'
               ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
               : 'text-slate-600 hover:bg-slate-100'
@@ -282,19 +306,19 @@ export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPl
 
         <button
           onClick={() => setActiveTab('map')}
-          className={`flex-1 min-w-[110px] py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-2 ${
+          className={`flex-1 min-w-[105px] py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
             activeTab === 'map'
               ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
               : 'text-slate-600 hover:bg-slate-100'
           }`}
         >
           <Compass className="w-4 h-4" />
-          <span>Interactive Map</span>
+          <span>Map</span>
         </button>
 
         <button
           onClick={() => setActiveTab('places')}
-          className={`flex-1 min-w-[110px] py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-2 ${
+          className={`flex-1 min-w-[105px] py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
             activeTab === 'places'
               ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
               : 'text-slate-600 hover:bg-slate-100'
@@ -306,7 +330,7 @@ export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPl
 
         <button
           onClick={() => setActiveTab('restaurants')}
-          className={`flex-1 min-w-[110px] py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-2 ${
+          className={`flex-1 min-w-[105px] py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
             activeTab === 'restaurants'
               ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
               : 'text-slate-600 hover:bg-slate-100'
@@ -318,7 +342,7 @@ export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPl
 
         <button
           onClick={() => setActiveTab('budget')}
-          className={`flex-1 min-w-[110px] py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-2 ${
+          className={`flex-1 min-w-[105px] py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
             activeTab === 'budget'
               ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
               : 'text-slate-600 hover:bg-slate-100'
@@ -330,14 +354,38 @@ export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPl
 
         <button
           onClick={() => setActiveTab('expenses')}
-          className={`flex-1 min-w-[110px] py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-2 ${
+          className={`flex-1 min-w-[105px] py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
             activeTab === 'expenses'
               ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
               : 'text-slate-600 hover:bg-slate-100'
           }`}
         >
           <Receipt className="w-4 h-4" />
-          <span>Expense Tracker</span>
+          <span>Expenses</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('weather')}
+          className={`flex-1 min-w-[105px] py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
+            activeTab === 'weather'
+              ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
+              : 'text-slate-600 hover:bg-slate-100'
+          }`}
+        >
+          <CloudSun className="w-4 h-4" />
+          <span>Weather</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('guidebook')}
+          className={`flex-1 min-w-[105px] py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
+            activeTab === 'guidebook'
+              ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
+              : 'text-slate-600 hover:bg-slate-100'
+          }`}
+        >
+          <BookOpen className="w-4 h-4" />
+          <span>Guidebook</span>
         </button>
       </div>
 
@@ -397,7 +445,37 @@ export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPl
             totalEstimatedBudgetStr={trip.estimatedBudget?.totalEstimate || '$1500'}
           />
         )}
+
+        {activeTab === 'weather' && (
+          <WeatherWidget
+            destination={trip.destination}
+            duration={trip.duration}
+          />
+        )}
+
+        {activeTab === 'guidebook' && (
+          <TravelGuidebook
+            destination={trip.destination}
+            country={trip.country}
+          />
+        )}
       </div>
+
+      {/* Floating Concierge FAB Button */}
+      <button
+        onClick={() => setIsConciergeOpen(true)}
+        className="fixed bottom-6 right-6 z-40 bg-gradient-to-r from-indigo-600 via-indigo-700 to-sky-600 text-white p-3.5 sm:px-5 sm:py-3.5 rounded-full shadow-2xl hover:scale-105 active:scale-95 transition-all flex items-center gap-2.5 font-bold text-xs sm:text-sm border-2 border-white/20"
+      >
+        <Bot className="w-5 h-5 text-amber-300" />
+        <span className="hidden sm:inline">Ask AI Concierge</span>
+      </button>
+
+      {/* AI Concierge Drawer */}
+      <AIConciergeModal
+        isOpen={isConciergeOpen}
+        onClose={() => setIsConciergeOpen(false)}
+        trip={trip}
+      />
     </div>
   );
 }
