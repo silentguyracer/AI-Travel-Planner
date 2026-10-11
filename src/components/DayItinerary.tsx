@@ -15,20 +15,27 @@ import {
   X,
   Check,
   Route,
-  Sparkles
+  Sparkles,
+  Train,
+  Footprints,
+  ExternalLink
 } from 'lucide-react';
 import RouteOptimizerModal from './RouteOptimizerModal';
+import AudioTourGuide from './AudioTourGuide';
+import { computeTransitBetweenStops } from '@/lib/transitMatrix';
 
 interface DayItineraryProps {
   itinerary: ItineraryDay[];
   onSelectActivityLocation?: (coords: { lat: number; lng: number; title: string }) => void;
   onUpdateItinerary?: (updated: ItineraryDay[]) => void;
+  destination?: string;
 }
 
 export default function DayItinerary({
   itinerary,
   onSelectActivityLocation,
   onUpdateItinerary,
+  destination = '',
 }: DayItineraryProps) {
   const [selectedDay, setSelectedDay] = useState<number>(1);
   const [expandedAll, setExpandedAll] = useState<boolean>(false);
@@ -165,10 +172,10 @@ export default function DayItinerary({
         {(expandedAll ? itinerary : [activeDayData]).map((day) => (
           <div
             key={day.day}
-            className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm relative overflow-hidden"
+            className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm relative overflow-hidden space-y-6"
           >
             {/* Day Header Banner */}
-            <div className="border-b border-slate-100 pb-5 mb-6 flex flex-wrap items-center justify-between gap-3">
+            <div className="border-b border-slate-100 pb-5 flex flex-wrap items-center justify-between gap-3">
               <div>
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="text-xs font-extrabold uppercase tracking-widest text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100">
@@ -205,95 +212,130 @@ export default function DayItinerary({
               </div>
             </div>
 
+            {/* Audio Tour Guide Widget for this Day */}
+            <AudioTourGuide day={day} destination={destination} />
+
             {/* Timeline Activities */}
-            <div className="relative border-l-2 border-indigo-100 ml-3 sm:ml-4 pl-6 sm:pl-8 space-y-8">
-              {day.schedule.map((activity, idx) => (
-                <div key={idx} className="relative group">
-                  {/* Timeline node icon */}
-                  <div className="absolute -left-[35px] sm:-left-[43px] top-1.5 w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-white border-2 border-indigo-600 flex items-center justify-center text-indigo-600 shadow-xs group-hover:bg-indigo-600 group-hover:text-white transition-colors">
-                    <span className="text-[10px] sm:text-xs font-bold">{idx + 1}</span>
-                  </div>
+            <div className="relative border-l-2 border-indigo-100 ml-3 sm:ml-4 pl-6 sm:pl-8 space-y-6">
+              {day.schedule.map((activity, idx) => {
+                const nextActivity = day.schedule[idx + 1];
+                const transit = nextActivity
+                  ? computeTransitBetweenStops(activity, nextActivity, destination)
+                  : null;
 
-                  {/* Card Content */}
-                  <div className="bg-slate-50/80 rounded-2xl p-5 border border-slate-200/70 hover:border-indigo-200 transition-all hover:shadow-xs">
-                    <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
-                      <div className="flex items-center gap-2">
-                        <span
-                          className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full border ${getTimeSlotColor(
-                            activity.timeSlot
-                          )}`}
-                        >
-                          {activity.timeSlot}
-                        </span>
-                        <div className="flex items-center gap-1 text-xs text-slate-500 font-semibold">
-                          <Clock className="w-3.5 h-3.5" />
-                          <span>{activity.time}</span>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        {activity.cost && (
-                          <div className="flex items-center gap-1 text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
-                            <DollarSign className="w-3 h-3" />
-                            <span>{activity.cost}</span>
-                          </div>
-                        )}
-                        {onUpdateItinerary && (
-                          <button
-                            onClick={() => handleDeleteActivity(day.day, idx)}
-                            title="Remove this stop"
-                            className="text-slate-300 hover:text-rose-500 transition-colors p-1"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        )}
-                      </div>
+                return (
+                  <div key={idx} className="relative group space-y-4">
+                    {/* Timeline node icon */}
+                    <div className="absolute -left-[35px] sm:-left-[43px] top-1.5 w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-white border-2 border-indigo-600 flex items-center justify-center text-indigo-600 shadow-xs group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                      <span className="text-[10px] sm:text-xs font-bold">{idx + 1}</span>
                     </div>
 
-                    <h4 className="text-base sm:text-lg font-bold text-slate-900">
-                      {activity.activity}
-                    </h4>
-
-                    {activity.locationName && (
-                      <div className="flex items-center justify-between mt-1 text-xs text-indigo-600 font-medium">
-                        <div className="flex items-center gap-1.5">
-                          <MapPin className="w-3.5 h-3.5" />
-                          <span>{activity.locationName}</span>
-                        </div>
-                        {activity.coordinates && onSelectActivityLocation && (
-                          <button
-                            type="button"
-                            onClick={() =>
-                              onSelectActivityLocation({
-                                lat: activity.coordinates!.lat,
-                                lng: activity.coordinates!.lng,
-                                title: activity.locationName,
-                              })
-                            }
-                            className="text-[11px] text-indigo-600 hover:text-indigo-800 underline font-semibold flex items-center gap-1"
+                    {/* Activity Card */}
+                    <div className="bg-slate-50/80 rounded-2xl p-5 border border-slate-200/70 hover:border-indigo-200 transition-all hover:shadow-xs">
+                      <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full border ${getTimeSlotColor(
+                              activity.timeSlot
+                            )}`}
                           >
-                            <Compass className="w-3.5 h-3.5" />
-                            <span>Locate on Map</span>
-                          </button>
-                        )}
-                      </div>
-                    )}
-
-                    <p className="mt-2 text-sm text-slate-600 leading-relaxed">
-                      {activity.description}
-                    </p>
-
-                    {activity.tip && (
-                      <div className="mt-3 p-3 bg-amber-50/70 border border-amber-200/80 rounded-xl text-xs text-amber-900 flex items-start gap-2">
-                        <Lightbulb className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-                        <div>
-                          <span className="font-bold">Insider Tip:</span> {activity.tip}
+                            {activity.timeSlot}
+                          </span>
+                          <div className="flex items-center gap-1 text-xs text-slate-500 font-semibold">
+                            <Clock className="w-3.5 h-3.5" />
+                            <span>{activity.time}</span>
+                          </div>
                         </div>
+
+                        <div className="flex items-center gap-2">
+                          {activity.cost && (
+                            <div className="flex items-center gap-1 text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                              <DollarSign className="w-3 h-3" />
+                              <span>{activity.cost}</span>
+                            </div>
+                          )}
+                          {onUpdateItinerary && (
+                            <button
+                              onClick={() => handleDeleteActivity(day.day, idx)}
+                              title="Remove this stop"
+                              className="text-slate-300 hover:text-rose-500 transition-colors p-1"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+
+                      <h4 className="text-base sm:text-lg font-bold text-slate-900">
+                        {activity.activity}
+                      </h4>
+
+                      {activity.locationName && (
+                        <div className="flex items-center justify-between mt-1 text-xs text-indigo-600 font-medium">
+                          <div className="flex items-center gap-1.5">
+                            <MapPin className="w-3.5 h-3.5" />
+                            <span>{activity.locationName}</span>
+                          </div>
+                          {activity.coordinates && onSelectActivityLocation && (
+                            <button
+                              type="button"
+                              onClick={() =>
+                                onSelectActivityLocation({
+                                  lat: activity.coordinates!.lat,
+                                  lng: activity.coordinates!.lng,
+                                  title: activity.locationName,
+                                })
+                              }
+                              className="text-[11px] text-indigo-600 hover:text-indigo-800 underline font-semibold flex items-center gap-1"
+                            >
+                              <Compass className="w-3.5 h-3.5" />
+                              <span>Locate on Map</span>
+                            </button>
+                          )}
+                        </div>
+                      )}
+
+                      <p className="mt-2 text-sm text-slate-600 leading-relaxed">
+                        {activity.description}
+                      </p>
+
+                      {activity.tip && (
+                        <div className="mt-3 p-3 bg-amber-50/70 border border-amber-200/80 rounded-xl text-xs text-amber-900 flex items-start gap-2">
+                          <Lightbulb className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                          <div>
+                            <span className="font-bold">Insider Tip:</span> {activity.tip}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Inter-Stop Transit Step Indicator */}
+                    {transit && (
+                      <div className="ml-1 my-2 p-2.5 bg-indigo-50/50 border border-indigo-100 rounded-xl flex items-center justify-between text-[11px] text-slate-600 shadow-2xs">
+                        <div className="flex items-center gap-2">
+                          {transit.mode === 'metro' ? (
+                            <Train className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                          ) : (
+                            <Footprints className="w-3.5 h-3.5 text-slate-600 shrink-0" />
+                          )}
+                          <span>
+                            <strong>Next:</strong> {transit.summary} ({transit.distanceKm} km)
+                          </span>
+                        </div>
+                        <a
+                          href={transit.navigationUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-indigo-600 hover:text-indigo-800 flex items-center gap-1 font-bold shrink-0 ml-2"
+                        >
+                          <span>Directions</span>
+                          <ExternalLink className="w-3 h-3" />
+                        </a>
                       </div>
                     )}
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             {/* Daily Dining Spotlight */}

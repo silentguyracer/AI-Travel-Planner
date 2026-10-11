@@ -27,7 +27,9 @@ import {
   Camera,
   CheckSquare,
   Clock,
-  Ticket
+  Ticket,
+  ShieldCheck,
+  Calculator
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { saveTrip, isTripSaved, exportTripToJson } from '@/lib/storage';
@@ -50,6 +52,8 @@ import DestinationGallery from './DestinationGallery';
 import PackingCustomizer from './PackingCustomizer';
 import JetLagAdvisor from './JetLagAdvisor';
 import BoardingPassCard from './BoardingPassCard';
+import VisaEntryRequirements from './VisaEntryRequirements';
+import TipCalculator from './TipCalculator';
 
 interface TripViewProps {
   trip: TripPlan;
@@ -66,6 +70,8 @@ type TabType =
   | 'packing'
   | 'jetlag'
   | 'pass'
+  | 'visa'
+  | 'tip'
   | 'budget'
   | 'expenses'
   | 'weather'
@@ -336,7 +342,7 @@ export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPl
       <div className="sticky top-16 z-30 bg-white/90 backdrop-blur-md p-2 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-1.5 overflow-x-auto scrollbar-none">
         <button
           onClick={() => setActiveTab('itinerary')}
-          className={`flex-1 min-w-[85px] py-2 px-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
+          className={`flex-1 min-w-[80px] py-2 px-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
             activeTab === 'itinerary'
               ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
               : 'text-slate-600 hover:bg-slate-100'
@@ -348,7 +354,7 @@ export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPl
 
         <button
           onClick={() => setActiveTab('map')}
-          className={`flex-1 min-w-[85px] py-2 px-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
+          className={`flex-1 min-w-[80px] py-2 px-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
             activeTab === 'map'
               ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
               : 'text-slate-600 hover:bg-slate-100'
@@ -360,7 +366,7 @@ export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPl
 
         <button
           onClick={() => setActiveTab('places')}
-          className={`flex-1 min-w-[85px] py-2 px-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
+          className={`flex-1 min-w-[80px] py-2 px-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
             activeTab === 'places'
               ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
               : 'text-slate-600 hover:bg-slate-100'
@@ -372,7 +378,7 @@ export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPl
 
         <button
           onClick={() => setActiveTab('restaurants')}
-          className={`flex-1 min-w-[85px] py-2 px-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
+          className={`flex-1 min-w-[80px] py-2 px-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
             activeTab === 'restaurants'
               ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
               : 'text-slate-600 hover:bg-slate-100'
@@ -384,7 +390,7 @@ export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPl
 
         <button
           onClick={() => setActiveTab('gallery')}
-          className={`flex-1 min-w-[85px] py-2 px-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
+          className={`flex-1 min-w-[80px] py-2 px-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
             activeTab === 'gallery'
               ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
               : 'text-slate-600 hover:bg-slate-100'
@@ -396,7 +402,7 @@ export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPl
 
         <button
           onClick={() => setActiveTab('packing')}
-          className={`flex-1 min-w-[85px] py-2 px-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
+          className={`flex-1 min-w-[80px] py-2 px-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
             activeTab === 'packing'
               ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
               : 'text-slate-600 hover:bg-slate-100'
@@ -408,7 +414,7 @@ export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPl
 
         <button
           onClick={() => setActiveTab('jetlag')}
-          className={`flex-1 min-w-[85px] py-2 px-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
+          className={`flex-1 min-w-[80px] py-2 px-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
             activeTab === 'jetlag'
               ? 'bg-purple-600 text-white shadow-md shadow-purple-600/20'
               : 'text-slate-600 hover:bg-slate-100'
@@ -419,8 +425,32 @@ export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPl
         </button>
 
         <button
+          onClick={() => setActiveTab('visa')}
+          className={`flex-1 min-w-[80px] py-2 px-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
+            activeTab === 'visa'
+              ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
+              : 'text-slate-600 hover:bg-slate-100'
+          }`}
+        >
+          <ShieldCheck className="w-4 h-4" />
+          <span>Visa</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('tip')}
+          className={`flex-1 min-w-[80px] py-2 px-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
+            activeTab === 'tip'
+              ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/20'
+              : 'text-slate-600 hover:bg-slate-100'
+          }`}
+        >
+          <Calculator className="w-4 h-4" />
+          <span>Tips</span>
+        </button>
+
+        <button
           onClick={() => setActiveTab('pass')}
-          className={`flex-1 min-w-[85px] py-2 px-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
+          className={`flex-1 min-w-[80px] py-2 px-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
             activeTab === 'pass'
               ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
               : 'text-slate-600 hover:bg-slate-100'
@@ -432,7 +462,7 @@ export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPl
 
         <button
           onClick={() => setActiveTab('excursions')}
-          className={`flex-1 min-w-[85px] py-2 px-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
+          className={`flex-1 min-w-[80px] py-2 px-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
             activeTab === 'excursions'
               ? 'bg-teal-600 text-white shadow-md shadow-teal-600/20'
               : 'text-slate-600 hover:bg-slate-100'
@@ -444,7 +474,7 @@ export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPl
 
         <button
           onClick={() => setActiveTab('booking')}
-          className={`flex-1 min-w-[85px] py-2 px-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
+          className={`flex-1 min-w-[80px] py-2 px-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
             activeTab === 'booking'
               ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
               : 'text-slate-600 hover:bg-slate-100'
@@ -456,7 +486,7 @@ export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPl
 
         <button
           onClick={() => setActiveTab('budget')}
-          className={`flex-1 min-w-[85px] py-2 px-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
+          className={`flex-1 min-w-[80px] py-2 px-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
             activeTab === 'budget'
               ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
               : 'text-slate-600 hover:bg-slate-100'
@@ -468,7 +498,7 @@ export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPl
 
         <button
           onClick={() => setActiveTab('expenses')}
-          className={`flex-1 min-w-[85px] py-2 px-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
+          className={`flex-1 min-w-[80px] py-2 px-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
             activeTab === 'expenses'
               ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
               : 'text-slate-600 hover:bg-slate-100'
@@ -480,7 +510,7 @@ export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPl
 
         <button
           onClick={() => setActiveTab('weather')}
-          className={`flex-1 min-w-[85px] py-2 px-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
+          className={`flex-1 min-w-[80px] py-2 px-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
             activeTab === 'weather'
               ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
               : 'text-slate-600 hover:bg-slate-100'
@@ -492,7 +522,7 @@ export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPl
 
         <button
           onClick={() => setActiveTab('guidebook')}
-          className={`flex-1 min-w-[85px] py-2 px-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
+          className={`flex-1 min-w-[80px] py-2 px-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
             activeTab === 'guidebook'
               ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
               : 'text-slate-600 hover:bg-slate-100'
@@ -504,7 +534,7 @@ export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPl
 
         <button
           onClick={() => setActiveTab('eco')}
-          className={`flex-1 min-w-[85px] py-2 px-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
+          className={`flex-1 min-w-[80px] py-2 px-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
             activeTab === 'eco'
               ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/20'
               : 'text-slate-600 hover:bg-slate-100'
@@ -523,6 +553,7 @@ export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPl
               itinerary={trip.itinerary}
               onSelectActivityLocation={handleSelectMapPoint}
               onUpdateItinerary={handleUpdateItinerary}
+              destination={trip.destination}
             />
           </div>
         )}
@@ -574,6 +605,17 @@ export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPl
 
         {activeTab === 'pass' && (
           <BoardingPassCard trip={trip} />
+        )}
+
+        {activeTab === 'visa' && (
+          <VisaEntryRequirements
+            destination={trip.destination}
+            country={trip.country}
+          />
+        )}
+
+        {activeTab === 'tip' && (
+          <TipCalculator destination={trip.destination} />
         )}
 
         {activeTab === 'excursions' && (
