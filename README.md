@@ -1,57 +1,72 @@
-# 🌍 WanderAI - AI Travel Planner
+# 🌍 WanderAI - Advanced AI Travel Planner
 
-A full-stack AI-powered travel planning application built with **Next.js (App Router)**, **OpenAI API**, and **Google Maps API**. 
+A commercial-grade, full-stack travel planning platform built with **Next.js (App Router)**, **OpenAI API**, and **Google Maps API**. 
 
-Pick any destination and budget, then instantly generate a complete, personalized trip with top attractions, dining recommendations, and an organized day-by-day itinerary. Save your favorite trips for later, explore them on an interactive map, and export them for your travels.
+Pick any destination and budget, then instantly generate a complete, personalized trip with top attractions, dining recommendations, and an organized day-by-day itinerary. Save your favorite trips for later, explore them on an interactive map, optimize transit paths, listen to native phrase pronunciations, track live expenses, and export to calendars.
 
 ---
 
-## ✨ Features
+## ✨ Full Suite of Advanced Capabilities
 
-- **🎯 Destination & Budget Customization**
-  - Choose any worldwide destination (or pick trending destinations like Tokyo, Paris, Rome, Bali, Barcelona, New York).
-  - Select trip duration from 1 to 14 days.
-  - Pick your budget tier (**Economy**, **Moderate**, **Luxury**) with realistic cost benchmarks.
-  - Select travel companions (Solo, Couple, Family, Friends) and travel vibes (Foodie, Cultural, Adventure, Relaxed, Photography, Nightlife, etc.).
-  - Add optional custom preferences (e.g. vegetarian dining, accessibility, romantic spots).
+### 1. 🎯 Trip Planning & Customization
+- **Global Autocomplete Search**: Interactive search across top global destinations with country badges and emoji markers.
+- **Duration & Budget Tiers**: Choose 1 to 14 days with benchmarks for **Economy** ($), **Moderate** ($$), and **Luxury** ($$$).
+- **Travel Companion & Vibes**: Solo, Couple, Family, Friends with vibes like *Foodie, Cultural, Adventure, Relaxed, Photography, Nightlife*.
+- **Special Requests**: Custom prompt inputs (e.g. *vegetarian dining, romantic spots, wheelchair accessible*).
 
-- **🤖 AI Travel Generation Engine (OpenAI API)**
-  - Powered by OpenAI (`gpt-4o-mini` with structured JSON schema output) via `/api/generate-trip`.
-  - Intelligently generates complete day-by-day schedules with Morning, Afternoon, and Evening activities, insider tips, and specific cost estimates.
-  - **Graceful Fallback Mode**: Works seamlessly right out of the box with built-in high-fidelity trip curation even before an OpenAI API key is configured.
+### 2. 🤖 AI Generation & Live Concierge (OpenAI API)
+- **Structured Output Engine**: Uses `gpt-4o-mini` with strict JSON schema enforcing accurate GPS coordinates, cost breakdowns, and timing.
+- **Live AI Concierge Drawer**: Real-time conversational chat assistant answering destination questions with trip context.
+- **Curated Fallback Engine**: Works seamlessly right out of the box with built-in itineraries even before an API key is entered.
 
-- **🗺️ Interactive Google Maps Integration**
-  - Live Google Maps JavaScript API rendering with custom colored markers for:
-    - 🟣 **Attractions & Places to Visit**
-    - 🔴 **Restaurants & Culinary Gems**
-    - 🟢 **Day-by-Day Itinerary Activities**
-  - Interactive InfoWindows with photos, ratings, price tiers, and "Open in Google Maps Directions".
-  - Filter map markers by category or specific trip day.
-  - **Visual Coordinate Fallback**: If a Google Maps API key is not supplied, an interactive digital coordinate map viewer with zoom & pan controls plots all pins accurately without throwing errors.
+### 3. 🗺️ Interactive Google Maps & Route Paths
+- **Custom Categorized Markers**:
+  - 🟣 Attractions & Sightseeing
+  - 🔴 Culinary & Dining Spots
+  - 🟢 Daily Activities
+- **Interactive Polyline Paths**: Visual walking/transit paths connecting morning, afternoon, and evening stops.
+- **Vector Coordinate Fallback**: Interactive digital GIS coordinate viewer with zoom, drag, and pan controls.
 
-- **💾 Save Trips for Later (LocalStorage & Export)**
-  - Save trips with 1 click (with celebratory confetti animation).
-  - Browse saved trips in the **My Saved Trips** drawer.
-  - Quick restore / switch between saved itineraries.
-  - Export trips as structured `.json` files.
-  - Print-friendly layout (or Save as PDF) formatted for clean offline travel reading.
-  - Share summary text to clipboard.
+### 4. 🧠 Geospatial AI Route Distance Optimizer (TSP)
+- **Haversine Distance & TSP Heuristic**: Calculates geographic distances between scheduled stops for each day.
+- **1-Click Route Optimization**: Eliminates backtracking, computes kilometers saved and estimated transit minutes saved, and updates the itinerary.
 
-- **💼 Practical Travel Advisory & Packing Checklist**
-  - Estimated expense breakdown (Flights/Transit, Lodging, Food, Activities, Total).
-  - Interactive interactive packing checklist with toggleable checkboxes.
-  - Local etiquette rules, tipping culture, and transit guidelines.
-  - Weather overview and payment advice.
+### 5. 🔊 Voice Audio Speech Synthesis Phrasebook
+- **Native Audio Pronunciation**: Uses the Web Speech API to speak essential local phrases aloud in native **Japanese (`ja-JP`)**, **French (`fr-FR`)**, **Italian (`it-IT`)**, and **Spanish (`es-ES`)**.
+- **1-Click Copy**: Copy phrase text to clipboard.
+- **Emergency Directory**: Police, Ambulance, Fire, and Universal GSM helpline numbers.
+
+### 6. 🚆 Nearby Excursions & Day Trip Extensions
+- **Curated Day Trips**: Recommends nearby escapes (e.g. *Mount Fuji, Kamakura, Nikko from Tokyo*; *Versailles, Giverny, Champagne from Paris*).
+- **1-Click Add**: Extends your trip duration and appends the day trip directly to the active itinerary.
+
+### 7. ✈️ Smart Flight & Hotel Booking Finder
+- **Pre-Configured Deep Links**: 1-click links to **Google Flights**, **Skyscanner**, **Booking.com**, and **Airbnb** with pre-filled destination parameters.
+
+### 8. 🧾 Real-Time Travel Expense Tracker
+- **Budget Consumed Progress Bar**: Compares actual spend against the estimated AI trip budget.
+- **Receipt Logger**: Log expenses categorized by *Food, Transit, Lodging, Activities, Shopping*. Stored in `localStorage`.
+
+### 9. 📅 Direct Calendar Sync & Multi-Currency Converter
+- **`.ics` iCalendar Export**: Imports the itinerary into **Google Calendar**, **Apple Calendar**, or **Outlook**.
+- **Multi-Currency Converter**: Instant currency switcher between **USD ($)**, **EUR (€)**, **GBP (£)**, **JPY (¥)**, **INR (₹)**, **AUD (A$)**, and **CAD (C$)**.
+
+### 10. 🌱 Carbon Footprint & Eco-Travel Estimator
+- Computes estimated kg CO₂ emissions based on transit and lodging tier.
+- Displays equivalent trees needed for annual absorption and actionable green travel tips.
 
 ---
 
 ## 🛠️ Tech Stack
 
-- **Framework**: [Next.js 16 (App Router)](https://nextjs.org/) + TypeScript + React 19
-- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
-- **AI Engine**: [OpenAI API](https://platform.openai.com/) (`gpt-4o-mini`)
-- **Maps**: [Google Maps JavaScript API](https://developers.google.com/maps/documentation/javascript)
-- **Icons**: [Lucide React](https://lucide.dev/)
+- **Framework**: Next.js 16 (App Router) + TypeScript + React 19
+- **Styling**: Tailwind CSS v4
+- **AI Engine**: OpenAI API (`gpt-4o-mini`)
+- **Maps**: Google Maps JavaScript API
+- **Audio**: Web Speech API (`SpeechSynthesis`)
+- **Algorithms**: Haversine Formula & 2-Opt TSP Nearest Neighbor Heuristic
+- **Calendar**: RFC 5545 iCalendar (`.ics`) standard
+- **Icons**: Lucide React
 - **Storage**: Browser LocalStorage with JSON export/import
 
 ---
@@ -66,23 +81,16 @@ npm install
 
 ### 2. Configure Environment Variables (Optional)
 
-Copy `.env.example` to `.env.local`:
-
 ```bash
 cp .env.example .env.local
 ```
 
-Set your keys:
-
 ```env
-# OpenAI API Key for live AI generation
 OPENAI_API_KEY=sk-proj-...
-
-# Google Maps API Key for live Google Maps tiles & satellite layers
 NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=AIzaSy...
 ```
 
-> **Note**: You can also enter or update your API keys directly inside the application UI by clicking the **"API Keys"** button in the top navigation bar.
+*(Note: API keys can also be configured directly in the browser via the **"API Keys"** button in the header).*
 
 ### 3. Run the Development Server
 
@@ -97,40 +105,4 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 ```bash
 npm run build
 npm start
-```
-
----
-
-## 📁 Project Structure
-
-```
-├── src/
-│   ├── app/
-│   │   ├── api/
-│   │   │   └── generate-trip/
-│   │   │       └── route.ts        # Next.js API Route for OpenAI itinerary generation
-│   │   ├── globals.css             # Tailwind v4 setup & print styles
-│   │   ├── layout.tsx              # Root HTML & metadata
-│   │   └── page.tsx                # Main application page & state orchestrator
-│   ├── components/
-│   │   ├── Header.tsx              # Top navigation bar with Saved Trips badge & API key modal
-│   │   ├── TripForm.tsx            # Trip configuration form (destination, budget, companions)
-│   │   ├── TripView.tsx            # Master trip plan container & tab switcher
-│   │   ├── DayItinerary.tsx        # Day-by-day morning/afternoon/evening schedule
-│   │   ├── GoogleMapView.tsx       # Google Maps view with markers, filters & interactive fallback
-│   │   ├── PlacesList.tsx          # Attractions & sightseeing cards with categories and ratings
-│   │   ├── RestaurantsList.tsx     # Culinary spots cards with cuisines and must-try dishes
-│   │   ├── BudgetBreakdown.tsx     # Expense calculator, packing checklist & etiquette
-│   │   ├── SavedTripsModal.tsx     # Saved trips manager (open, export JSON, delete)
-│   │   ├── SampleTripsModal.tsx    # Instant sample itinerary picker (Tokyo, Paris, etc.)
-│   │   └── SettingsModal.tsx       # In-app API keys configuration modal
-│   ├── lib/
-│   │   ├── openai.ts               # OpenAI client & prompt engineering
-│   │   ├── sampleTrips.ts          # Curated sample itineraries for instant testing
-│   │   └── storage.ts              # LocalStorage helper for trips and preferences
-│   └── types/
-│       └── travel.ts               # Complete TypeScript data models
-├── .env.example
-├── package.json
-└── tsconfig.json
 ```
