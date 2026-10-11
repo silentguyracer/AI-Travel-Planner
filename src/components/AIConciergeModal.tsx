@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { TripPlan } from '@/types/travel';
-import { MessageSquare, Send, Sparkles, X, Bot, User, Loader2, Compass } from 'lucide-react';
+import { Send, X, Bot, User, Loader2 } from 'lucide-react';
 import { getUserSettings } from '@/lib/storage';
 
 interface AIConciergeModalProps {
@@ -43,8 +43,6 @@ export default function AIConciergeModal({ isOpen, onClose, trip }: AIConciergeM
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages, isOpen]);
-
-  if (!isOpen) return null;
 
   const handleSend = async (queryText?: string) => {
     const textToSend = queryText || input;
@@ -97,6 +95,8 @@ export default function AIConciergeModal({ isOpen, onClose, trip }: AIConciergeM
       setIsLoading(false);
     }
   };
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-end sm:p-4 bg-slate-950/60 backdrop-blur-sm animate-in fade-in">

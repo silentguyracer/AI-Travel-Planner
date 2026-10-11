@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Phone, BookOpen, Volume2, ShieldAlert, Zap, Globe, Check, VolumeX } from 'lucide-react';
+import { BookOpen, Volume2, ShieldAlert, Zap, Globe, Check } from 'lucide-react';
 
 interface TravelGuidebookProps {
   destination: string;

@@ -13,9 +13,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (!body.duration || typeof body.duration !== 'number' || body.duration < 1 || body.duration > 14) {
+    if (!body.duration || typeof body.duration !== 'number' || body.duration < 1 || body.duration > 30) {
       return NextResponse.json(
-        { error: 'Duration must be between 1 and 14 days.' },
+        { error: 'Duration must be between 1 and 30 days.' },
         { status: 400 }
       );
     }

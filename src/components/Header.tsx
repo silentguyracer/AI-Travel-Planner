@@ -1,42 +1,45 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Compass, Bookmark, Key, Sparkles, Map } from 'lucide-react';
+import React from 'react';
+import { Compass, Bookmark, Key, Sparkles, HelpCircle, Home, ArrowLeft } from 'lucide-react';
 import { getSavedTrips, getUserSettings } from '@/lib/storage';
 
 interface HeaderProps {
   onOpenSettings: () => void;
   onOpenSavedTrips: () => void;
   onSelectSample: () => void;
+  onOpenTour?: () => void;
   savedCount?: number;
+  onGoHome?: () => void;
+  isTripActive?: boolean;
 }
 
 export default function Header({
   onOpenSettings,
   onOpenSavedTrips,
   onSelectSample,
-  savedCount: propSavedCount
+  onOpenTour,
+  savedCount: propSavedCount,
+  onGoHome,
+  isTripActive = false,
 }: HeaderProps) {
-  const [savedCount, setSavedCount] = useState<number>(propSavedCount ?? 0);
-  const [hasCustomKey, setHasCustomKey] = useState<boolean>(false);
+  const hasCustomKey = typeof window !== 'undefined'
+    ? Boolean(getUserSettings().openaiApiKey || getUserSettings().googleMapsApiKey)
+    : false;
 
-  useEffect(() => {
-    if (propSavedCount !== undefined) {
-      setSavedCount(propSavedCount);
-    } else {
-      const trips = getSavedTrips();
-      setSavedCount(trips.length);
-    }
-    const settings = getUserSettings();
-    setHasCustomKey(Boolean(settings.openaiApiKey || settings.googleMapsApiKey));
-  }, [propSavedCount]);
+  const displayCount = propSavedCount !== undefined
+    ? propSavedCount
+    : (typeof window !== 'undefined' ? getSavedTrips().length : 0);
 
   return (
     <header className="sticky top-0 z-40 w-full backdrop-blur-md bg-white/85 border-b border-slate-200/80 transition-all">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Brand */}
         <div
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          onClick={() => {
+            if (onGoHome) onGoHome();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
           className="flex items-center gap-2.5 cursor-pointer group"
         >
           <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-sky-400 flex items-center justify-center text-white shadow-md shadow-indigo-500/20 group-hover:scale-105 transition-transform">
@@ -59,6 +62,42 @@ export default function Header({
 
         {/* Action Controls */}
         <div className="flex items-center gap-2 sm:gap-3">
+          {/* Back & Home Buttons when a trip is open */}
+          {isTripActive && onGoHome && (
+            <div className="flex items-center gap-1.5 mr-1">
+              <button
+                type="button"
+                onClick={onGoHome}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-slate-700 hover:text-indigo-600 bg-slate-100 hover:bg-slate-200/90 border border-slate-200/80 transition-all shadow-2xs hover:scale-105 active:scale-95 cursor-pointer"
+                title="Back to Trip Planner"
+              >
+                <ArrowLeft className="w-3.5 h-3.5 text-slate-500" />
+                <span className="hidden sm:inline">Back</span>
+              </button>
+              <button
+                type="button"
+                onClick={onGoHome}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200/80 transition-all shadow-2xs hover:scale-105 active:scale-95 cursor-pointer"
+                title="Go to Homepage"
+              >
+                <Home className="w-3.5 h-3.5 text-indigo-600" />
+                <span>Home</span>
+              </button>
+            </div>
+          )}
+
+          {/* How It Works Visual Tour Trigger */}
+          {onOpenTour && (
+            <button
+              onClick={onOpenTour}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100/90 border border-indigo-200/80 transition-all shadow-2xs hover:scale-105 active:scale-95 cursor-pointer"
+              title="Interactive 1-minute visual guide to WanderAI"
+            >
+              <HelpCircle className="w-3.5 h-3.5 text-indigo-600" />
+              <span>How It Works</span>
+            </button>
+          )}
+
           {/* Sample Trips Quick Button */}
           <button
             onClick={onSelectSample}
@@ -75,9 +114,9 @@ export default function Header({
           >
             <Bookmark className="w-4 h-4 text-indigo-600" />
             <span>Saved Trips</span>
-            {savedCount > 0 && (
+            {displayCount > 0 && (
               <span className="w-5 h-5 rounded-full bg-indigo-600 text-white text-[10px] font-bold flex items-center justify-center">
-                {savedCount}
+                {displayCount}
               </span>
             )}
           </button>

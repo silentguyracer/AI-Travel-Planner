@@ -25,6 +25,10 @@ export interface PlaceToVisit {
   };
   address: string;
   tags: string[];
+  durationRecommended?: string;
+  openingHours?: string;
+  insiderSecret?: string;
+  nearestTransit?: string;
 }
 
 export interface RestaurantRecommendation {
@@ -39,6 +43,10 @@ export interface RestaurantRecommendation {
     lat: number;
     lng: number;
   };
+  averageMealCost?: string;
+  vibe?: string;
+  reservationAdvice?: string;
+  signatureSpecialty?: string;
 }
 
 export interface ItineraryActivity {
@@ -53,17 +61,32 @@ export interface ItineraryActivity {
     lat: number;
     lng: number;
   };
+  durationMin?: number;
+  transitInfo?: string;
+  insiderTip?: string;
+  photoSpot?: string;
+  dressCode?: string;
+  bookingStatus?: string;
+  crowdLevel?: 'Low' | 'Moderate' | 'High';
+  audioTrivia?: string;
 }
 
 export interface ItineraryDay {
   day: number;
+  date?: string;
   title: string;
   theme: string;
+  energyLevel?: 'Relaxed' | 'Moderate' | 'High-Energy';
+  walkingDistance?: string;
+  estimatedDayBudget?: string;
   schedule: ItineraryActivity[];
   diningRecommendation: {
     lunch: string;
     dinner: string;
+    breakfast?: string;
+    snack?: string;
   };
+  dailyProTip?: string;
 }
 
 export interface BudgetBreakdown {
@@ -88,6 +111,8 @@ export interface TripPlan {
   destination: string;
   country: string;
   duration: number; // in days
+  startDate?: string;
+  endDate?: string;
   budget: BudgetTier;
   companion?: CompanionType;
   travelStyles?: TravelStyle[];
@@ -109,6 +134,8 @@ export interface TripPlan {
 export interface TripGenerationRequest {
   destination: string;
   duration: number;
+  startDate?: string;
+  endDate?: string;
   budget: BudgetTier;
   companion?: CompanionType;
   travelStyles?: TravelStyle[];

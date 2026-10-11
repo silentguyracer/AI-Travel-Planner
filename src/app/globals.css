@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
 
 :root {
   --background: #f8fafc;
@@ -19,24 +20,257 @@ body {
   overflow-x: hidden;
 }
 
-/* Print-friendly styles */
+/* ================= Custom Keyframes & Animations ================= */
+@keyframes floatSlow {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(1deg);
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.95;
+    transform: scale(1.04);
+  }
+}
+
+@keyframes shimmerSweep {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes slideUpFade {
+  0% {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleInFade {
+  0% {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes subtleBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+.animate-float-slow {
+  animation: floatSlow 6s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 4s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0) 100%);
+  background-size: 200% 100%;
+  animation: shimmerSweep 3s infinite linear;
+}
+
+.animate-gradient-flow {
+  background-size: 200% 200%;
+  animation: gradientShift 8s ease infinite;
+}
+
+.animate-slide-up-fade {
+  animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-scale-in-fade {
+  animation: scaleInFade 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-subtle-bounce {
+  animation: subtleBounce 2s ease-in-out infinite;
+}
+
+/* Stagger animation delay helper classes */
+.delay-75 { animation-delay: 75ms; }
+.delay-150 { animation-delay: 150ms; }
+.delay-225 { animation-delay: 225ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-375 { animation-delay: 375ms; }
+.delay-450 { animation-delay: 450ms; }
+.delay-600 { animation-delay: 600ms; }
+
+/* ================= Columbus Travel Animation Suite ================= */
+@keyframes columbusMarquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes columbusMarqueeReverse {
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(0%);
+  }
+}
+
+.animate-columbus-marquee {
+  display: flex;
+  width: max-content;
+  animation: columbusMarquee 32s linear infinite;
+}
+
+.animate-columbus-marquee:hover {
+  animation-play-state: paused;
+}
+
+.animate-columbus-marquee-reverse {
+  display: flex;
+  width: max-content;
+  animation: columbusMarqueeReverse 32s linear infinite;
+}
+
+.animate-columbus-marquee-reverse:hover {
+  animation-play-state: paused;
+}
+
+/* Columbus Travel Magnetic Arrow Interaction */
+.columbus-arrow-circle {
+  position: relative;
+  overflow: hidden;
+  border-radius: 9999px;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s ease;
+}
+
+.columbus-arrow-icon {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.group:hover .columbus-arrow-icon,
+.columbus-arrow-circle:hover .columbus-arrow-icon {
+  transform: translate(3px, -3px);
+}
+
+.columbus-plus-btn {
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s ease;
+}
+
+.group:hover .columbus-plus-btn,
+.columbus-plus-btn:hover {
+  transform: rotate(90deg) scale(1.12);
+}
+
+/* Interactive card hover glow */
+.card-hover-lift {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease;
+}
+.card-hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 32px -8px rgba(15, 23, 42, 0.08), 0 4px 12px -2px rgba(15, 23, 42, 0.04);
+}
+
+/* Comprehensive Editorial Print & PDF Export Stylesheet */
 @media print {
-  header, footer, nav, button, .no-print {
+  @page {
+    margin: 1.2cm;
+    size: auto;
+  }
+
+  /* Hide interactive chrome and UI overlays */
+  header,
+  footer,
+  nav,
+  button,
+  .no-print,
+  #interactive-bg-canvas,
+  .floating-nav-dock,
+  .leaflet-control-container,
+  [role="dialog"] {
     display: none !important;
   }
 
+  /* Reset body and background for crisp ink/PDF */
   body {
-    background: white !important;
-    color: black !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+    font-size: 11pt !important;
+    line-height: 1.4 !important;
   }
 
-  .bg-gradient-to-br, .bg-slate-900 {
-    background: white !important;
-    color: black !important;
+  /* Containers expand cleanly without scroll constraints */
+  main, .container, [class*="max-w-"] {
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Clean cards & avoid orphan page cuts */
+  .rounded-2xl, .rounded-3xl, .rounded-xl {
+    border-radius: 8px !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    box-shadow: none !important;
     border: 1px solid #cbd5e1 !important;
+    background: #ffffff !important;
+    margin-bottom: 1rem !important;
   }
 
-  h1, h2, h3, h4, p, span {
-    color: black !important;
+  /* Keep headings intact with their content */
+  h1, h2, h3, h4 {
+    color: #0f172a !important;
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+  }
+
+  /* Preserve links readable in print */
+  a {
+    text-decoration: none !important;
+    color: #1e293b !important;
+  }
+
+  /* Ensure photos display cleanly */
+  img {
+    max-width: 100% !important;
+    page-break-inside: avoid !important;
   }
 }
+

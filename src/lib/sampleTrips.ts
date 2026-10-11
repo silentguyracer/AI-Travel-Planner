@@ -139,6 +139,16 @@ export const SAMPLE_TRIPS: TripPlan[] = [
         schedule: [
           {
             timeSlot: 'Morning',
+            time: '07:45 AM',
+            activity: 'Early Morning Kaminarimon & Peaceful Asakusa Stroll',
+            locationName: 'Kaminarimon Gate',
+            description: 'Witness the iconic giant red lantern and quiet traditional alleyways before the shops and tour buses arrive.',
+            cost: 'Free',
+            tip: 'Best lighting for photos right as the morning sun hits the temple entrance.',
+            coordinates: { lat: 35.7111, lng: 139.7963 }
+          },
+          {
+            timeSlot: 'Morning',
             time: '09:00 AM',
             activity: 'Check-in & Senso-ji Exploration',
             locationName: 'Senso-ji Temple',
@@ -146,6 +156,16 @@ export const SAMPLE_TRIPS: TripPlan[] = [
             cost: 'Free',
             tip: 'Draw an omikuji fortune stick at the main hall for 100 JPY.',
             coordinates: { lat: 35.7148, lng: 139.7967 }
+          },
+          {
+            timeSlot: 'Afternoon',
+            time: '11:45 AM',
+            activity: 'Asakusa Imahan Historic Sukiyaki Lunch',
+            locationName: 'Asakusa Imahan',
+            description: 'Savor legendary thinly sliced Kuroge Wagyu beef simmered in sweet soy warishita sauce, serving diners since 1895.',
+            cost: '$30 - $45',
+            tip: 'Order the limited lunchtime sukiyaki gozen set for exceptional value.',
+            coordinates: { lat: 35.7138, lng: 139.7925 }
           },
           {
             timeSlot: 'Afternoon',
@@ -158,8 +178,28 @@ export const SAMPLE_TRIPS: TripPlan[] = [
             coordinates: { lat: 35.7101, lng: 139.8107 }
           },
           {
+            timeSlot: 'Afternoon',
+            time: '03:45 PM',
+            activity: 'Tokyo Mizumachi Artisan Promenade & Craft Coffee',
+            locationName: 'Tokyo Mizumachi',
+            description: 'Stroll along the riverside community hub featuring local design boutiques, artisanal bakeries, and craft cafes.',
+            cost: '$6 - $12',
+            tip: 'Try the fresh seasonal melonpan and cold brew coffee.',
+            coordinates: { lat: 35.7115, lng: 139.8055 }
+          },
+          {
             timeSlot: 'Evening',
-            time: '07:00 PM',
+            time: '05:30 PM',
+            activity: 'Sunset Observation from Skytree Tembo Deck',
+            locationName: 'Tokyo Skytree Observation Deck',
+            description: 'Watch twilight spread over the endless Tokyo skyline as Mount Fuji is silhouetted in the distance.',
+            cost: 'Included in ticket',
+            tip: 'The glass floor section on level 340 offers thrilling downward views.',
+            coordinates: { lat: 35.7101, lng: 139.8107 }
+          },
+          {
+            timeSlot: 'Evening',
+            time: '07:30 PM',
             activity: 'Traditional Izakaya & Asakusa Hoppy Street',
             locationName: 'Hoppy Dori Asakusa',
             description: 'Experience casual retro open-air dining with stewed beef tendon (nikomi) and cold Japanese draft beer.',
@@ -180,7 +220,7 @@ export const SAMPLE_TRIPS: TripPlan[] = [
         schedule: [
           {
             timeSlot: 'Morning',
-            time: '08:30 AM',
+            time: '08:00 AM',
             activity: 'Forest Walk at Meiji Shrine',
             locationName: 'Meiji Jingu',
             description: 'Walk under the towering cedar torii gates into the tranquil forested grounds of Emperor Meiji’s shrine.',
@@ -189,14 +229,44 @@ export const SAMPLE_TRIPS: TripPlan[] = [
             coordinates: { lat: 35.6764, lng: 139.6993 }
           },
           {
+            timeSlot: 'Morning',
+            time: '10:00 AM',
+            activity: 'Yoyogi Park & Japanese Tea Garden Stroll',
+            locationName: 'Yoyogi Park',
+            description: 'Enjoy a peaceful nature stroll through expansive lawns, ginkgo trees, and tranquil ponds.',
+            cost: 'Free',
+            tip: 'Great spot for morning people-watching and street performers.',
+            coordinates: { lat: 35.6717, lng: 139.6949 }
+          },
+          {
             timeSlot: 'Afternoon',
-            time: '12:30 PM',
+            time: '11:45 AM',
+            activity: 'Afuri Harajuku Yuzu Shio Ramen Lunch',
+            locationName: 'Afuri Harajuku',
+            description: 'Savor light, citrus-infused chicken broth ramen with charcoal-grilled chashu and spring water from Mt. Afuri.',
+            cost: '$12 - $18',
+            tip: 'Select your ramen from the ticket vending machine at the entrance.',
+            coordinates: { lat: 35.6702, lng: 139.7042 }
+          },
+          {
+            timeSlot: 'Afternoon',
+            time: '01:15 PM',
             activity: 'Harajuku & Cat Street Boutique Stroll',
             locationName: 'Takeshita & Cat Street',
             description: 'Explore trendy crepe cafes, indie fashion boutiques, and vintage shops between Harajuku and Omotesando.',
             cost: 'Free browsing, $5-$10 snacks',
             tip: 'Stop at Marion Crepes for an authentic Tokyo crepe.',
             coordinates: { lat: 35.6716, lng: 139.7032 }
+          },
+          {
+            timeSlot: 'Afternoon',
+            time: '03:45 PM',
+            activity: 'Miyashita Park Elevated Rooftop Garden',
+            locationName: 'Miyashita Park Shibuya',
+            description: 'Relax on the lush rooftop deck featuring skate parks, coffee lounges, and skyline vistas.',
+            cost: 'Free',
+            tip: 'Grab a matcha latte at the rooftop cafe pavilion.',
+            coordinates: { lat: 35.6621, lng: 139.7022 }
           },
           {
             timeSlot: 'Evening',
@@ -207,6 +277,16 @@ export const SAMPLE_TRIPS: TripPlan[] = [
             cost: '$16 ticket',
             tip: 'Hold onto your phone; hats and loose accessories must be put in lockers.',
             coordinates: { lat: 35.6586, lng: 139.7013 }
+          },
+          {
+            timeSlot: 'Night',
+            time: '08:00 PM',
+            activity: 'Nonbei Yokocho Lantern-Lit Yakitori Alley',
+            locationName: 'Nonbei Yokocho',
+            description: 'Step into Shibuya’s nostalgic post-war drinking alleyway for sizzling charcoal skewers and local craft beers.',
+            cost: '$20 - $35',
+            tip: 'Tucked right beside Shibuya Station under the Yamanote train line.',
+            coordinates: { lat: 35.6596, lng: 139.7021 }
           }
         ],
         diningRecommendation: {
@@ -221,13 +301,33 @@ export const SAMPLE_TRIPS: TripPlan[] = [
         schedule: [
           {
             timeSlot: 'Morning',
-            time: '08:30 AM',
+            time: '07:30 AM',
             activity: 'Street Food Safari at Tsukiji Outer Market',
             locationName: 'Tsukiji Outer Market',
             description: 'Sample freshly torched wagyu beef skewers, sweet tamagoyaki egg omelets, and premium sashimi bowls.',
             cost: '$20-$30 food tasting',
             tip: 'Stand near the vendor stalls while eating, as walking while eating is discouraged in Japan.',
             coordinates: { lat: 35.6655, lng: 139.7708 }
+          },
+          {
+            timeSlot: 'Morning',
+            time: '09:30 AM',
+            activity: 'Hamarikyu Gardens Tea House over Tidal Pond',
+            locationName: 'Hamarikyu Gardens',
+            description: 'Stroll through a tranquil Edo-period feudal lord garden surrounded by modern skyscrapers and enjoy matcha in a floating teahouse.',
+            cost: '300 JPY entrance + 500 JPY tea',
+            tip: 'The 300-year-old pine tree near the entrance is one of Tokyo’s grandest bonsai specimens.',
+            coordinates: { lat: 35.6596, lng: 139.7634 }
+          },
+          {
+            timeSlot: 'Afternoon',
+            time: '11:45 AM',
+            activity: 'Fresh Omakase Sushi at Toyosu Market',
+            locationName: 'Daiwa Sushi Toyosu',
+            description: 'Feast on fresh morning auction tuna, Hokkaido sea urchin, and flame-seared anago eel straight from the market floor.',
+            cost: '$40 - $65',
+            tip: 'Arrive before noon to beat the market lunch crowd.',
+            coordinates: { lat: 35.6444, lng: 139.7842 }
           },
           {
             timeSlot: 'Afternoon',
@@ -241,13 +341,33 @@ export const SAMPLE_TRIPS: TripPlan[] = [
           },
           {
             timeSlot: 'Evening',
-            time: '07:00 PM',
-            activity: 'Ginza Architecture & Cocktail Experience',
-            locationName: 'Ginza Six & Bar High Five',
-            description: 'Explore upscale department stores and indulge in Tokyo’s legendary bespoke craft cocktail artistry.',
-            cost: '$40-$60',
-            tip: 'Bar High Five offers custom tailored cocktails crafted to your flavor preferences.',
+            time: '04:30 PM',
+            activity: 'Ginza Six Rooftop Garden & Luxury Promenade',
+            locationName: 'Ginza Six',
+            description: 'Explore Tokyo’s premier luxury fashion and arts complex, culminating at the serene 4,000-square-meter rooftop garden.',
+            cost: 'Free rooftop access',
+            tip: 'The basement food hall (Depachika) has exquisite Japanese confection gifts.',
             coordinates: { lat: 35.6696, lng: 139.7645 }
+          },
+          {
+            timeSlot: 'Evening',
+            time: '06:30 PM',
+            activity: 'Ginza Kagari Rich Tori Paitan Ramen Dinner',
+            locationName: 'Ginza Kagari',
+            description: 'Dine on Michelin-recommended creamy chicken potage ramen served with seasonal root vegetables.',
+            cost: '$15 - $20',
+            tip: 'Add a soft-boiled seasoned ajitama egg and black truffle paste for unmatched flavor.',
+            coordinates: { lat: 35.6714, lng: 139.7654 }
+          },
+          {
+            timeSlot: 'Night',
+            time: '08:30 PM',
+            activity: 'Bespoke Craft Cocktails at Bar High Five',
+            locationName: 'Bar High Five Ginza',
+            description: 'Experience legendary cocktail master Hidetsugu Ueno’s bespoke drinks tailored to your flavor palate.',
+            cost: '$35 - $50',
+            tip: 'There is no written menu; tell the bartender what spirits and flavor notes you enjoy.',
+            coordinates: { lat: 35.6698, lng: 139.7638 }
           }
         ],
         diningRecommendation: {
@@ -262,33 +382,73 @@ export const SAMPLE_TRIPS: TripPlan[] = [
         schedule: [
           {
             timeSlot: 'Morning',
-            time: '10:00 AM',
-            activity: 'Shinjuku Gyoen National Garden',
+            time: '08:30 AM',
+            activity: 'Shinjuku Gyoen National Garden Morning Walk',
             locationName: 'Shinjuku Gyoen',
             description: 'Stroll through traditional Japanese landscape gardens, English lawns, and French formal rose gardens.',
             cost: '500 JPY (~$3.50)',
-            tip: 'Very serene spot for peaceful morning photos.',
+            tip: 'Very serene spot for peaceful morning photos before the afternoon heat.',
             coordinates: { lat: 35.6852, lng: 139.7101 }
           },
           {
+            timeSlot: 'Morning',
+            time: '10:45 AM',
+            activity: 'Tokyo Metropolitan Government Building 45th Floor Deck',
+            locationName: 'Tokyo Metropolitan Government Observatory',
+            description: 'Take the high-speed elevator for stunning free panoramic Tokyo views from the 45th floor observatory.',
+            cost: 'Free observatory',
+            tip: 'The South Tower observation deck has a grand piano painted by Yayoi Kusama.',
+            coordinates: { lat: 35.6896, lng: 139.6917 }
+          },
+          {
             timeSlot: 'Afternoon',
-            time: '02:30 PM',
-            activity: 'Tokyo Metropolitan Gov Building & Akihabara',
+            time: '12:30 PM',
+            activity: 'Tatsunoya Tsukemen Rich Broth Ramen Lunch',
+            locationName: 'Tatsunoya Shinjuku',
+            description: 'Enjoy rich dipping noodles served with tender pork belly, bamboo shoots, and hot stone broth.',
+            cost: '$10 - $15',
+            tip: 'Request wari-soup (broth refresher) at the end to drink the remaining soup base.',
+            coordinates: { lat: 35.6948, lng: 139.6985 }
+          },
+          {
+            timeSlot: 'Afternoon',
+            time: '02:15 PM',
+            activity: 'Akihabara Electric Town & Retro Gaming',
             locationName: 'Akihabara Electric Town',
-            description: 'Free panoramic Tokyo views from the 45th floor observatory followed by vintage gaming arcades in Akihabara.',
-            cost: 'Free observatory / $10 arcade coins',
+            description: 'Explore multi-story retro game stores like Super Potato, arcade claw halls, and futuristic gadget shops.',
+            cost: 'Free browsing / $10 arcade coins',
             tip: 'Visit GiGO and Mandarake Complex for retro collectors items.',
             coordinates: { lat: 35.6984, lng: 139.7731 }
           },
           {
             timeSlot: 'Evening',
+            time: '04:45 PM',
+            activity: 'Kanda Myojin Historic Shrine & Anime Charms',
+            locationName: 'Kanda Myojin Shrine',
+            description: 'Visit a 1,300-year-old Shinto shrine famous as the spiritual guardian of Tokyo and tech workers.',
+            cost: 'Free',
+            tip: 'Look for the unique IT computer safety amulets (omamori).',
+            coordinates: { lat: 35.7020, lng: 139.7679 }
+          },
+          {
+            timeSlot: 'Evening',
             time: '06:30 PM',
-            activity: 'Memory Lane (Omoide Yokocho) & Golden Gai',
+            activity: 'Memory Lane (Omoide Yokocho) Yakitori Stalls',
             locationName: 'Omoide Yokocho',
             description: 'Squeeze into tiny 6-seater yakitori bars filled with lanterns and sizzling skewers right by Shinjuku station tracks.',
             cost: '$25-$40',
             tip: 'Be aware of small cover charges (Otoshi) in Golden Gai.',
             coordinates: { lat: 35.6929, lng: 139.7001 }
+          },
+          {
+            timeSlot: 'Night',
+            time: '08:45 PM',
+            activity: 'Shinjuku Golden Gai Night Owls & Micro-Bars',
+            locationName: 'Golden Gai Shinjuku',
+            description: 'Wander six narrow alleyways packed with over 200 character-filled miniature bars, each seating just 5-8 patrons.',
+            cost: '$10 - $25 per drink',
+            tip: 'Check door signs: bars with English menus outside welcome international travelers.',
+            coordinates: { lat: 35.6941, lng: 139.7047 }
           }
         ],
         diningRecommendation: {
@@ -303,8 +463,28 @@ export const SAMPLE_TRIPS: TripPlan[] = [
         schedule: [
           {
             timeSlot: 'Morning',
-            time: '09:30 AM',
-            activity: 'Daikanyama T-Site Book Lounge',
+            time: '08:30 AM',
+            activity: 'Nakameguro Weeping Willow Canal Morning Walk',
+            locationName: 'Meguro River Walkway',
+            description: 'Enjoy a peaceful morning walk along the tree-lined riverbanks under weeping cherry trees.',
+            cost: 'Free',
+            tip: 'Quiet and scenic morning ambiance with minimal bicycle traffic.',
+            coordinates: { lat: 35.6457, lng: 139.6988 }
+          },
+          {
+            timeSlot: 'Morning',
+            time: '09:45 AM',
+            activity: 'Starbucks Reserve Roastery Tokyo Architectural Coffee',
+            locationName: 'Starbucks Reserve Roastery Tokyo',
+            description: 'Visit Kengo Kuma-designed 4-story flagship roastery with a 17-meter copper cask and bespoke tea & coffee flights.',
+            cost: '$12-$18 for specialty brew',
+            tip: 'Sit on the 3rd floor terrace overlooking the Meguro river.',
+            coordinates: { lat: 35.6506, lng: 139.6926 }
+          },
+          {
+            timeSlot: 'Afternoon',
+            time: '11:30 AM',
+            activity: 'Daikanyama T-Site Book Lounge & Design Boutiques',
             locationName: 'Daikanyama T-Site',
             description: 'Explore one of the world’s most beautiful architectural bookstores, specialty cafes, and leafy design shops.',
             cost: 'Free browsing, $6 matcha latte',
@@ -313,23 +493,43 @@ export const SAMPLE_TRIPS: TripPlan[] = [
           },
           {
             timeSlot: 'Afternoon',
-            time: '01:00 PM',
-            activity: 'Nakameguro Canal & Starbucks Reserve Roastery',
-            locationName: 'Starbucks Reserve Roastery Tokyo',
-            description: 'Walk along the weeping willow canal and visit Kengo Kuma-designed 4-story flagship roastery.',
-            cost: '$12-$18 for specialty brew',
-            tip: 'Sit on the 3rd floor terrace overlooking the Meguro river.',
-            coordinates: { lat: 35.6506, lng: 139.6926 }
+            time: '01:15 PM',
+            activity: 'Artisan Handmade Soba Lunch in Meguro',
+            locationName: 'Matsugen Meguro',
+            description: 'Delight in cold dipping buckwheat noodles served with crisp tempura prawns and fresh wasabi.',
+            cost: '$18 - $28',
+            tip: 'Drink the sobayu (hot buckwheat broth) mixed with your leftover dipping sauce at the end.',
+            coordinates: { lat: 35.6421, lng: 139.6981 }
+          },
+          {
+            timeSlot: 'Afternoon',
+            time: '03:15 PM',
+            activity: 'Roppongi Hills Mori Art Museum & Sky View',
+            locationName: 'Mori Art Museum',
+            description: 'Peruse cutting-edge contemporary art exhibitions high on the 53rd floor with panoramic city views.',
+            cost: '$18',
+            tip: 'Ticket includes admission to the indoor Tokyo City View observation lounge.',
+            coordinates: { lat: 35.6605, lng: 139.7292 }
           },
           {
             timeSlot: 'Evening',
-            time: '05:30 PM',
-            activity: 'Tokyo Station Souvenirs & Farewell Dinner',
-            locationName: 'Tokyo Station Ramen Street',
-            description: 'Pick up Tokyo Banana and matcha confections at Tokyo Character Street, followed by a celebratory farewell meal.',
-            cost: '$30-$50',
-            tip: 'Direct Narita Express or Haneda Monorail connection from here.',
+            time: '05:45 PM',
+            activity: 'Tokyo Station Character Street & Omiyage Souvenirs',
+            locationName: 'Tokyo Station Character Street',
+            description: 'Pick up Tokyo Banana, matcha confections, and Studio Ghibli souvenirs at the underground mall.',
+            cost: 'Free browsing, $15 - $30 gifts',
+            tip: 'Direct Narita Express or Haneda Monorail connection right from here.',
             coordinates: { lat: 35.6812, lng: 139.7671 }
+          },
+          {
+            timeSlot: 'Night',
+            time: '07:45 PM',
+            activity: 'Celebratory Farewell Dinner at Gonpachi Nishiazabu',
+            locationName: 'Gonpachi Nishiazabu',
+            description: 'Toast your trip inside the iconic multi-level Edo-style tavern that inspired Kill Bill, feasting on yakitori and soba.',
+            cost: '$40 - $70',
+            tip: 'Book 1-2 days ahead to request a seat on the dramatic second-floor wooden balcony.',
+            coordinates: { lat: 35.6599, lng: 139.7238 }
           }
         ],
         diningRecommendation: {
@@ -496,33 +696,73 @@ export const SAMPLE_TRIPS: TripPlan[] = [
         schedule: [
           {
             timeSlot: 'Morning',
+            time: '07:45 AM',
+            activity: 'Fresh Croissant & Île Saint-Louis Sunrise Walk',
+            locationName: 'Île Saint-Louis',
+            description: 'Begin with a warm butter croissant from an artisan boulangerie and take in quiet morning river views over the Seine.',
+            cost: '€4 - €8',
+            tip: 'The eastern tip of the island (Square Barye) has sublime sunrise reflections.',
+            coordinates: { lat: 48.8519, lng: 2.3575 }
+          },
+          {
+            timeSlot: 'Morning',
             time: '09:00 AM',
-            activity: 'Croissant breakfast & Sainte-Chapelle',
+            activity: 'Sainte-Chapelle Stained Glass & Notre-Dame Parvis',
             locationName: 'Sainte-Chapelle & Notre-Dame',
-            description: 'Grab a fresh butter croissant at a nearby boulangerie then gaze at the kaleidoscope of stained glass inside Sainte-Chapelle.',
+            description: 'Gaze at the kaleidoscopic 13th-century stained glass windows rising 15 meters high inside the royal medieval chapel.',
             cost: '€13 entry',
             tip: 'Book the first morning slot to avoid security queues.',
             coordinates: { lat: 48.8554, lng: 2.345 }
           },
           {
             timeSlot: 'Afternoon',
-            time: '02:00 PM',
-            activity: 'Louvre Museum Expedition',
+            time: '11:45 AM',
+            activity: 'Pont Neuf Crossing & Classic Parisian Bistro Lunch',
+            locationName: 'Place Dauphine',
+            description: 'Stroll across Paris’s oldest standing bridge into the charming chestnut-tree square of Place Dauphine for lunch.',
+            cost: '€20 - €35',
+            tip: 'Dine outdoors under the awnings at Restaurant Paul for authentic coq au vin.',
+            coordinates: { lat: 48.8566, lng: 2.3427 }
+          },
+          {
+            timeSlot: 'Afternoon',
+            time: '01:30 PM',
+            activity: 'Louvre Museum Grand Expedition',
             locationName: 'The Louvre',
-            description: 'Enter through the iconic I.M. Pei glass pyramid to see the Mona Lisa, Venus de Milo, and French Crown Jewels.',
+            description: 'Enter through the iconic I.M. Pei glass pyramid to see the Mona Lisa, Winged Victory of Samothrace, and French Crown Jewels.',
             cost: '€22',
             tip: 'Use the Carrousel du Louvre underground mall entrance for shorter lines.',
             coordinates: { lat: 48.8606, lng: 2.3376 }
           },
           {
+            timeSlot: 'Afternoon',
+            time: '04:15 PM',
+            activity: 'Palais-Royal Arcades & Buren Columns',
+            locationName: 'Domaine National du Palais-Royal',
+            description: 'Wander the tranquil neoclassical courtyard filled with black-and-white striped striped columns and hidden antique shops.',
+            cost: 'Free',
+            tip: 'Grab a specialty espresso at Café Kitsuné under the gardens arcades.',
+            coordinates: { lat: 48.8637, lng: 2.3371 }
+          },
+          {
             timeSlot: 'Evening',
-            time: '06:30 PM',
-            activity: 'Tuileries Gardens & Seine River Walk',
+            time: '06:00 PM',
+            activity: 'Tuileries Gardens & Seine River Promenade',
             locationName: 'Jardin des Tuileries',
             description: 'Stroll past classical statues and green park chairs, crossing Pont des Arts bridge to the Left Bank.',
             cost: 'Free',
             tip: 'Grab a gelato at Amorino near Saint-Germain.',
             coordinates: { lat: 48.8634, lng: 2.3275 }
+          },
+          {
+            timeSlot: 'Night',
+            time: '08:00 PM',
+            activity: 'Saint-Germain Atmospheric Candlelit Dinner',
+            locationName: 'Le Comptoir du Relais',
+            description: 'Indulge in classic Parisian bistro cooking with duck confit, cheese courses, and chilled red Burgundy wine.',
+            cost: '€35 - €60',
+            tip: 'Arrive slightly before 08:00 PM to secure a cozy sidewalk table.',
+            coordinates: { lat: 48.8522, lng: 2.3387 }
           }
         ],
         diningRecommendation: {
@@ -537,32 +777,72 @@ export const SAMPLE_TRIPS: TripPlan[] = [
         schedule: [
           {
             timeSlot: 'Morning',
+            time: '08:00 AM',
+            activity: 'Seine River Embankment Morning Jog or Stroll',
+            locationName: 'Quai d’Orsay',
+            description: 'Take in the crisp morning air along the paved lower riverbank quays watching morning river barges glide past.',
+            cost: 'Free',
+            tip: 'The view of the Pont Alexandre III bridge golden statues is spectacular in morning light.',
+            coordinates: { lat: 48.8624, lng: 2.3134 }
+          },
+          {
+            timeSlot: 'Morning',
             time: '09:30 AM',
             activity: 'Musée d’Orsay Masterpieces',
             locationName: 'Musée d’Orsay',
-            description: 'Admire Van Gogh’s Starry Night over the Rhone and Monet’s water lilies under the huge clock face.',
+            description: 'Admire Van Gogh’s Starry Night over the Rhone and Monet’s water lilies under the grand Beaux-Arts railway clock face.',
             cost: '€16',
             tip: 'The giant clock on the 5th floor makes a sensational silhouette photo backdrop.',
             coordinates: { lat: 48.8599, lng: 2.3265 }
           },
           {
             timeSlot: 'Afternoon',
-            time: '02:30 PM',
-            activity: 'Champ de Mars Picnic & Trocadéro',
+            time: '12:00 PM',
+            activity: 'Rue Cler Market Street Food Tasting',
+            locationName: 'Rue Cler Market',
+            description: 'Venture through Paris’s quintessential pedestrian market street, gathering aged Comté cheese, charcuterie, and pastries.',
+            cost: '€15 - €25',
+            tip: 'Stop at Fromagerie Cler for expert cheese pairing advice.',
+            coordinates: { lat: 48.8568, lng: 2.3056 }
+          },
+          {
+            timeSlot: 'Afternoon',
+            time: '01:45 PM',
+            activity: 'Rodin Museum Sculpture Gardens',
+            locationName: 'Musée Rodin',
+            description: 'Wander through manicured rose gardens displaying The Thinker and The Gates of Hell against the backdrop of Hotel Biron.',
+            cost: '€14',
+            tip: 'The garden-only ticket is a cheaper, peaceful alternative on sunny afternoons.',
+            coordinates: { lat: 48.8552, lng: 2.3158 }
+          },
+          {
+            timeSlot: 'Afternoon',
+            time: '03:45 PM',
+            activity: 'Champ de Mars Lawn Picnic facing Eiffel Tower',
             locationName: 'Champ de Mars',
-            description: 'Gather baguette, brie cheese, and macaron box for an idyllic lawn picnic facing the Eiffel Tower.',
-            cost: '€15 for bakery treats',
-            tip: 'Rue Cler market street nearby has the finest specialty cheese and wine shops.',
+            description: 'Lay out on the green lawns facing the Iron Lady, savoring fresh macarons and chilled champagne.',
+            cost: 'Free park access',
+            tip: 'Great spot for playful perspective photos with the tower.',
             coordinates: { lat: 48.8556, lng: 2.2986 }
           },
           {
             timeSlot: 'Evening',
-            time: '07:30 PM',
-            activity: 'Eiffel Tower Sparkle & Vedettes de Paris Cruise',
-            locationName: 'Eiffel Tower',
+            time: '06:00 PM',
+            activity: 'Trocadéro Esplanade Golden Hour Sunset Lookout',
+            locationName: 'Place du Trocadéro',
+            description: 'Ascend the marble terrace for Paris’s most panoramic sunset view overlooking the Eiffel Tower fountains and Seine valley.',
+            cost: 'Free',
+            tip: 'Best angle for wide panoramic photos right as the twilight sky turns lavender.',
+            coordinates: { lat: 48.8624, lng: 2.2882 }
+          },
+          {
+            timeSlot: 'Night',
+            time: '08:00 PM',
+            activity: 'Eiffel Tower Sparkle & Vedettes de Paris Night Cruise',
+            locationName: 'Eiffel Tower & Seine Cruise',
             description: 'Watch the tower burst into 20,000 sparkling gold lights on the hour, followed by a romantic 1-hour Seine boat ride.',
             cost: '€17 for boat cruise',
-            tip: 'The 5-minute hourly sparkle begins at sunset and repeats on every hour until 1 AM.',
+            tip: 'The 5-minute hourly sparkle begins at dusk and repeats every hour on the hour.',
             coordinates: { lat: 48.8584, lng: 2.2945 }
           }
         ],
@@ -578,18 +858,48 @@ export const SAMPLE_TRIPS: TripPlan[] = [
         schedule: [
           {
             timeSlot: 'Morning',
-            time: '09:00 AM',
-            activity: 'Montmartre Steps & Sacré-Cœur',
-            locationName: 'Sacré-Cœur Basilica',
-            description: 'Wander the cobbled alleys of Rue de l’Abreuvoir and Place du Tertre before stepping inside the basilica.',
+            time: '08:00 AM',
+            activity: 'Montmartre Hidden Cobblestones & La Maison Rose',
+            locationName: 'Rue de l’Abreuvoir',
+            description: 'Walk Paris’s prettiest street in early morning serenity, passing the iconic pink facade of La Maison Rose.',
             cost: 'Free',
-            tip: 'Stop at La Maison Rose for iconic Parisian pastel photography.',
+            tip: 'Zero crowds before 08:30 AM allows for fairytale-like cobblestone photography.',
+            coordinates: { lat: 48.8879, lng: 2.3398 }
+          },
+          {
+            timeSlot: 'Morning',
+            time: '09:15 AM',
+            activity: 'Sacré-Cœur Basilica & Dome Panorama',
+            locationName: 'Sacré-Cœur Basilica',
+            description: 'Climb the steps to Paris’s highest hilltop and marvel at the grand white domes and panoramic urban expanse.',
+            cost: 'Free (Dome climb €7)',
+            tip: 'Climbing the 300 steps to the dome awards the highest outdoor viewpoint in Paris.',
             coordinates: { lat: 48.8867, lng: 2.3431 }
           },
           {
+            timeSlot: 'Morning',
+            time: '11:00 AM',
+            activity: 'Place du Tertre Open-Air Portrait Artists',
+            locationName: 'Place du Tertre',
+            description: 'Watch local painters, caricaturists, and watercolor artists at work in the historic bohemian village square.',
+            cost: 'Free browsing',
+            tip: 'Tucked behind the square is the Dalí Paris museum with rare surrealist sculptures.',
+            coordinates: { lat: 48.8865, lng: 2.3408 }
+          },
+          {
             timeSlot: 'Afternoon',
-            time: '02:00 PM',
-            activity: 'Le Marais Mansions & Place des Vosges',
+            time: '12:45 PM',
+            activity: 'L’As du Fallafel Feast in Jewish Quarter',
+            locationName: 'Rue des Rosiers',
+            description: 'Feast on the world’s most celebrated pita falafel loaded with fried eggplant, cucumber salad, and creamy tahini.',
+            cost: '€9 - €14',
+            tip: 'Join the takeout queue on the left for the fastest service.',
+            coordinates: { lat: 48.8573, lng: 2.3592 }
+          },
+          {
+            timeSlot: 'Afternoon',
+            time: '02:30 PM',
+            activity: 'Place des Vosges & Victor Hugo’s Apartment',
             locationName: 'Place des Vosges',
             description: 'Explore the red-brick arcades of Paris’s oldest planned square, home to Victor Hugo, and browse independent perfumeries.',
             cost: 'Free',
@@ -598,12 +908,22 @@ export const SAMPLE_TRIPS: TripPlan[] = [
           },
           {
             timeSlot: 'Evening',
-            time: '07:00 PM',
-            activity: 'Traditional Dinner at Bouillon Chartier',
+            time: '05:00 PM',
+            activity: 'Hôtel de Sully Hidden Renaissance Courtyard Stroll',
+            locationName: 'Hôtel de Sully',
+            description: 'Walk through the secret arched doorway connecting Place des Vosges to the quiet 17th-century private mansion gardens.',
+            cost: 'Free',
+            tip: 'A serene hidden oasis with fragrant linden trees and stone sculptures.',
+            coordinates: { lat: 48.8548, lng: 2.3638 }
+          },
+          {
+            timeSlot: 'Night',
+            time: '07:30 PM',
+            activity: 'Traditional Belle Époque Dinner at Bouillon Chartier',
             locationName: 'Bouillon Chartier',
-            description: 'Waiters in black waistcoats write your order directly onto the white paper tablecloth in this 19th-century jewel.',
-            cost: '€18-€25 per person',
-            tip: 'Arrive by 6:45 PM to beat the queue or go after 9:00 PM.',
+            description: 'Waiters in black waistcoats write your order directly onto the white paper tablecloth in this 1896 dining palace.',
+            cost: '€18-€28 per person',
+            tip: 'Try the escargots with garlic butter followed by their house chocolate mousse.',
             coordinates: { lat: 48.8719, lng: 2.3429 }
           }
         ],
@@ -619,8 +939,8 @@ export const SAMPLE_TRIPS: TripPlan[] = [
         schedule: [
           {
             timeSlot: 'Morning',
-            time: '09:30 AM',
-            activity: 'Shakespeare and Company & Panthéon',
+            time: '08:30 AM',
+            activity: 'Shakespeare and Company & Notre-Dame Riverside',
             locationName: 'Shakespeare and Company',
             description: 'Browse poetry and classic paperbacks in the world’s most celebrated English bookstore facing the Seine.',
             cost: 'Free',
@@ -628,14 +948,44 @@ export const SAMPLE_TRIPS: TripPlan[] = [
             coordinates: { lat: 48.8525, lng: 2.3471 }
           },
           {
+            timeSlot: 'Morning',
+            time: '10:15 AM',
+            activity: 'Panthéon Neoclassical Dome & Crypt Tour',
+            locationName: 'The Panthéon',
+            description: 'Stand beneath the soaring neoclassical dome where Foucault’s pendulum swings, and visit the tombs of Marie Curie and Voltaire.',
+            cost: '€11.50',
+            tip: 'The colonnade platform offers breathtaking 360-degree views across Paris.',
+            coordinates: { lat: 48.8462, lng: 2.3464 }
+          },
+          {
             timeSlot: 'Afternoon',
-            time: '01:30 PM',
+            time: '12:00 PM',
+            activity: 'Rue Mouffetard Market Street Bistro Lunch',
+            locationName: 'Rue Mouffetard',
+            description: 'Dine along Hemingway’s favorite historic market street lined with charcuteries, cheese shops, and creperies.',
+            cost: '€15 - €25',
+            tip: 'Order a savory galette and artisanal Breton cider.',
+            coordinates: { lat: 48.8415, lng: 2.3498 }
+          },
+          {
+            timeSlot: 'Afternoon',
+            time: '01:45 PM',
             activity: 'Luxembourg Gardens (Jardin du Luxembourg)',
             locationName: 'Jardin du Luxembourg',
             description: 'Relax in iconic green metal lounge chairs by the Medici Fountain watching vintage wooden toy boats sail the pond.',
             cost: 'Free',
             tip: 'Buy Pierre Hermé macarons nearby on Rue Bonaparte to enjoy in the park.',
             coordinates: { lat: 48.8462, lng: 2.3371 }
+          },
+          {
+            timeSlot: 'Afternoon',
+            time: '04:00 PM',
+            activity: 'Saint-Sulpice Church & Delacroix Murals',
+            locationName: 'Church of Saint-Sulpice',
+            description: 'Admire the monumental baroque church, its brass astronomical gnomon line, and dramatic murals by Eugène Delacroix.',
+            cost: 'Free',
+            tip: 'Sit by the grand fountain in Place Saint-Sulpice for a peaceful coffee break.',
+            coordinates: { lat: 48.8509, lng: 2.3344 }
           },
           {
             timeSlot: 'Evening',
@@ -646,6 +996,16 @@ export const SAMPLE_TRIPS: TripPlan[] = [
             cost: '€25-€40',
             tip: 'Watch the stylish Parisian evening promenade on Boulevard Saint-Germain.',
             coordinates: { lat: 48.854, lng: 2.3327 }
+          },
+          {
+            timeSlot: 'Night',
+            time: '08:00 PM',
+            activity: 'Romantic Illumination Nightwalk across Pont Neuf',
+            locationName: 'Pont Neuf & Square du Vert-Galant',
+            description: 'Walk out to the western tip of the island where willow trees weep into the Seine, watching illuminated tour boats drift past.',
+            cost: 'Free',
+            tip: 'The perfect romantic closing memory of Paris before departing.',
+            coordinates: { lat: 48.8571, lng: 2.3397 }
           }
         ],
         diningRecommendation: {

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Calculator, Users, DollarSign, Sparkles, AlertCircle, Check } from 'lucide-react';
+import { Calculator, Users, AlertCircle } from 'lucide-react';
 
 interface TipCalculatorProps {
   destination: string;
@@ -57,7 +57,7 @@ export default function TipCalculator({ destination }: TipCalculatorProps) {
           <AlertCircle className="w-4 h-4 text-sky-600 shrink-0 mt-0.5" />
           <div>
             <strong className="block mb-0.5 text-sky-900">Service Compris in Europe:</strong>
-            Restaurant bills legally include a service charge ("service compris"). Rounding up the bill or leaving €1 - €2 per person in cash for good table service is appreciated, but large American-style 20% tips are not expected.
+            Restaurant bills legally include a service charge (&ldquo;service compris&rdquo;). Rounding up the bill or leaving €1 - €2 per person in cash for good table service is appreciated, but large American-style 20% tips are not expected.
           </div>
         </div>
       ) : (

@@ -103,32 +103,48 @@ export default function DestinationGallery({ destination }: DestinationGalleryPr
     key = 'paris';
   }
 
-  const photos = DESTINATION_PHOTOS[key] || [
-    {
-      url: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1200&q=80',
-      title: `Iconic Vistas & Architecture of ${destination}`,
-      category: 'landmark',
-      location: `${destination} City Center`,
-    },
-    {
-      url: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=80',
-      title: 'Authentic Local Gastronomy & Market Delicacies',
-      category: 'food',
-      location: `${destination} Dining Quarter`,
-    },
-    {
-      url: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&q=80',
-      title: `Scenic Landscapes & Strolls in ${destination}`,
-      category: 'nature',
-      location: `${destination} Promenade`,
-    },
-    {
-      url: 'https://images.unsplash.com/photo-1517840905900-31f3e0c11ce9?auto=format&fit=crop&w=1200&q=80',
-      title: 'Vibrant Alleys & Evening Ambiance',
-      category: 'street',
-      location: `${destination} Historic District`,
-    },
-  ];
+  const photos: PhotoItem[] = React.useMemo(() => {
+    if (DESTINATION_PHOTOS[key]) return DESTINATION_PHOTOS[key];
+
+    return [
+      {
+        url: `/api/place-image?query=${encodeURIComponent(`${destination} landmark architecture`)}&category=landmark&redirect=true`,
+        title: `Iconic Landmark & Vistas of ${destination}`,
+        category: 'landmark',
+        location: `${destination} Historic Center`,
+      },
+      {
+        url: `/api/place-image?query=${encodeURIComponent(`${destination} city center square`)}&category=landmark&redirect=true`,
+        title: `Central City Square & Monument`,
+        category: 'landmark',
+        location: `${destination} Central Plaza`,
+      },
+      {
+        url: `/api/place-image?query=${encodeURIComponent(`${destination} local food cuisine`)}&category=food&redirect=true`,
+        title: `Authentic Local Gastronomy & Delicacies`,
+        category: 'food',
+        location: `${destination} Food District`,
+      },
+      {
+        url: `/api/place-image?query=${encodeURIComponent(`${destination} streets market`)}&category=street&redirect=true`,
+        title: `Bustling Local Street Life & Markets`,
+        category: 'street',
+        location: `${destination} Local Quarters`,
+      },
+      {
+        url: `/api/place-image?query=${encodeURIComponent(`${destination} nature landscape park`)}&category=nature&redirect=true`,
+        title: `Scenic Nature & Landscapes of ${destination}`,
+        category: 'nature',
+        location: `${destination} Countryside & Parks`,
+      },
+      {
+        url: `/api/place-image?query=${encodeURIComponent(`${destination} night skyline evening`)}&category=street&redirect=true`,
+        title: `Atmospheric Evening & Night Vibes`,
+        category: 'street',
+        location: `${destination} Waterfront / Downtown`,
+      },
+    ];
+  }, [destination, key]);
 
   const filtered = activeCategory === 'all'
     ? photos
@@ -150,21 +166,33 @@ export default function DestinationGallery({ destination }: DestinationGalleryPr
           </p>
         </div>
 
-        {/* Filter Pills */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 max-w-full scrollbar-none">
-          {['all', 'landmark', 'food', 'street', 'nature'].map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              className={`px-3 py-1 rounded-xl text-xs font-semibold capitalize transition-all shrink-0 ${
-                activeCategory === cat
-                  ? 'bg-indigo-600 text-white shadow-xs'
-                  : 'bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100'
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
+        <div className="flex items-center gap-2 flex-wrap">
+          <a
+            href={`https://www.google.com/search?tbm=isch&q=${encodeURIComponent(`${destination} travel photography landmarks`)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl text-xs font-bold flex items-center gap-2 shadow-sm transition-all"
+          >
+            <Camera className="w-4 h-4 text-white" />
+            <span>Search Google Images ↗</span>
+          </a>
+
+          {/* Filter Pills */}
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 max-w-full scrollbar-none">
+            {['all', 'landmark', 'food', 'street', 'nature'].map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                className={`px-3 py-1 rounded-xl text-xs font-semibold capitalize transition-all shrink-0 ${
+                  activeCategory === cat
+                    ? 'bg-indigo-600 text-white shadow-xs'
+                    : 'bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100'
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -182,6 +210,10 @@ export default function DestinationGallery({ destination }: DestinationGalleryPr
               alt={photo.title}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
               loading="lazy"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src =
+                  'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=1000&q=80';
+              }}
             />
 
             {/* Gradient Overlay */}
@@ -230,6 +262,10 @@ export default function DestinationGallery({ destination }: DestinationGalleryPr
               src={selectedPhoto.url}
               alt={selectedPhoto.title}
               className="w-full max-h-[70vh] object-cover"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src =
+                  'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=1200&q=80';
+              }}
             />
 
             <div className="p-5 text-white flex flex-wrap items-center justify-between gap-3">

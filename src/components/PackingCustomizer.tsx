@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { CheckSquare, Square, Plus, Trash2, ShieldCheck, Check, Sparkles, Tag } from 'lucide-react';
+import React, { useState } from 'react';
+import { CheckSquare, Square, Plus, Trash2, Scale } from 'lucide-react';
+import LuggageWeightCalculator from './LuggageWeightCalculator';
 
 interface PackingCustomizerProps {
   tripId: string;
@@ -22,35 +23,31 @@ export default function PackingCustomizer({
   defaultPackingList,
 }: PackingCustomizerProps) {
   const storageKey = `wanderai_packing_${tripId}`;
-  const [items, setItems] = useState<PackingItem[]>([]);
+  const [items, setItems] = useState<PackingItem[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = localStorage.getItem(`wanderai_packing_${tripId}`);
+        if (stored) return JSON.parse(stored);
+      } catch {
+        // ignore
+      }
+    }
+    return defaultPackingList.map((str, idx) => ({
+      id: `pack-${idx}`,
+      text: str,
+      category:
+        str.toLowerCase().includes('shoe') || str.toLowerCase().includes('cloth') || str.toLowerCase().includes('jacket')
+          ? 'clothing'
+          : str.toLowerCase().includes('power') || str.toLowerCase().includes('adapter') || str.toLowerCase().includes('charger')
+          ? 'electronics'
+          : 'essentials',
+      packed: false,
+    }));
+  });
   const [newItemText, setNewItemText] = useState('');
   const [newItemCategory, setNewItemCategory] = useState<PackingItem['category']>('essentials');
   const [activeCategory, setActiveCategory] = useState<string>('all');
-
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem(storageKey);
-      if (stored) {
-        setItems(JSON.parse(stored));
-      } else {
-        // Initialize from trip's default packing items
-        const initial: PackingItem[] = defaultPackingList.map((str, idx) => ({
-          id: `pack-${idx}`,
-          text: str,
-          category:
-            str.toLowerCase().includes('shoe') || str.toLowerCase().includes('cloth') || str.toLowerCase().includes('jacket')
-              ? 'clothing'
-              : str.toLowerCase().includes('power') || str.toLowerCase().includes('adapter') || str.toLowerCase().includes('charger')
-              ? 'electronics'
-              : 'essentials',
-          packed: false,
-        }));
-        setItems(initial);
-      }
-    } catch {
-      // ignore
-    }
-  }, [storageKey, defaultPackingList]);
+  const [subMode, setSubMode] = useState<'checklist' | 'physics'>('checklist');
 
   const saveItems = (updated: PackingItem[]) => {
     setItems(updated);
@@ -94,13 +91,46 @@ export default function PackingCustomizer({
     : items.filter((it) => it.category === activeCategory);
 
   return (
-    <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm space-y-6">
-      {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <span className="text-xs font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100">
-            Interactive Packing Checklist
-          </span>
+    <div className="space-y-6">
+      {/* Sub-mode Switcher */}
+      <div className="flex items-center gap-2 bg-slate-100 p-1.5 rounded-2xl border border-slate-200/80 max-w-md">
+        <button
+          type="button"
+          onClick={() => setSubMode('checklist')}
+          className={`flex-1 py-2 px-4 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-2 ${
+            subMode === 'checklist'
+              ? 'bg-white text-indigo-900 shadow-xs'
+              : 'text-slate-600 hover:text-slate-900'
+          }`}
+        >
+          <CheckSquare className="w-4 h-4 text-indigo-600" />
+          <span>Luggage Checklist</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setSubMode('physics')}
+          className={`flex-1 py-2 px-4 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-2 ${
+            subMode === 'physics'
+              ? 'bg-white text-amber-900 shadow-xs'
+              : 'text-slate-600 hover:text-slate-900'
+          }`}
+        >
+          <Scale className="w-4 h-4 text-amber-600" />
+          <span>Weight & Penalty Radar</span>
+        </button>
+      </div>
+
+      {subMode === 'physics' ? (
+        <LuggageWeightCalculator destination={destination} />
+      ) : (
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm space-y-6">
+          {/* Header */}
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <span className="text-xs font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100">
+                Interactive Packing Checklist
+              </span>
           <h3 className="text-xl sm:text-2xl font-bold text-slate-900 mt-2">
             Pack for {destination}
           </h3>
@@ -222,6 +252,8 @@ export default function PackingCustomizer({
           </div>
         ))}
       </div>
+    </div>
+      )}
     </div>
   );
 }

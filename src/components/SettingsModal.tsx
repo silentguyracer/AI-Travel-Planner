@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { getUserSettings, saveUserSettings } from '@/lib/storage';
 import { Key, MapPin, Check, X, Shield, ExternalLink } from 'lucide-react';
 
@@ -11,18 +11,30 @@ interface SettingsModalProps {
 }
 
 export default function SettingsModal({ isOpen, onClose, onSaved }: SettingsModalProps) {
-  const [openaiKey, setOpenaiKey] = useState('');
-  const [googleKey, setGoogleKey] = useState('');
-  const [savedSuccess, setSavedSuccess] = useState(false);
-
-  useEffect(() => {
-    if (isOpen) {
-      const current = getUserSettings();
-      setOpenaiKey(current.openaiApiKey || '');
-      setGoogleKey(current.googleMapsApiKey || '');
-      setSavedSuccess(false);
+  const [openaiKey, setOpenaiKey] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return getUserSettings().openaiApiKey || '';
     }
-  }, [isOpen]);
+    return '';
+  });
+  const [googleKey, setGoogleKey] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return getUserSettings().googleMapsApiKey || '';
+    }
+    return '';
+  });
+  const [savedSuccess, setSavedSuccess] = useState(false);
+  const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
+
+  if (isOpen && !prevIsOpen) {
+    setPrevIsOpen(true);
+    const current = getUserSettings();
+    setOpenaiKey(current.openaiApiKey || '');
+    setGoogleKey(current.googleMapsApiKey || '');
+    setSavedSuccess(false);
+  } else if (!isOpen && prevIsOpen) {
+    setPrevIsOpen(false);
+  }
 
   if (!isOpen) return null;
 
@@ -71,28 +83,39 @@ export default function SettingsModal({ isOpen, onClose, onSaved }: SettingsModa
             </p>
           </div>
 
-          {/* OpenAI Key */}
+          {/* AI Key */}
           <div className="space-y-1.5">
             <label className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center justify-between">
-              <span>OpenAI API Key</span>
-              <a
-                href="https://platform.openai.com/api-keys"
-                target="_blank"
-                rel="noreferrer"
-                className="text-[11px] text-indigo-600 hover:underline flex items-center gap-1 font-normal normal-case"
-              >
-                Get Key <ExternalLink className="w-3 h-3" />
-              </a>
+              <span>AI API Key (Groq or OpenAI)</span>
+              <div className="flex items-center gap-2">
+                <a
+                  href="https://console.groq.com/keys"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-[11px] text-emerald-600 hover:underline flex items-center gap-1 font-semibold normal-case"
+                >
+                  Groq Key <ExternalLink className="w-2.5 h-2.5" />
+                </a>
+                <span className="text-slate-300">•</span>
+                <a
+                  href="https://platform.openai.com/api-keys"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-[11px] text-indigo-600 hover:underline flex items-center gap-1 font-normal normal-case"
+                >
+                  OpenAI <ExternalLink className="w-2.5 h-2.5" />
+                </a>
+              </div>
             </label>
             <input
               type="password"
-              placeholder="sk-proj-..."
+              placeholder="gsk_... or sk-..."
               value={openaiKey}
               onChange={(e) => setOpenaiKey(e.target.value)}
               className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 font-mono transition-all"
             />
             <p className="text-[11px] text-slate-400">
-              Powers instant custom trip planning. If left blank, the app uses built-in smart curated destination plans.
+              Powers ultra-fast live AI itinerary generation with 120B model intelligence. Also configured in <code className="font-mono text-slate-600">.env.local</code>.
             </p>
           </div>
 

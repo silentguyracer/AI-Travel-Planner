@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import OpenAI from 'openai';
-import { getUserSettings } from '@/lib/storage';
+import { getAIConfig, createChatCompletionWithFallback } from '@/lib/aiClient';
 
 export async function POST(req: NextRequest) {
   try {
@@ -10,10 +9,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Question is required.' }, { status: 400 });
     }
 
-    const apiKey = customApiKey || process.env.OPENAI_API_KEY;
+    const aiConfig = getAIConfig(customApiKey);
 
-    if (!apiKey) {
-      // Intelligent mock concierge responses if no OpenAI key is set
+    if (!aiConfig) {
+      // Intelligent mock concierge responses if no key is configured
       const qLower = question.toLowerCase();
       let answer = `For ${destination}, we recommend checking official transport passes (like 24h/72h city passes) which save significant money. Most attractions are best visited early in the morning before 10 AM to avoid peak queues.`;
 
@@ -33,10 +32,7 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const openai = new OpenAI({ apiKey });
-
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
+    const { content } = await createChatCompletionWithFallback(aiConfig, {
       messages: [
         {
           role: 'system',
@@ -51,12 +47,12 @@ Trip context: ${tripContext || 'General personalized itinerary'}`,
         },
       ],
       temperature: 0.7,
-      max_tokens: 350,
+      maxTokens: 350,
     });
 
-    const reply = completion.choices[0]?.message?.content || 'I could not find an answer. Please try again.';
+    const reply = content || 'I could not find an answer. Please try again.';
 
-    return NextResponse.json({ reply, source: 'openai' });
+    return NextResponse.json({ reply, source: aiConfig.provider });
   } catch (err: unknown) {
     console.error('Concierge API error:', err);
     return NextResponse.json(

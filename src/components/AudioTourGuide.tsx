@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Headphones, Play, Pause, Square, Volume2, RotateCcw, Sparkles, BookOpen } from 'lucide-react';
 import { ItineraryDay } from '@/types/travel';
+import { animateAudioWaveform } from '@/lib/gsapAnimations';
 
 interface AudioTourGuideProps {
   day: ItineraryDay;
@@ -14,6 +15,14 @@ export default function AudioTourGuide({ day, destination }: AudioTourGuideProps
   const [isPaused, setIsPaused] = useState(false);
   const [speechRate, setSpeechRate] = useState<number>(1.0);
   const [showTranscript, setShowTranscript] = useState(false);
+  const waveformRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const tl = animateAudioWaveform(waveformRef.current, isPlaying);
+    return () => {
+      tl?.kill();
+    };
+  }, [isPlaying]);
 
   // Build narration script
   const script = `Welcome to Day ${day.day} of your journey in ${destination}. Today's theme is ${day.theme}. 
@@ -23,7 +32,7 @@ ${day.schedule
       `Stop number ${i + 1} is ${act.activity} at ${act.locationName || 'the city center'}, scheduled for ${act.timeSlot} at ${act.time}. ${act.description}. Insider tip: ${act.tip}.`
   )
   .join(' ')} 
-For culinary delights today, we recommend lunch at ${day.diningRecommendation.lunch}, and dinner at ${day.diningRecommendation.dinner}. Enjoy this remarkable day in ${destination}!`;
+${day.diningRecommendation ? `For culinary delights today, we recommend lunch at ${day.diningRecommendation.lunch || 'a local favourite'}, and dinner at ${day.diningRecommendation.dinner || 'a top-rated restaurant'}.` : ''} Enjoy this remarkable day in ${destination}!`;
 
   const handlePlay = () => {
     if (typeof window === 'undefined' || !window.speechSynthesis) {
@@ -102,15 +111,20 @@ For culinary delights today, we recommend lunch at ${day.diningRecommendation.lu
         </div>
 
         {/* Audio Waveform Animation when playing */}
-        {isPlaying && (
-          <div className="flex items-center gap-1 h-6 px-3 bg-indigo-500/20 rounded-xl border border-indigo-500/30">
-            <span className="w-1 bg-indigo-400 rounded-full animate-bounce h-3" />
-            <span className="w-1 bg-indigo-300 rounded-full animate-bounce h-5" style={{ animationDelay: '0.15s' }} />
-            <span className="w-1 bg-indigo-400 rounded-full animate-bounce h-4" style={{ animationDelay: '0.3s' }} />
-            <span className="w-1 bg-indigo-200 rounded-full animate-bounce h-6" style={{ animationDelay: '0.45s' }} />
-            <span className="w-1 bg-indigo-300 rounded-full animate-bounce h-3" style={{ animationDelay: '0.2s' }} />
-          </div>
-        )}
+        <div
+          ref={waveformRef}
+          className={`flex items-center gap-1 h-6 px-3 bg-indigo-500/20 rounded-xl border border-indigo-500/30 transition-opacity duration-300 ${
+            isPlaying ? 'opacity-100' : 'opacity-30'
+          }`}
+        >
+          <span className="audio-bar w-1 bg-indigo-400 rounded-full h-5 origin-bottom" />
+          <span className="audio-bar w-1 bg-indigo-300 rounded-full h-5 origin-bottom" />
+          <span className="audio-bar w-1 bg-indigo-200 rounded-full h-5 origin-bottom" />
+          <span className="audio-bar w-1 bg-indigo-400 rounded-full h-5 origin-bottom" />
+          <span className="audio-bar w-1 bg-sky-300 rounded-full h-5 origin-bottom" />
+          <span className="audio-bar w-1 bg-indigo-300 rounded-full h-5 origin-bottom" />
+          <span className="audio-bar w-1 bg-indigo-400 rounded-full h-5 origin-bottom" />
+        </div>
       </div>
 
       {/* Audio Player Controls Bar */}
