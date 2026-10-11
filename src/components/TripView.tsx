@@ -23,12 +23,17 @@ import {
   Bot,
   Plane,
   Train,
-  Leaf
+  Leaf,
+  Camera,
+  CheckSquare,
+  Clock,
+  Ticket
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { saveTrip, isTripSaved, exportTripToJson } from '@/lib/storage';
 import { downloadCalendarICS } from '@/lib/calendarExport';
 import { CURRENCIES, SupportedCurrency, convertAmount, parseUsdAmount } from '@/lib/currency';
+import { generateShareableUrl } from '@/lib/shareUrl';
 import DayItinerary from './DayItinerary';
 import PlacesList from './PlacesList';
 import RestaurantsList from './RestaurantsList';
@@ -41,6 +46,10 @@ import AIConciergeModal from './AIConciergeModal';
 import FlightHotelFinder from './FlightHotelFinder';
 import DayTripSuggester from './DayTripSuggester';
 import CarbonFootprint from './CarbonFootprint';
+import DestinationGallery from './DestinationGallery';
+import PackingCustomizer from './PackingCustomizer';
+import JetLagAdvisor from './JetLagAdvisor';
+import BoardingPassCard from './BoardingPassCard';
 
 interface TripViewProps {
   trip: TripPlan;
@@ -53,6 +62,10 @@ type TabType =
   | 'map'
   | 'places'
   | 'restaurants'
+  | 'gallery'
+  | 'packing'
+  | 'jetlag'
+  | 'pass'
   | 'budget'
   | 'expenses'
   | 'weather'
@@ -67,6 +80,7 @@ export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPl
   const [isSaved, setIsSaved] = useState<boolean>(() => isTripSaved(initialTrip.id));
   const [currency, setCurrency] = useState<SupportedCurrency>('USD');
   const [isConciergeOpen, setIsConciergeOpen] = useState<boolean>(false);
+  const [copiedLink, setCopiedLink] = useState<boolean>(false);
   const [selectedMapLocation, setSelectedMapLocation] = useState<{
     lat: number;
     lng: number;
@@ -121,10 +135,11 @@ export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPl
   };
 
   const handleShare = () => {
-    const text = `Take a look at this AI-generated ${trip.duration}-day travel plan for ${trip.destination}!`;
+    const shareUrl = generateShareableUrl(trip);
     if (navigator.clipboard) {
-      navigator.clipboard.writeText(window.location.href);
-      alert('Link to trip planner copied to clipboard!');
+      navigator.clipboard.writeText(shareUrl || window.location.href);
+      setCopiedLink(true);
+      setTimeout(() => setCopiedLink(false), 2000);
     }
   };
 
@@ -258,11 +273,15 @@ export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPl
 
               <button
                 onClick={handleShare}
-                title="Share Trip"
-                className="p-2.5 bg-white/10 hover:bg-white/20 rounded-xl text-white backdrop-blur-md transition-colors flex items-center justify-center gap-1.5 text-xs font-semibold"
+                title="Share Compressed URL"
+                className={`p-2.5 rounded-xl backdrop-blur-md transition-colors flex items-center justify-center gap-1.5 text-xs font-semibold ${
+                  copiedLink
+                    ? 'bg-emerald-500 text-white'
+                    : 'bg-white/10 hover:bg-white/20 text-white'
+                }`}
               >
-                <Share2 className="w-3.5 h-3.5" />
-                <span>Share</span>
+                {copiedLink ? <Check className="w-3.5 h-3.5" /> : <Share2 className="w-3.5 h-3.5" />}
+                <span>{copiedLink ? 'Copied!' : 'Share'}</span>
               </button>
 
               <button
@@ -317,7 +336,7 @@ export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPl
       <div className="sticky top-16 z-30 bg-white/90 backdrop-blur-md p-2 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-1.5 overflow-x-auto scrollbar-none">
         <button
           onClick={() => setActiveTab('itinerary')}
-          className={`flex-1 min-w-[95px] py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
+          className={`flex-1 min-w-[85px] py-2 px-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
             activeTab === 'itinerary'
               ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
               : 'text-slate-600 hover:bg-slate-100'
@@ -329,7 +348,7 @@ export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPl
 
         <button
           onClick={() => setActiveTab('map')}
-          className={`flex-1 min-w-[95px] py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
+          className={`flex-1 min-w-[85px] py-2 px-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
             activeTab === 'map'
               ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
               : 'text-slate-600 hover:bg-slate-100'
@@ -341,31 +360,79 @@ export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPl
 
         <button
           onClick={() => setActiveTab('places')}
-          className={`flex-1 min-w-[95px] py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
+          className={`flex-1 min-w-[85px] py-2 px-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
             activeTab === 'places'
               ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
               : 'text-slate-600 hover:bg-slate-100'
           }`}
         >
           <MapPin className="w-4 h-4" />
-          <span>Places ({trip.placesToVisit?.length || 0})</span>
+          <span>Places</span>
         </button>
 
         <button
           onClick={() => setActiveTab('restaurants')}
-          className={`flex-1 min-w-[95px] py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
+          className={`flex-1 min-w-[85px] py-2 px-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
             activeTab === 'restaurants'
               ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
               : 'text-slate-600 hover:bg-slate-100'
           }`}
         >
           <Utensils className="w-4 h-4" />
-          <span>Dining ({trip.restaurants?.length || 0})</span>
+          <span>Dining</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('gallery')}
+          className={`flex-1 min-w-[85px] py-2 px-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
+            activeTab === 'gallery'
+              ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
+              : 'text-slate-600 hover:bg-slate-100'
+          }`}
+        >
+          <Camera className="w-4 h-4" />
+          <span>Photos</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('packing')}
+          className={`flex-1 min-w-[85px] py-2 px-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
+            activeTab === 'packing'
+              ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
+              : 'text-slate-600 hover:bg-slate-100'
+          }`}
+        >
+          <CheckSquare className="w-4 h-4" />
+          <span>Luggage</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('jetlag')}
+          className={`flex-1 min-w-[85px] py-2 px-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
+            activeTab === 'jetlag'
+              ? 'bg-purple-600 text-white shadow-md shadow-purple-600/20'
+              : 'text-slate-600 hover:bg-slate-100'
+          }`}
+        >
+          <Clock className="w-4 h-4" />
+          <span>Jet Lag</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('pass')}
+          className={`flex-1 min-w-[85px] py-2 px-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
+            activeTab === 'pass'
+              ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
+              : 'text-slate-600 hover:bg-slate-100'
+          }`}
+        >
+          <Ticket className="w-4 h-4" />
+          <span>Pass</span>
         </button>
 
         <button
           onClick={() => setActiveTab('excursions')}
-          className={`flex-1 min-w-[95px] py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
+          className={`flex-1 min-w-[85px] py-2 px-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
             activeTab === 'excursions'
               ? 'bg-teal-600 text-white shadow-md shadow-teal-600/20'
               : 'text-slate-600 hover:bg-slate-100'
@@ -377,7 +444,7 @@ export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPl
 
         <button
           onClick={() => setActiveTab('booking')}
-          className={`flex-1 min-w-[95px] py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
+          className={`flex-1 min-w-[85px] py-2 px-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
             activeTab === 'booking'
               ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
               : 'text-slate-600 hover:bg-slate-100'
@@ -389,7 +456,7 @@ export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPl
 
         <button
           onClick={() => setActiveTab('budget')}
-          className={`flex-1 min-w-[95px] py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
+          className={`flex-1 min-w-[85px] py-2 px-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
             activeTab === 'budget'
               ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
               : 'text-slate-600 hover:bg-slate-100'
@@ -401,7 +468,7 @@ export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPl
 
         <button
           onClick={() => setActiveTab('expenses')}
-          className={`flex-1 min-w-[95px] py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
+          className={`flex-1 min-w-[85px] py-2 px-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
             activeTab === 'expenses'
               ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
               : 'text-slate-600 hover:bg-slate-100'
@@ -413,7 +480,7 @@ export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPl
 
         <button
           onClick={() => setActiveTab('weather')}
-          className={`flex-1 min-w-[95px] py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
+          className={`flex-1 min-w-[85px] py-2 px-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
             activeTab === 'weather'
               ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
               : 'text-slate-600 hover:bg-slate-100'
@@ -425,7 +492,7 @@ export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPl
 
         <button
           onClick={() => setActiveTab('guidebook')}
-          className={`flex-1 min-w-[95px] py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
+          className={`flex-1 min-w-[85px] py-2 px-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
             activeTab === 'guidebook'
               ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
               : 'text-slate-600 hover:bg-slate-100'
@@ -437,7 +504,7 @@ export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPl
 
         <button
           onClick={() => setActiveTab('eco')}
-          className={`flex-1 min-w-[95px] py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
+          className={`flex-1 min-w-[85px] py-2 px-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
             activeTab === 'eco'
               ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/20'
               : 'text-slate-600 hover:bg-slate-100'
@@ -487,6 +554,26 @@ export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPl
             destinationName={trip.destination}
             onSelectRestaurant={handleSelectMapPoint}
           />
+        )}
+
+        {activeTab === 'gallery' && (
+          <DestinationGallery destination={trip.destination} />
+        )}
+
+        {activeTab === 'packing' && (
+          <PackingCustomizer
+            tripId={trip.id}
+            destination={trip.destination}
+            defaultPackingList={trip.practicalTips.packing || []}
+          />
+        )}
+
+        {activeTab === 'jetlag' && (
+          <JetLagAdvisor destination={trip.destination} />
+        )}
+
+        {activeTab === 'pass' && (
+          <BoardingPassCard trip={trip} />
         )}
 
         {activeTab === 'excursions' && (

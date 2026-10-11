@@ -12,6 +12,8 @@ import { getSavedTrips } from '@/lib/storage';
 import { SAMPLE_TRIPS } from '@/lib/sampleTrips';
 import { Sparkles, MapPin, Compass, AlertCircle, Shield, ArrowUpRight } from 'lucide-react';
 
+import { decodeTripFromUrl } from '@/lib/shareUrl';
+
 export default function Home() {
   const [currentTrip, setCurrentTrip] = useState<TripPlan | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -27,6 +29,17 @@ export default function Home() {
 
   useEffect(() => {
     setSavedTrips(getSavedTrips());
+
+    // Check for shared trip encoded in URL hash
+    if (typeof window !== 'undefined' && window.location.hash.includes('trip=')) {
+      const hash = window.location.hash.replace('#trip=', '');
+      if (hash) {
+        const decoded = decodeTripFromUrl(hash);
+        if (decoded) {
+          setCurrentTrip(decoded);
+        }
+      }
+    }
   }, []);
 
   const refreshSavedTrips = () => {
