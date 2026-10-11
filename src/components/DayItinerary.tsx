@@ -8,20 +8,36 @@ import {
   Utensils,
   Lightbulb,
   DollarSign,
-  ChevronDown,
-  ChevronUp,
   Compass,
-  Calendar
+  Calendar,
+  Plus,
+  Trash2,
+  X,
+  Check
 } from 'lucide-react';
 
 interface DayItineraryProps {
   itinerary: ItineraryDay[];
   onSelectActivityLocation?: (coords: { lat: number; lng: number; title: string }) => void;
+  onUpdateItinerary?: (updated: ItineraryDay[]) => void;
 }
 
-export default function DayItinerary({ itinerary, onSelectActivityLocation }: DayItineraryProps) {
+export default function DayItinerary({
+  itinerary,
+  onSelectActivityLocation,
+  onUpdateItinerary,
+}: DayItineraryProps) {
   const [selectedDay, setSelectedDay] = useState<number>(1);
   const [expandedAll, setExpandedAll] = useState<boolean>(false);
+
+  // New activity form modal state
+  const [isAddingActivityForDay, setIsAddingActivityForDay] = useState<number | null>(null);
+  const [newTitle, setNewTitle] = useState('');
+  const [newLocation, setNewLocation] = useState('');
+  const [newTime, setNewTime] = useState('10:00 AM');
+  const [newSlot, setNewSlot] = useState<ItineraryActivity['timeSlot']>('Morning');
+  const [newCost, setNewCost] = useState('Free');
+  const [newDesc, setNewDesc] = useState('');
 
   const activeDayData = itinerary.find((d) => d.day === selectedDay) || itinerary[0];
 
@@ -38,6 +54,51 @@ export default function DayItinerary({ itinerary, onSelectActivityLocation }: Da
       default:
         return 'bg-slate-100 text-slate-800 border-slate-200';
     }
+  };
+
+  const handleDeleteActivity = (dayNum: number, activityIdx: number) => {
+    if (!onUpdateItinerary) return;
+    const updated = itinerary.map((d) => {
+      if (d.day === dayNum) {
+        return {
+          ...d,
+          schedule: d.schedule.filter((_, idx) => idx !== activityIdx),
+        };
+      }
+      return d;
+    });
+    onUpdateItinerary(updated);
+  };
+
+  const handleSaveNewActivity = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isAddingActivityForDay || !newTitle.trim() || !onUpdateItinerary) return;
+
+    const newActivity: ItineraryActivity = {
+      timeSlot: newSlot,
+      time: newTime,
+      activity: newTitle.trim(),
+      locationName: newLocation.trim() || newTitle.trim(),
+      description: newDesc.trim() || 'Custom planned activity.',
+      cost: newCost.trim() || 'Free',
+      tip: 'Custom traveler scheduled stop.',
+    };
+
+    const updated = itinerary.map((d) => {
+      if (d.day === isAddingActivityForDay) {
+        return {
+          ...d,
+          schedule: [...d.schedule, newActivity],
+        };
+      }
+      return d;
+    });
+
+    onUpdateItinerary(updated);
+    setIsAddingActivityForDay(null);
+    setNewTitle('');
+    setNewLocation('');
+    setNewDesc('');
   };
 
   return (
@@ -71,7 +132,7 @@ export default function DayItinerary({ itinerary, onSelectActivityLocation }: Da
             className={`px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold transition-all shrink-0 border ${
               expandedAll
                 ? 'bg-indigo-600 text-white border-indigo-600 shadow-md'
-                : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'
             }`}
           >
             {expandedAll ? 'Show Single Day' : 'View All Days'}
@@ -87,18 +148,30 @@ export default function DayItinerary({ itinerary, onSelectActivityLocation }: Da
             className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm relative overflow-hidden"
           >
             {/* Day Header Banner */}
-            <div className="border-b border-slate-100 pb-5 mb-6">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="text-xs font-extrabold uppercase tracking-widest text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100">
-                  Day {day.day} Program
-                </span>
-                <span className="text-xs font-semibold text-slate-500 italic">
-                  Theme: {day.theme}
-                </span>
+            <div className="border-b border-slate-100 pb-5 mb-6 flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-xs font-extrabold uppercase tracking-widest text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100">
+                    Day {day.day} Program
+                  </span>
+                  <span className="text-xs font-semibold text-slate-500 italic">
+                    Theme: {day.theme}
+                  </span>
+                </div>
+                <h3 className="text-xl sm:text-2xl font-bold text-slate-900 mt-2">
+                  {day.title}
+                </h3>
               </div>
-              <h3 className="text-xl sm:text-2xl font-bold text-slate-900 mt-2">
-                {day.title}
-              </h3>
+
+              {onUpdateItinerary && (
+                <button
+                  onClick={() => setIsAddingActivityForDay(day.day)}
+                  className="px-3.5 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold rounded-xl border border-indigo-200/80 transition-colors flex items-center gap-1.5 shadow-2xs"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Add Stop</span>
+                </button>
+              )}
             </div>
 
             {/* Timeline Activities */}
@@ -127,12 +200,23 @@ export default function DayItinerary({ itinerary, onSelectActivityLocation }: Da
                         </div>
                       </div>
 
-                      {activity.cost && (
-                        <div className="flex items-center gap-1 text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
-                          <DollarSign className="w-3 h-3" />
-                          <span>{activity.cost}</span>
-                        </div>
-                      )}
+                      <div className="flex items-center gap-2">
+                        {activity.cost && (
+                          <div className="flex items-center gap-1 text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                            <DollarSign className="w-3 h-3" />
+                            <span>{activity.cost}</span>
+                          </div>
+                        )}
+                        {onUpdateItinerary && (
+                          <button
+                            onClick={() => handleDeleteActivity(day.day, idx)}
+                            title="Remove this stop"
+                            className="text-slate-300 hover:text-rose-500 transition-colors p-1"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </div>
                     </div>
 
                     <h4 className="text-base sm:text-lg font-bold text-slate-900">
@@ -205,6 +289,127 @@ export default function DayItinerary({ itinerary, onSelectActivityLocation }: Da
           </div>
         ))}
       </div>
+
+      {/* Inline Modal to Add New Activity */}
+      {isAddingActivityForDay && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <h4 className="font-bold text-base text-slate-900">
+                Add Activity to Day {isAddingActivityForDay}
+              </h4>
+              <button
+                onClick={() => setIsAddingActivityForDay(null)}
+                className="text-slate-400 hover:text-slate-600"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveNewActivity} className="space-y-3 text-xs">
+              <div>
+                <label className="font-bold text-slate-700 uppercase tracking-wider block mb-1">
+                  Activity Name
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Sunset drinks at rooftop bar"
+                  value={newTitle}
+                  onChange={(e) => setNewTitle(e.target.value)}
+                  className="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="font-bold text-slate-700 uppercase tracking-wider block mb-1">
+                    Time Slot
+                  </label>
+                  <select
+                    value={newSlot}
+                    onChange={(e) => setNewSlot(e.target.value as ItineraryActivity['timeSlot'])}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:outline-none"
+                  >
+                    <option value="Morning">Morning</option>
+                    <option value="Afternoon">Afternoon</option>
+                    <option value="Evening">Evening</option>
+                    <option value="Night">Night</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="font-bold text-slate-700 uppercase tracking-wider block mb-1">
+                    Time
+                  </label>
+                  <input
+                    type="text"
+                    value={newTime}
+                    onChange={(e) => setNewTime(e.target.value)}
+                    placeholder="e.g. 10:00 AM"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="font-bold text-slate-700 uppercase tracking-wider block mb-1">
+                    Location Name
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Grand Terrace"
+                    value={newLocation}
+                    onChange={(e) => setNewLocation(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="font-bold text-slate-700 uppercase tracking-wider block mb-1">
+                    Cost
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. $15 or Free"
+                    value={newCost}
+                    onChange={(e) => setNewCost(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-700 uppercase tracking-wider block mb-1">
+                  Description / Notes
+                </label>
+                <textarea
+                  rows={2}
+                  placeholder="Notes about reservations, dress code, etc."
+                  value={newDesc}
+                  onChange={(e) => setNewDesc(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:outline-none"
+                />
+              </div>
+
+              <div className="pt-2 flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsAddingActivityForDay(null)}
+                  className="px-4 py-2 font-semibold text-slate-600 hover:bg-slate-100 rounded-xl"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-xs"
+                >
+                  Add Stop
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

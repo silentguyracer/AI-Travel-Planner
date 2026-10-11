@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { PlaceToVisit, RestaurantRecommendation, ItineraryDay } from '@/types/travel';
-import { MapPin, Utensils, Compass, ExternalLink, Layers, ZoomIn, ZoomOut, AlertCircle } from 'lucide-react';
+import { MapPin, Utensils, Compass, ExternalLink, Layers, ZoomIn, ZoomOut, AlertCircle, Navigation } from 'lucide-react';
 import { getUserSettings } from '@/lib/storage';
 
 declare global {
@@ -41,7 +41,7 @@ export default function GoogleMapView({
   places,
   restaurants,
   itinerary,
-  selectedPlace
+  selectedPlace,
 }: GoogleMapViewProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const [apiKey, setApiKey] = useState<string>('');
@@ -49,6 +49,7 @@ export default function GoogleMapView({
   const [loadError, setLoadError] = useState<string | null>(null);
   const [filterType, setFilterType] = useState<string>('all');
   const [activeItem, setActiveItem] = useState<MapMarkerItem | null>(null);
+  const [showRoute, setShowRoute] = useState<boolean>(true);
 
   // Simulated map zoom & pan state for fallback mode
   const [simZoom, setSimZoom] = useState<number>(1);
@@ -182,8 +183,8 @@ export default function GoogleMapView({
         streetViewControl: true,
         styles: [
           { featureType: 'poi', elementType: 'labels.text', stylers: [{ visibility: 'off' }] },
-          { featureType: 'transit', elementType: 'labels.icon', stylers: [{ visibility: 'simplified' }] }
-        ]
+          { featureType: 'transit', elementType: 'labels.icon', stylers: [{ visibility: 'simplified' }] },
+        ],
       });
 
       const infoWindow = new window.google.maps.InfoWindow();
@@ -200,7 +201,7 @@ export default function GoogleMapView({
             fillOpacity: 1,
             strokeColor: '#ffffff',
             strokeWeight: 2,
-          }
+          },
         });
 
         marker.addListener('click', () => {
@@ -223,14 +224,38 @@ export default function GoogleMapView({
           infoWindow.open(map, marker);
         });
       });
+
+      // Draw polyline route if enabled
+      if (showRoute) {
+        const routePoints = filteredMarkers
+          .filter((m) => m.type === 'activity')
+          .map((m) => ({ lat: m.lat, lng: m.lng }));
+
+        if (routePoints.length > 1) {
+          new window.google.maps.Polyline({
+            path: routePoints,
+            geodesic: true,
+            strokeColor: '#6366f1',
+            strokeOpacity: 0.8,
+            strokeWeight: 4,
+            map: map,
+          });
+        }
+      }
     } catch (err) {
       console.error('Google Maps init error:', err);
     }
-  }, [googleMapsLoaded, filteredMarkers, center, destinationName]);
+  }, [googleMapsLoaded, filteredMarkers, center, destinationName, showRoute]);
 
   // Coordinate normalizer for fallback interactive canvas
   const bounds = useMemo(() => {
-    if (allMarkers.length === 0) return { minLat: center.lat - 0.05, maxLat: center.lat + 0.05, minLng: center.lng - 0.05, maxLng: center.lng + 0.05 };
+    if (allMarkers.length === 0)
+      return {
+        minLat: center.lat - 0.05,
+        maxLat: center.lat + 0.05,
+        minLng: center.lng - 0.05,
+        maxLng: center.lng + 0.05,
+      };
     const lats = allMarkers.map((m) => m.lat);
     const lngs = allMarkers.map((m) => m.lng);
     return {
@@ -244,7 +269,6 @@ export default function GoogleMapView({
   const getMarkerPositionPercent = (lat: number, lng: number) => {
     const latSpan = bounds.maxLat - bounds.minLat || 0.01;
     const lngSpan = bounds.maxLng - bounds.minLng || 0.01;
-    // Map latitude (inverted because y goes down)
     const y = 100 - ((lat - bounds.minLat) / latSpan) * 100;
     const x = ((lng - bounds.minLng) / lngSpan) * 100;
     return { x: Math.max(8, Math.min(92, x)), y: Math.max(8, Math.min(92, y)) };
@@ -268,6 +292,13 @@ export default function GoogleMapView({
     isDraggingRef.current = false;
   };
 
+  // Build SVG path points for route line in fallback mode
+  const routePoints = useMemo(() => {
+    return filteredMarkers
+      .filter((m) => m.type === 'activity')
+      .map((m) => getMarkerPositionPercent(m.lat, m.lng));
+  }, [filteredMarkers]);
+
   return (
     <div className="bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden flex flex-col">
       {/* Top Map Control Bar */}
@@ -278,7 +309,7 @@ export default function GoogleMapView({
           </div>
           <div>
             <h3 className="font-semibold text-sm sm:text-base flex items-center gap-2">
-              Interactive Route & Map: {destinationName}
+              Route & Map: {destinationName}
               {apiKey && googleMapsLoaded && (
                 <span className="text-[10px] bg-emerald-500/20 text-emerald-300 font-medium px-2 py-0.5 rounded-full border border-emerald-500/30">
                   Google Maps Live
@@ -286,13 +317,26 @@ export default function GoogleMapView({
               )}
             </h3>
             <p className="text-xs text-slate-400">
-              {filteredMarkers.length} locations plotted • Coordinates: {center.lat.toFixed(4)}, {center.lng.toFixed(4)}
+              {filteredMarkers.length} locations plotted • Coords: {center.lat.toFixed(3)}, {center.lng.toFixed(3)}
             </p>
           </div>
         </div>
 
-        {/* Filter Pills */}
+        {/* Filter Pills & Route Toggle */}
         <div className="flex items-center gap-1.5 overflow-x-auto max-w-full pb-1 sm:pb-0 scrollbar-none">
+          <button
+            onClick={() => setShowRoute(!showRoute)}
+            className={`px-2.5 py-1 text-xs rounded-full transition-colors whitespace-nowrap font-medium flex items-center gap-1 border ${
+              showRoute
+                ? 'bg-indigo-600 text-white border-indigo-500'
+                : 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700'
+            }`}
+            title="Toggle route path connecting day activities"
+          >
+            <Navigation className="w-3 h-3" />
+            <span>Path</span>
+          </button>
+
           <button
             onClick={() => setFilterType('all')}
             className={`px-2.5 py-1 text-xs rounded-full transition-colors whitespace-nowrap font-medium ${
@@ -363,10 +407,10 @@ export default function GoogleMapView({
                 transformOrigin: 'center center',
               }}
             >
-              {/* Radial gradient glow representing urban center */}
+              {/* Radial gradient glow */}
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-indigo-950/40 rounded-full blur-3xl pointer-events-none" />
 
-              {/* Grid Lines simulating digital GIS map view */}
+              {/* Grid Lines */}
               <div
                 className="absolute inset-0 opacity-15"
                 style={{
@@ -375,6 +419,20 @@ export default function GoogleMapView({
                   backgroundSize: '40px 40px',
                 }}
               />
+
+              {/* SVG Connecting Path Line */}
+              {showRoute && routePoints.length > 1 && (
+                <svg className="absolute inset-0 w-full h-full pointer-events-none z-10">
+                  <polyline
+                    points={routePoints.map((p) => `${p.x}%,${p.y}%`).join(' ')}
+                    fill="none"
+                    stroke="#818cf8"
+                    strokeWidth="3"
+                    strokeDasharray="6 4"
+                    strokeOpacity="0.8"
+                  />
+                </svg>
+              )}
 
               {/* Destination Center Indicator */}
               <div
@@ -470,9 +528,9 @@ export default function GoogleMapView({
               <div className="flex items-start gap-2">
                 <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                 <div className="text-xs space-y-1">
-                  <p className="font-semibold text-slate-200">Interactive Coordinate View</p>
+                  <p className="font-semibold text-slate-200">Interactive Route Visualizer</p>
                   <p className="text-slate-400 leading-relaxed">
-                    Showing real geographic coordinates for all itinerary destinations. Add your Google Maps API key in Settings to activate Google Maps tiles & satellite layers.
+                    Showing real geographic coordinates & route paths. Add a Google Maps API Key in Settings to enable live Google Satellite tiles.
                   </p>
                 </div>
               </div>
@@ -552,7 +610,7 @@ export default function GoogleMapView({
           </div>
           <div className="flex items-center gap-1.5">
             <span className="w-3 h-3 rounded-full bg-emerald-600 inline-block" />
-            <span>Daily Itinerary Activities</span>
+            <span>Daily Stops</span>
           </div>
         </div>
         <p className="text-[11px] text-slate-400">Click any pin to inspect details or open directions</p>

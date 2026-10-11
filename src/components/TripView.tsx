@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
-import { TripPlan } from '@/types/travel';
+import React, { useState, useEffect } from 'react';
+import { TripPlan, ItineraryDay } from '@/types/travel';
 import {
   Bookmark,
   Share2,
@@ -14,17 +14,21 @@ import {
   MapPin,
   Utensils,
   Sparkles,
-  Info,
   Check,
-  ChevronRight
+  CalendarPlus,
+  Coins,
+  Receipt
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { saveTrip, isTripSaved, exportTripToJson } from '@/lib/storage';
+import { downloadCalendarICS } from '@/lib/calendarExport';
+import { CURRENCIES, SupportedCurrency, convertAmount, parseUsdAmount } from '@/lib/currency';
 import DayItinerary from './DayItinerary';
 import PlacesList from './PlacesList';
 import RestaurantsList from './RestaurantsList';
 import GoogleMapView from './GoogleMapView';
 import BudgetBreakdown from './BudgetBreakdown';
+import ExpenseTracker from './ExpenseTracker';
 
 interface TripViewProps {
   trip: TripPlan;
@@ -32,31 +36,49 @@ interface TripViewProps {
   onNewPlanClick: () => void;
 }
 
-type TabType = 'itinerary' | 'map' | 'places' | 'restaurants' | 'budget';
+type TabType = 'itinerary' | 'map' | 'places' | 'restaurants' | 'budget' | 'expenses';
 
-export default function TripView({ trip, onTripSavedChange, onNewPlanClick }: TripViewProps) {
+export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPlanClick }: TripViewProps) {
+  const [trip, setTrip] = useState<TripPlan>(initialTrip);
   const [activeTab, setActiveTab] = useState<TabType>('itinerary');
-  const [isSaved, setIsSaved] = useState<boolean>(() => isTripSaved(trip.id));
+  const [isSaved, setIsSaved] = useState<boolean>(() => isTripSaved(initialTrip.id));
+  const [currency, setCurrency] = useState<SupportedCurrency>('USD');
   const [selectedMapLocation, setSelectedMapLocation] = useState<{
     lat: number;
     lng: number;
     title: string;
   } | null>(null);
 
+  useEffect(() => {
+    setTrip(initialTrip);
+    setIsSaved(isTripSaved(initialTrip.id));
+  }, [initialTrip]);
+
   const handleToggleSave = () => {
     saveTrip(trip);
     setIsSaved(true);
     if (onTripSavedChange) onTripSavedChange();
 
-    // Trigger celebratory confetti
     try {
       confetti({
         particleCount: 80,
         spread: 70,
-        origin: { y: 0.6 }
+        origin: { y: 0.6 },
       });
     } catch {
       // ignore
+    }
+  };
+
+  const handleUpdateItinerary = (updatedSchedule: ItineraryDay[]) => {
+    const updatedTrip: TripPlan = {
+      ...trip,
+      itinerary: updatedSchedule,
+    };
+    setTrip(updatedTrip);
+    if (isSaved) {
+      saveTrip(updatedTrip);
+      if (onTripSavedChange) onTripSavedChange();
     }
   };
 
@@ -64,7 +86,7 @@ export default function TripView({ trip, onTripSavedChange, onNewPlanClick }: Tr
     const text = `Take a look at this AI-generated ${trip.duration}-day travel plan for ${trip.destination}!`;
     if (navigator.clipboard) {
       navigator.clipboard.writeText(window.location.href);
-      alert('Link to planner copied to clipboard!');
+      alert('Link to trip planner copied to clipboard!');
     }
   };
 
@@ -80,6 +102,10 @@ export default function TripView({ trip, onTripSavedChange, onNewPlanClick }: Tr
       mapSection.scrollIntoView({ behavior: 'smooth' });
     }
   };
+
+  // Convert estimate to selected currency
+  const rawTotalEstimateUsd = parseUsdAmount(trip.estimatedBudget?.totalEstimate || '$1500');
+  const convertedTotalEstimate = convertAmount(rawTotalEstimateUsd, currency);
 
   return (
     <div className="space-y-8 animate-in fade-in duration-300">
@@ -99,6 +125,22 @@ export default function TripView({ trip, onTripSavedChange, onNewPlanClick }: Tr
               <span className="text-xs font-semibold text-slate-300 bg-white/10 px-3 py-1 rounded-full backdrop-blur-md">
                 {trip.bestTimeToVisit}
               </span>
+
+              {/* Currency Selector */}
+              <div className="flex items-center gap-1 bg-white/10 px-2.5 py-1 rounded-full backdrop-blur-md text-xs">
+                <Coins className="w-3.5 h-3.5 text-amber-300" />
+                <select
+                  value={currency}
+                  onChange={(e) => setCurrency(e.target.value as SupportedCurrency)}
+                  className="bg-transparent text-white font-bold outline-none cursor-pointer text-xs"
+                >
+                  {Object.keys(CURRENCIES).map((c) => (
+                    <option key={c} value={c} className="bg-slate-900 text-white">
+                      {c} ({CURRENCIES[c as SupportedCurrency].symbol})
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
 
             {/* Destination Title */}
@@ -114,7 +156,9 @@ export default function TripView({ trip, onTripSavedChange, onNewPlanClick }: Tr
               </div>
               <div className="flex items-center gap-1.5 font-medium capitalize">
                 <DollarSign className="w-4 h-4 text-emerald-400" />
-                <span>{trip.budget} Budget</span>
+                <span>
+                  {trip.budget} Budget (~{convertedTotalEstimate})
+                </span>
               </div>
               {trip.companion && (
                 <div className="flex items-center gap-1.5 font-medium capitalize">
@@ -154,32 +198,41 @@ export default function TripView({ trip, onTripSavedChange, onNewPlanClick }: Tr
               )}
             </button>
 
-            {/* Sub-actions */}
-            <div className="flex items-center gap-2 w-full justify-between sm:justify-start">
+            {/* Sub-actions Row */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 w-full">
+              <button
+                onClick={() => downloadCalendarICS(trip)}
+                title="Add to Google / Apple Calendar"
+                className="p-2.5 bg-white/10 hover:bg-white/20 rounded-xl text-white backdrop-blur-md transition-colors flex items-center justify-center gap-1.5 text-xs font-semibold"
+              >
+                <CalendarPlus className="w-3.5 h-3.5 text-sky-300" />
+                <span>Calendar</span>
+              </button>
+
               <button
                 onClick={handleShare}
                 title="Share Trip"
-                className="flex-1 sm:flex-initial p-2.5 bg-white/10 hover:bg-white/20 rounded-xl text-white backdrop-blur-md transition-colors flex items-center justify-center gap-1.5 text-xs font-semibold"
+                className="p-2.5 bg-white/10 hover:bg-white/20 rounded-xl text-white backdrop-blur-md transition-colors flex items-center justify-center gap-1.5 text-xs font-semibold"
               >
-                <Share2 className="w-4 h-4" />
+                <Share2 className="w-3.5 h-3.5" />
                 <span>Share</span>
               </button>
 
               <button
                 onClick={() => exportTripToJson(trip)}
                 title="Download JSON"
-                className="flex-1 sm:flex-initial p-2.5 bg-white/10 hover:bg-white/20 rounded-xl text-white backdrop-blur-md transition-colors flex items-center justify-center gap-1.5 text-xs font-semibold"
+                className="p-2.5 bg-white/10 hover:bg-white/20 rounded-xl text-white backdrop-blur-md transition-colors flex items-center justify-center gap-1.5 text-xs font-semibold"
               >
-                <Download className="w-4 h-4" />
+                <Download className="w-3.5 h-3.5" />
                 <span>JSON</span>
               </button>
 
               <button
                 onClick={handlePrint}
                 title="Print Itinerary"
-                className="flex-1 sm:flex-initial p-2.5 bg-white/10 hover:bg-white/20 rounded-xl text-white backdrop-blur-md transition-colors flex items-center justify-center gap-1.5 text-xs font-semibold"
+                className="p-2.5 bg-white/10 hover:bg-white/20 rounded-xl text-white backdrop-blur-md transition-colors flex items-center justify-center gap-1.5 text-xs font-semibold"
               >
-                <Printer className="w-4 h-4" />
+                <Printer className="w-3.5 h-3.5" />
                 <span>Print</span>
               </button>
             </div>
@@ -274,6 +327,18 @@ export default function TripView({ trip, onTripSavedChange, onNewPlanClick }: Tr
           <DollarSign className="w-4 h-4" />
           <span>Budget & Tips</span>
         </button>
+
+        <button
+          onClick={() => setActiveTab('expenses')}
+          className={`flex-1 min-w-[110px] py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-2 ${
+            activeTab === 'expenses'
+              ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
+              : 'text-slate-600 hover:bg-slate-100'
+          }`}
+        >
+          <Receipt className="w-4 h-4" />
+          <span>Expense Tracker</span>
+        </button>
       </div>
 
       {/* 3. Tab Contents */}
@@ -283,6 +348,7 @@ export default function TripView({ trip, onTripSavedChange, onNewPlanClick }: Tr
             <DayItinerary
               itinerary={trip.itinerary}
               onSelectActivityLocation={handleSelectMapPoint}
+              onUpdateItinerary={handleUpdateItinerary}
             />
           </div>
         )}
@@ -321,6 +387,14 @@ export default function TripView({ trip, onTripSavedChange, onNewPlanClick }: Tr
             budget={trip.estimatedBudget}
             practicalTips={trip.practicalTips}
             budgetTier={trip.budget}
+          />
+        )}
+
+        {activeTab === 'expenses' && (
+          <ExpenseTracker
+            tripId={trip.id}
+            destination={trip.destination}
+            totalEstimatedBudgetStr={trip.estimatedBudget?.totalEstimate || '$1500'}
           />
         )}
       </div>

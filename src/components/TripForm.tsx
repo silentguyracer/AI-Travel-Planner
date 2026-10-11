@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   BudgetTier,
   CompanionType,
@@ -15,8 +15,9 @@ import {
   Compass,
   Sparkles,
   Loader2,
-  CheckCircle2,
-  Flame
+  Flame,
+  Search,
+  Check
 } from 'lucide-react';
 import { getUserSettings } from '@/lib/storage';
 
@@ -35,6 +36,39 @@ const POPULAR_DESTINATIONS = [
   { name: 'New York', country: 'USA', emoji: '🗽' },
   { name: 'Kyoto', country: 'Japan', emoji: '⛩️' },
   { name: 'London', country: 'UK', emoji: '🎡' },
+];
+
+const AUTOCOMPLETE_CATALOG = [
+  { name: 'Tokyo', country: 'Japan', emoji: '🗼' },
+  { name: 'Kyoto', country: 'Japan', emoji: '⛩️' },
+  { name: 'Osaka', country: 'Japan', emoji: '🐙' },
+  { name: 'Paris', country: 'France', emoji: '🥐' },
+  { name: 'Nice', country: 'France', emoji: '🏖️' },
+  { name: 'Rome', country: 'Italy', emoji: '🏛️' },
+  { name: 'Florence', country: 'Italy', emoji: '🖼️' },
+  { name: 'Venice', country: 'Italy', emoji: '🛶' },
+  { name: 'Amalfi Coast', country: 'Italy', emoji: '🍋' },
+  { name: 'Barcelona', country: 'Spain', emoji: '🎨' },
+  { name: 'Madrid', country: 'Spain', emoji: '💃' },
+  { name: 'Seville', country: 'Spain', emoji: '🏰' },
+  { name: 'London', country: 'United Kingdom', emoji: '🎡' },
+  { name: 'Edinburgh', country: 'Scotland', emoji: '🏴󠁧󠁢󠁳󠁣󠁴󠁿' },
+  { name: 'New York City', country: 'United States', emoji: '🗽' },
+  { name: 'San Francisco', country: 'United States', emoji: '🌉' },
+  { name: 'Los Angeles', country: 'United States', emoji: '🎬' },
+  { name: 'Bali', country: 'Indonesia', emoji: '🌴' },
+  { name: 'Bangkok', country: 'Thailand', emoji: '🛕' },
+  { name: 'Phuket', country: 'Thailand', emoji: '🏝️' },
+  { name: 'Singapore', country: 'Singapore', emoji: '🦁' },
+  { name: 'Dubai', country: 'United Arab Emirates', emoji: '🏙️' },
+  { name: 'Amsterdam', country: 'Netherlands', emoji: '🚲' },
+  { name: 'Prague', country: 'Czech Republic', emoji: '🏰' },
+  { name: 'Vienna', country: 'Austria', emoji: '🎻' },
+  { name: 'Reykjavik', country: 'Iceland', emoji: '🌋' },
+  { name: 'Sydney', country: 'Australia', emoji: '🦘' },
+  { name: 'Cape Town', country: 'South Africa', emoji: '⛰️' },
+  { name: 'Rio de Janeiro', country: 'Brazil', emoji: '🎉' },
+  { name: 'Seoul', country: 'South Korea', emoji: '🍜' },
 ];
 
 const TRAVEL_STYLES: { id: TravelStyle; label: string; icon: string }[] = [
@@ -88,6 +122,32 @@ export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip }: 
   const [specificInterests, setSpecificInterests] = useState('');
   const [loadingStep, setLoadingStep] = useState(0);
 
+  // Autocomplete state
+  const [showAutocomplete, setShowAutocomplete] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const filteredSuggestions = AUTOCOMPLETE_CATALOG.filter(
+    (item) =>
+      item.name.toLowerCase().includes(destination.toLowerCase()) ||
+      item.country.toLowerCase().includes(destination.toLowerCase())
+  );
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node) &&
+        inputRef.current &&
+        !inputRef.current.contains(e.target as Node)
+      ) {
+        setShowAutocomplete(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const toggleStyle = (style: TravelStyle) => {
     setSelectedStyles((prev) =>
       prev.includes(style) ? prev.filter((s) => s !== style) : [...prev, style]
@@ -97,6 +157,7 @@ export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip }: 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!destination.trim() || isLoading) return;
+    setShowAutocomplete(false);
 
     const userSettings = getUserSettings();
 
@@ -162,23 +223,56 @@ export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip }: 
       </div>
 
       <form onSubmit={handleSubmit} className="relative space-y-6">
-        {/* 1. Destination Input & Popular Suggestions */}
-        <div className="space-y-2">
+        {/* 1. Destination Input & Autocomplete Dropdown */}
+        <div className="space-y-2 relative">
           <label className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
             <MapPin className="w-4 h-4 text-indigo-600" />
             <span>Where do you want to go?</span>
           </label>
           <div className="relative">
             <input
+              ref={inputRef}
               type="text"
               required
               value={destination}
-              onChange={(e) => setDestination(e.target.value)}
+              onFocus={() => setShowAutocomplete(true)}
+              onChange={(e) => {
+                setDestination(e.target.value);
+                setShowAutocomplete(true);
+              }}
               placeholder="e.g. Tokyo, Rome, Barcelona, Kyoto, New York, Bali..."
               className="w-full pl-11 pr-4 py-3.5 rounded-2xl border border-slate-200 text-base font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-600 shadow-xs transition-all"
             />
             <Compass className="w-5 h-5 text-indigo-500 absolute left-3.5 top-4" />
           </div>
+
+          {/* Autocomplete Dropdown */}
+          {showAutocomplete && filteredSuggestions.length > 0 && (
+            <div
+              ref={dropdownRef}
+              className="absolute left-0 right-0 top-full mt-1.5 bg-white rounded-2xl shadow-2xl border border-slate-200 z-50 max-h-60 overflow-y-auto divide-y divide-slate-100 animate-in fade-in"
+            >
+              {filteredSuggestions.slice(0, 8).map((item) => (
+                <div
+                  key={item.name}
+                  onClick={() => {
+                    setDestination(item.name);
+                    setShowAutocomplete(false);
+                  }}
+                  className="p-3 hover:bg-indigo-50 cursor-pointer flex items-center justify-between text-xs transition-colors"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <span className="text-lg">{item.emoji}</span>
+                    <div>
+                      <span className="font-bold text-slate-800 text-sm">{item.name}</span>
+                      <span className="text-slate-400 ml-2">{item.country}</span>
+                    </div>
+                  </div>
+                  <Check className="w-3.5 h-3.5 text-indigo-500 opacity-0 group-hover:opacity-100" />
+                </div>
+              ))}
+            </div>
+          )}
 
           {/* Destination Quick Chips */}
           <div className="flex items-center gap-1.5 overflow-x-auto pt-1 pb-2 scrollbar-none">
@@ -189,7 +283,10 @@ export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip }: 
               <button
                 key={dest.name}
                 type="button"
-                onClick={() => setDestination(dest.name)}
+                onClick={() => {
+                  setDestination(dest.name);
+                  setShowAutocomplete(false);
+                }}
                 className={`text-xs px-2.5 py-1 rounded-lg border transition-all shrink-0 font-medium ${
                   destination.toLowerCase() === dest.name.toLowerCase()
                     ? 'bg-indigo-600 text-white border-indigo-600 shadow-xs'
