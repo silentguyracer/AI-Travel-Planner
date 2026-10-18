@@ -47,7 +47,11 @@ import {
   Home,
   ArrowLeft,
   Footprints,
-  Globe
+  Globe,
+  TrendingDown,
+  Luggage,
+  Laptop,
+  Mic
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { saveTrip, isTripSaved, exportTripToJson } from '@/lib/storage';
@@ -90,6 +94,10 @@ import TripScoreDashboard from './TripScoreDashboard';
 import GlobeFlightPath3D from './GlobeFlightPath3D';
 import TravelMissionControlHUD from './TravelMissionControlHUD';
 import TrekElevationProfile from './TrekElevationProfile';
+import AICopilotVoiceHUD from './AICopilotVoiceHUD';
+import FlightPricePredictor from './FlightPricePredictor';
+import SuitcaseTetrisVisualizer from './SuitcaseTetrisVisualizer';
+import DigitalNomadWorkationHub from './DigitalNomadWorkationHub';
 import { animateTabTransition, attachMagneticHover, animateSpringPop } from '@/lib/gsapAnimations';
 
 interface TripViewProps {
@@ -128,7 +136,11 @@ export type TabType =
   | 'journal'
   | 'booking'
   | 'excursions'
-  | 'eco';
+  | 'eco'
+  | 'copilot'
+  | 'hopper'
+  | 'tetris'
+  | 'nomad';
 
 type TabCategory = 'schedule' | 'transit' | 'finance' | 'companion';
 
@@ -145,9 +157,9 @@ interface TabItem {
 
 const TAB_CATEGORIES: { id: TabCategory; label: string; icon: React.ComponentType<{ className?: string }>; count: number }[] = [
   { id: 'schedule', label: 'Plan & Schedule', icon: Calendar, count: 8 },
-  { id: 'transit', label: 'Transit & Flight', icon: Plane, count: 6 },
-  { id: 'finance', label: 'Budget & Finance', icon: DollarSign, count: 7 },
-  { id: 'companion', label: 'Smart Companion', icon: ShieldAlert, count: 9 },
+  { id: 'transit', label: 'Transit & Flight', icon: Plane, count: 7 },
+  { id: 'finance', label: 'Budget & Finance', icon: DollarSign, count: 8 },
+  { id: 'companion', label: 'Smart Companion', icon: ShieldAlert, count: 11 },
 ];
 
 const ALL_TABS: TabItem[] = [
@@ -163,6 +175,7 @@ const ALL_TABS: TabItem[] = [
 
   // Transit
   { id: 'globe', label: '3D Globe & Flight Arc', icon: Globe, category: 'transit', badge: '3D', badgeColor: 'bg-amber-500 text-white', description: '3D Orthographic globe & Great Circle flight trajectory' },
+  { id: 'hopper', label: 'Flight Fare Predictor', icon: TrendingDown, category: 'transit', badge: 'ML PREDICT', badgeColor: 'bg-emerald-500 text-white', description: 'Hopper-grade 30-day airfare curve, confidence bands & wait-vs-buy verdict' },
   { id: 'radar', label: 'Flight Radar HUD', icon: Radio, category: 'transit', badge: 'LIVE', badgeColor: 'bg-sky-500 text-white', description: 'Cockpit telemetry HUD & 5-step terminal wayfinder' },
   { id: 'trains', label: 'Bullet Trains', icon: Train, category: 'transit', description: 'High-speed rail routes, passes & bookings' },
   { id: 'booking', label: 'Flights & Hotels', icon: Plane, category: 'transit', description: 'Live price aggregators & bookings' },
@@ -172,6 +185,7 @@ const ALL_TABS: TabItem[] = [
   // Finance & Logistics
   { id: 'budget', label: 'Budget Blueprint', icon: DollarSign, category: 'finance', description: 'Cost tiers & expenditure breakdowns' },
   { id: 'expenses', label: 'Group Expense Splitter', icon: Receipt, category: 'finance', badge: 'SPLIT', badgeColor: 'bg-emerald-500 text-white', description: 'Debt minimization & WhatsApp settlements' },
+  { id: 'tetris', label: 'Suitcase Tetris', icon: Luggage, category: 'finance', badge: '3D PACK', badgeColor: 'bg-purple-500 text-white', description: 'Luggage compartment packing, weight balance center & TSA scanner' },
   { id: 'vat', label: 'Tax-Free VAT Refund', icon: ShoppingBag, category: 'finance', badge: 'REFUND', badgeColor: 'bg-purple-500 text-white', description: 'Airport kiosk tax refund calculator' },
   { id: 'packing', label: 'Luggage & Weight', icon: CheckSquare, category: 'finance', description: 'Scale physics & airline baggage limits' },
   { id: 'jetlag', label: 'Jet Lag Advisor', icon: Clock, category: 'finance', description: 'Circadian melatonin & sunlight protocols' },
@@ -179,6 +193,8 @@ const ALL_TABS: TabItem[] = [
   { id: 'tip', label: 'Tipping Guide', icon: Calculator, category: 'finance', description: 'Local gratuity customs & tipping calculator' },
 
   // Smart Companion
+  { id: 'copilot', label: 'AI Voice Copilot', icon: Bot, category: 'companion', badge: 'VOICE AI', badgeColor: 'bg-indigo-600 text-white', description: 'Autonomous voice-guided flight & ground copilot with live waveforms' },
+  { id: 'nomad', label: 'Digital Nomad Hub', icon: Laptop, category: 'companion', badge: 'REMOTE', badgeColor: 'bg-sky-500 text-white', description: 'Verified Wi-Fi speed benchmarks, coworking spots & timezone overlap' },
   { id: 'mission', label: 'Mission Control HUD', icon: ShieldCheck, category: 'companion', badge: 'HUD', badgeColor: 'bg-emerald-500 text-white', description: 'Pre-flight launch readiness & electrical utility intelligence' },
   { id: 'translator', label: 'Voice & Allergy Cards', icon: Languages, category: 'companion', badge: 'VOICE', badgeColor: 'bg-rose-500 text-white', description: 'Audio speech synthesizer & dietary flashcards' },
   { id: 'safety', label: 'Safety & Scam Radar', icon: ShieldAlert, category: 'companion', badge: 'RADAR', badgeColor: 'bg-red-500 text-white', description: '1-tap emergency dialer & tourist scam alerts' },
@@ -207,6 +223,10 @@ export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPl
   const [isSaved, setIsSaved] = useState<boolean>(() => isTripSaved(initialTrip.id));
   const [currency, setCurrency] = useState<SupportedCurrency>('USD');
   const [isConciergeOpen, setIsConciergeOpen] = useState<boolean>(false);
+  const [isCopilotOpen, setIsCopilotOpen] = useState<boolean>(false);
+  const [isPricePredictorOpen, setIsPricePredictorOpen] = useState<boolean>(false);
+  const [isSuitcaseTetrisOpen, setIsSuitcaseTetrisOpen] = useState<boolean>(false);
+  const [isNomadHubOpen, setIsNomadHubOpen] = useState<boolean>(false);
   const [isOfflinePassOpen, setIsOfflinePassOpen] = useState<boolean>(false);
   const [copiedLink, setCopiedLink] = useState<boolean>(false);
   const [selectedMapLocation, setSelectedMapLocation] = useState<{
@@ -500,6 +520,15 @@ export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPl
               >
                 <Bot className="w-3.5 h-3.5 text-slate-950" />
                 <span>Ask AI Concierge</span>
+              </button>
+
+              {/* Voice Copilot Button in Hero */}
+              <button
+                onClick={() => setIsCopilotOpen(true)}
+                className="flex items-center gap-1.5 bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white font-black px-3.5 py-1.5 rounded-full shadow-lg shadow-indigo-500/20 text-xs transition-all"
+              >
+                <Mic className="w-3.5 h-3.5 text-white animate-pulse" />
+                <span>AI Voice Copilot</span>
               </button>
             </div>
 
@@ -1110,6 +1139,52 @@ export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPl
             budget={trip.budget}
           />
         )}
+
+        {/* Autonomous Voice Copilot */}
+        {activeTab === 'copilot' && (
+          <div className="bg-slate-900 border border-indigo-500/30 rounded-3xl p-8 text-white text-center shadow-2xl">
+            <div className="w-16 h-16 rounded-3xl bg-indigo-600/30 border border-indigo-500/40 flex items-center justify-center text-indigo-400 mx-auto mb-4 shadow-inner">
+              <Bot className="w-8 h-8 animate-pulse" />
+            </div>
+            <h3 className="text-2xl font-bold mb-2">Autonomous Voice & Ground Copilot</h3>
+            <p className="text-sm text-slate-300 max-w-md mx-auto mb-6 leading-relaxed">
+              Real-time voice telemetry, destination weather outfit advice, crowd-avoidance recommendations, and local ordering phrases.
+            </p>
+            <button
+              onClick={() => setIsCopilotOpen(true)}
+              className="px-6 py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm shadow-xl inline-flex items-center gap-2 transition-all hover:scale-105 active:scale-95"
+            >
+              <Mic className="w-4 h-4 animate-pulse" /> Launch Holographic Voice HUD
+            </button>
+          </div>
+        )}
+
+        {/* Hopper-Grade Flight Price Predictor */}
+        {activeTab === 'hopper' && (
+          <FlightPricePredictor
+            trip={trip}
+            isOpen={true}
+            onClose={() => handleSelectTab('itinerary')}
+          />
+        )}
+
+        {/* 3D Suitcase Tetris & TSA Rule Compliance */}
+        {activeTab === 'tetris' && (
+          <SuitcaseTetrisVisualizer
+            trip={trip}
+            isOpen={true}
+            onClose={() => handleSelectTab('itinerary')}
+          />
+        )}
+
+        {/* Digital Nomad & Remote Workation Hub */}
+        {activeTab === 'nomad' && (
+          <DigitalNomadWorkationHub
+            trip={trip}
+            isOpen={true}
+            onClose={() => handleSelectTab('itinerary')}
+          />
+        )}
       </div>
 
       {/* 4. "All 25 Travel Modules" Directory Modal */}
@@ -1262,6 +1337,40 @@ export default function TripView({ trip: initialTrip, onTripSavedChange, onNewPl
         onClose={() => setIsOfflinePassOpen(false)}
         trip={trip}
       />
+
+      {/* Autonomous Voice Copilot HUD */}
+      <AICopilotVoiceHUD
+        isOpen={isCopilotOpen}
+        onClose={() => setIsCopilotOpen(false)}
+        trip={trip}
+      />
+
+      {/* Hopper-Grade Flight Price Predictor Modal */}
+      {isPricePredictorOpen && (
+        <FlightPricePredictor
+          isOpen={isPricePredictorOpen}
+          onClose={() => setIsPricePredictorOpen(false)}
+          trip={trip}
+        />
+      )}
+
+      {/* 3D Suitcase Tetris Modal */}
+      {isSuitcaseTetrisOpen && (
+        <SuitcaseTetrisVisualizer
+          isOpen={isSuitcaseTetrisOpen}
+          onClose={() => setIsSuitcaseTetrisOpen(false)}
+          trip={trip}
+        />
+      )}
+
+      {/* Digital Nomad Workation Hub Modal */}
+      {isNomadHubOpen && (
+        <DigitalNomadWorkationHub
+          isOpen={isNomadHubOpen}
+          onClose={() => setIsNomadHubOpen(false)}
+          trip={trip}
+        />
+      )}
     </div>
   );
 }

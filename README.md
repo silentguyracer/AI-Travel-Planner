@@ -43,7 +43,7 @@ WanderAI transforms any destination, travel duration (1–14 days), group size, 
 
 ---
 
-## 🧩 All 30 Built-In Travel Modules
+## 🧩 All 34 Built-In Travel Modules
 
 ### 1. Intelligent Itinerary & Planning
 1. **Interactive Day-by-Day Timeline**: Chronological morning (09:00–12:00), afternoon (13:00–17:00), and evening schedules with category tags (*Culture, Culinary, Nature, Leisure*).
@@ -56,36 +56,40 @@ WanderAI transforms any destination, travel duration (1–14 days), group size, 
 
 ### 2. 3D Flight & Geospatial Navigation
 8. **3D Flight Path Globe (Three.js WebGL)**: Interactive globe with spherical geodesics, real flight path curves, orbital camera controls, and city pin drop animations.
-9. **Flight Radar Simulator**: Live radar sweep visualizing aircraft callsigns, altitude, groundspeed, and radar cross-section.
-10. **Interactive Google Maps + GIS Vector Engine**: Custom categorized map markers (Sightseeing, Dining, Activities) with polyline walking paths and fallback coordinate canvas.
-11. **High-Speed Rail & Bullet Train Explorer**: Rail network planner covering Shinkansen, TGV, Frecciarossa, and Eurostar with JR Pass & Eurail pass cost calculations.
-12. **Inter-Stop Turn-by-Turn Transit Matrix**: Distance, walking duration, subway line options, and taxi fare estimates between every consecutive stop.
-13. **Interactive Destination Map Picker**: Click anywhere on a world map modal to set destinations and inspect regional highlights.
+9. **Hopper-Grade Flight Price Predictor**: 30-day historical and projected fare curve with confidence band canvas, volatility score, and "Wait vs Buy Now" machine learning verdict.
+10. **Flight Radar Simulator**: Live radar sweep visualizing aircraft callsigns, altitude, groundspeed, and radar cross-section.
+11. **Interactive Google Maps + GIS Vector Engine**: Custom categorized map markers (Sightseeing, Dining, Activities) with polyline walking paths and fallback coordinate canvas.
+12. **High-Speed Rail & Bullet Train Explorer**: Rail network planner covering Shinkansen, TGV, Frecciarossa, and Eurostar with JR Pass & Eurail pass cost calculations.
+13. **Inter-Stop Turn-by-Turn Transit Matrix**: Distance, walking duration, subway line options, and taxi fare estimates between every consecutive stop.
+14. **Interactive Destination Map Picker**: Click anywhere on a world map modal to set destinations and inspect regional highlights.
 
-### 3. Finance, Budget & Taxes
-14. **Real-Time Travel Expense Tracker**: Category breakdowns (*Food, Transit, Lodging, Activities, Shopping*) with budget utilization progress bars.
-15. **Group Bill Splitter & "Who Owes Who" Settler**: Greedy debt minimization algorithm simplifying webs of group expenses into minimal payments with 1-click WhatsApp export.
-16. **Live Multi-Currency Converter & Ticker**: Real-time conversion across 12 world currencies (USD, EUR, GBP, JPY, INR, AUD, CAD, CHF, SGD, AED, etc.).
-17. **VAT / Tax-Free Shopping Refund Calculator**: Country-specific VAT refund rates, minimum spend threshold checks, and airport customs stamp checklists.
-18. **Local Tipping & Etiquette Advisor**: Country-specific gratuity standards for restaurants, bars, taxis, bellhops, and tour guides.
+### 3. Finance, Budget & Luggage Logistics
+15. **3D Suitcase Tetris & Center-of-Gravity Balance**: Interactive compartment luggage packer (Upper Mesh, Heavy Basin, Tech Sleeve, Toiletry Pouch) with tip-over balance physics and TSA 3-1-1 compliance checks.
+16. **Real-Time Travel Expense Tracker**: Category breakdowns (*Food, Transit, Lodging, Activities, Shopping*) with budget utilization progress bars.
+17. **Group Bill Splitter & "Who Owes Who" Settler**: Greedy debt minimization algorithm simplifying webs of group expenses into minimal payments with 1-click WhatsApp export.
+18. **Live Multi-Currency Converter & Ticker**: Real-time conversion across 12 world currencies (USD, EUR, GBP, JPY, INR, AUD, CAD, CHF, SGD, AED, etc.).
+19. **VAT / Tax-Free Shopping Refund Calculator**: Country-specific VAT refund rates, minimum spend threshold checks, and airport customs stamp checklists.
+20. **Local Tipping & Etiquette Advisor**: Country-specific gratuity standards for restaurants, bars, taxis, bellhops, and tour guides.
 
 ### 4. Traveler Safety & Emergency Hub
-19. **Traveler Safety Shield & Scam Radar**: Verified intelligence database of top tourist scams (e.g. fake petitions, taxi meter refusal, nightlife touts) with threat meters and counter-tactics.
-20. **One-Tap Emergency Dialing**: Instant `tel:` links to local Police, Ambulance, Fire Department, and universal GSM helpline numbers.
-21. **Visa & Entry Requirements Advisor**: Passport validity rules, Schengen 90/180-day calculators, e-Visa / ETA requirements, and mandatory tourist cards.
-22. **Severe Allergy & Dietary Flashcards**: High-contrast, full-screen cards in local characters for peanut allergies, celiac/gluten-free, strict vegetarian, and taxi drivers.
+21. **Traveler Safety Shield & Scam Radar**: Verified intelligence database of top tourist scams (e.g. fake petitions, taxi meter refusal, nightlife touts) with threat meters and counter-tactics.
+22. **One-Tap Emergency Dialing**: Instant `tel:` links to local Police, Ambulance, Fire Department, and universal GSM helpline numbers.
+23. **Visa & Entry Requirements Advisor**: Passport validity rules, Schengen 90/180-day calculators, e-Visa / ETA requirements, and mandatory tourist cards.
+24. **Severe Allergy & Dietary Flashcards**: High-contrast, full-screen cards in local characters for peanut allergies, celiac/gluten-free, strict vegetarian, and taxi drivers.
 
 ### 5. Smart Companion & Sensory Audio
-23. **AI Concierge Live Chat**: Floating real-time travel assistant answering local questions, cultural nuances, and packing advice.
-24. **Native Speech Audio Tour Guide**: Multi-lingual browser audio tour guide with speed controls (0.65x study speed vs 1.0x native).
-25. **Ambient Soundscape Generator**: Procedural background audio players (Rain on Window, Zen Temple Bells, Cafe Ambient, Ocean Waves).
-26. **Avoid-the-Crowds & Foot-Traffic Radar**: Hourly crowd density heatmaps (06:00 to 23:00) with best arrival windows to bypass long queues.
-27. **Golden Hour & Astro-Photo Radar**: Solar ephemeris calculating Sunrise, Morning Golden Hour, Solar Noon, Sunset, and Blue Hour with lens recommendations.
+25. **Autonomous AI Flight & Ground Copilot HUD**: Floating voice-enabled copilot with live audio visualizer waveforms, speech synthesis, microphone recognition, and contextual itinerary intelligence.
+26. **Digital Nomad & Workation Hub**: Verified Wi-Fi speed and latency benchmarks, top laptop-friendly cafes, dual-clock timezone overlap synchronizer, and electrical plug adapter guides.
+27. **AI Concierge Live Chat**: Floating real-time travel assistant answering local questions, cultural nuances, and packing advice.
+28. **Native Speech Audio Tour Guide**: Multi-lingual browser audio tour guide with speed controls (0.65x study speed vs 1.0x native).
+29. **Ambient Soundscape Generator**: Procedural background audio players (Rain on Window, Zen Temple Bells, Cafe Ambient, Ocean Waves).
+30. **Avoid-the-Crowds & Foot-Traffic Radar**: Hourly crowd density heatmaps (06:00 to 23:00) with best arrival windows to bypass long queues.
+31. **Golden Hour & Astro-Photo Radar**: Solar ephemeris calculating Sunrise, Morning Golden Hour, Solar Noon, Sunset, and Blue Hour with lens recommendations.
 
 ### 6. Export, Sharing & Offline Print
-28. **Offline Pocket Travel Booklet**: Clean printable CSS layout formatted for A4 paper folding with emergency contacts, taxi cards, and schedules.
-29. **Luggage Weight & Baggage Calculator**: Visual airline scale checker against cabin and checked limits (23kg / 32kg) with excess baggage fee alerts.
-30. **Digital Boarding Pass & URL Hash Compression**: Airline-style boarding pass card with QR code, plus instant URL hash sharing (no database login required).
+32. **Offline Pocket Travel Booklet**: Clean printable CSS layout formatted for A4 paper folding with emergency contacts, taxi cards, and schedules.
+33. **Luggage Weight & Baggage Calculator**: Visual airline scale checker against cabin and checked limits (23kg / 32kg) with excess baggage fee alerts.
+34. **Digital Boarding Pass & URL Hash Compression**: Airline-style boarding pass card with QR code, plus instant URL hash sharing (no database login required).
 
 ---
 
