@@ -10,19 +10,19 @@ import SampleTripsModal from '@/components/SampleTripsModal';
 import { TripGenerationRequest, TripPlan } from '@/types/travel';
 import { getSavedTrips } from '@/lib/storage';
 import { SAMPLE_TRIPS } from '@/lib/sampleTrips';
-import { Sparkles, MapPin, Compass, AlertCircle, Calendar, Globe, Plane, Star, ArrowRight } from 'lucide-react';
+import { Sparkles, MapPin, Compass, AlertCircle, Calendar, Globe, Plane, Star, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { decodeTripFromUrl } from '@/lib/shareUrl';
 import InteractiveBackground from '@/components/InteractiveBackground';
 import QuickTourModal from '@/components/QuickTourModal';
 import { animateStaggerCards, attachMagneticHover } from '@/lib/gsapAnimations';
 
 const HERO_DESTINATIONS = [
-  { name: 'Tokyo', country: 'Japan', emoji: '🗼', gradient: 'from-rose-500 to-pink-600', img: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=400&q=80' },
-  { name: 'Paris', country: 'France', emoji: '🥐', gradient: 'from-amber-400 to-orange-500', img: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400&q=80' },
-  { name: 'Bali', country: 'Indonesia', emoji: '🌴', gradient: 'from-emerald-500 to-teal-600', img: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=400&q=80' },
-  { name: 'Dubai', country: 'UAE', emoji: '🏙️', gradient: 'from-sky-500 to-indigo-600', img: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=400&q=80' },
-  { name: 'Santorini', country: 'Greece', emoji: '⛵', gradient: 'from-blue-400 to-cyan-500', img: 'https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=400&q=80' },
-  { name: 'New York', country: 'USA', emoji: '🗽', gradient: 'from-violet-500 to-purple-600', img: 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=400&q=80' },
+  { name: 'Tokyo', country: 'Japan', emoji: '🗼', days: 5, gradient: 'from-rose-500 to-pink-600', img: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=400&q=80', highlight: 'Shibuya Crossing & Michelin Ramen' },
+  { name: 'Paris', country: 'France', emoji: '🥐', days: 4, gradient: 'from-amber-400 to-orange-500', img: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400&q=80', highlight: 'Eiffel Lights & Seine Sunsets' },
+  { name: 'Bali', country: 'Indonesia', emoji: '🌴', days: 6, gradient: 'from-emerald-500 to-teal-600', img: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=400&q=80', highlight: 'Ubud Waterfalls & Beach Sunsets' },
+  { name: 'Dubai', country: 'UAE', emoji: '🏙️', days: 5, gradient: 'from-sky-500 to-indigo-600', img: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=400&q=80', highlight: 'Burj Khalifa & Desert Safari' },
+  { name: 'Santorini', country: 'Greece', emoji: '⛵', days: 4, gradient: 'from-blue-400 to-cyan-500', img: 'https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=400&q=80', highlight: 'Oia Caldera & Catamaran Sailing' },
+  { name: 'New York', country: 'USA', emoji: '🗽', days: 5, gradient: 'from-violet-500 to-purple-600', img: 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=400&q=80', highlight: 'Broadway & Central Park Strolls' },
 ];
 
 const STATS = [
@@ -42,6 +42,15 @@ export default function Home() {
   const [isSampleModalOpen, setIsSampleModalOpen] = useState<boolean>(false);
   const [isTourOpen, setIsTourOpen] = useState<boolean>(false);
   const [activeDestIdx, setActiveDestIdx] = useState(0);
+  const [prefillDestination, setPrefillDestination] = useState<{ destination: string; duration?: number } | null>(null);
+
+  const handleSelectHeroDestination = (dest: typeof HERO_DESTINATIONS[0]) => {
+    setPrefillDestination({
+      destination: `${dest.name}, ${dest.country}`,
+      duration: dest.days,
+    });
+    document.getElementById('planner')?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   const featuresGridRef = useRef<HTMLDivElement | null>(null);
 
@@ -263,17 +272,50 @@ export default function Home() {
                           />
                           {/* Overlay */}
                           <div className={`absolute inset-0 bg-gradient-to-t ${dest.gradient} opacity-60`} />
-                          {/* Text */}
+                          {/* Text & Interactive 1-Click Plan Button */}
                           <div className="absolute bottom-0 left-0 right-0 p-5">
                             <div className="text-3xl mb-1">{dest.emoji}</div>
                             <div className="text-white font-black text-xl leading-tight">{dest.name}</div>
-                            <div className="text-white/70 text-sm font-medium">{dest.country}</div>
+                            <div className="text-white/70 text-xs font-medium">{dest.country} • {dest.highlight}</div>
+
+                            {isActive && (
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleSelectHeroDestination(dest);
+                                }}
+                                className="mt-3 w-full py-2 px-3 rounded-xl bg-white/20 hover:bg-white/30 text-white font-extrabold text-xs flex items-center justify-center gap-1.5 backdrop-blur-md border border-white/30 shadow-lg transition-all hover:scale-102 active:scale-98 cursor-pointer"
+                              >
+                                <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                                <span>Plan {dest.days} Days in {dest.name}</span>
+                                <ArrowRight className="w-3.5 h-3.5" />
+                              </button>
+                            )}
                           </div>
                           {/* Shimmer border */}
                           <div className={`absolute inset-0 rounded-3xl ring-2 ${isActive ? 'ring-white/30' : 'ring-transparent'} transition-all duration-700`} />
                         </div>
                       );
                     })}
+
+                    {/* Interactive Carousel Arrow Controls */}
+                    <button
+                      type="button"
+                      onClick={() => setActiveDestIdx(prev => (prev - 1 + HERO_DESTINATIONS.length) % HERO_DESTINATIONS.length)}
+                      className="absolute -left-3.5 top-1/2 -translate-y-1/2 z-30 p-2 rounded-full bg-slate-900/80 hover:bg-slate-800 text-white border border-white/10 shadow-lg transition-all hover:scale-110 cursor-pointer backdrop-blur-sm"
+                      title="Previous Destination"
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setActiveDestIdx(prev => (prev + 1) % HERO_DESTINATIONS.length)}
+                      className="absolute -right-3.5 top-1/2 -translate-y-1/2 z-30 p-2 rounded-full bg-slate-900/80 hover:bg-slate-800 text-white border border-white/10 shadow-lg transition-all hover:scale-110 cursor-pointer backdrop-blur-sm"
+                      title="Next Destination"
+                    >
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
 
                     {/* Dot indicators */}
                     <div className="absolute -bottom-8 left-0 right-0 flex justify-center gap-1.5">
@@ -313,6 +355,7 @@ export default function Home() {
                     onGenerate={handleGenerateTrip}
                     isLoading={isLoading}
                     onSelectSampleTrip={handleSelectSample}
+                    prefillDestination={prefillDestination}
                   />
                 </div>
               </div>

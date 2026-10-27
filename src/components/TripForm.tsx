@@ -30,12 +30,18 @@ import {
 import { getUserSettings } from '@/lib/storage';
 import { WORLD_CITIES_DATABASE, WorldCity } from '@/lib/worldCities';
 import DestinationMapPickerModal from '@/components/DestinationMapPickerModal';
+import TravelVibeQuizModal, { VibeQuizResult } from '@/components/TravelVibeQuizModal';
+import { playPop, playChime, playWhoosh, toggleAudioMute, isMuted } from '@/lib/interactiveAudio';
+import { getDestinationSnapshot, DestinationSnapshot } from '@/lib/destinationSnapshots';
+import { Volume2, VolumeX, TrendingUp, HelpCircle, ChevronDown, ChevronUp, Sliders } from 'lucide-react';
+
 import { animateStaggerCards, animateSpringPop, attachMagneticHover } from '@/lib/gsapAnimations';
 
 interface TripFormProps {
   onGenerate: (data: TripGenerationRequest) => Promise<void>;
   isLoading: boolean;
   onSelectSampleTrip: (sampleId: string) => void;
+  prefillDestination?: { destination: string; duration?: number } | null;
 }
 
 interface CitySuggestion {
@@ -190,7 +196,91 @@ export const STARTER_VACATION_TEMPLATES: VacationTemplate[] = [
   },
 ];
 
-export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip }: TripFormProps) {
+
+export interface TravelExperienceMode {
+  id: string;
+  name: string;
+  icon: string;
+  tagline: string;
+  budget: BudgetTier;
+  companion: CompanionType;
+  styles: TravelStyle[];
+  notice: string;
+}
+
+export const TRAVEL_EXPERIENCE_MODES: TravelExperienceMode[] = [
+  {
+    id: 'holiday',
+    name: 'Complete Holiday',
+    icon: '🏖️',
+    tagline: 'Best sights & leisurely meals',
+    budget: 'moderate',
+    companion: 'couple',
+    styles: ['cultural', 'foodie', 'relaxed'],
+    notice: 'Classic balanced getaway curated with iconic landmarks, authentic dining, and relaxed evenings.',
+  },
+  {
+    id: 'backpacker',
+    name: 'Solo Backpacker',
+    icon: '🎒',
+    tagline: 'Hostels, transit & street eats',
+    budget: 'economy',
+    companion: 'solo',
+    styles: ['adventure', 'nature', 'cultural'],
+    notice: 'Optimized for smart budgets, local metro transit, vibrant street markets, and spontaneous exploration.',
+  },
+  {
+    id: 'honeymoon',
+    name: 'Couples & Romance',
+    icon: '💑',
+    tagline: 'Boutique stays & sunsets',
+    budget: 'luxury',
+    companion: 'couple',
+    styles: ['relaxed', 'foodie', 'photography'],
+    notice: 'Curated with intimate candlelight dinners, golden hour view terraces, scenic walks, and romantic charm.',
+  },
+  {
+    id: 'family',
+    name: 'Family & Kids',
+    icon: '👨‍👩‍👧',
+    tagline: 'Fun parks & spacious pace',
+    budget: 'moderate',
+    companion: 'family',
+    styles: ['cultural', 'nature', 'relaxed'],
+    notice: 'Child-friendly pacing with stroller-friendly routes, amusement spots, and comfortable rest breaks.',
+  },
+  {
+    id: 'luxury',
+    name: 'Luxury & VIP',
+    icon: '💎',
+    tagline: '5-star suites & fine dining',
+    budget: 'luxury',
+    companion: 'couple',
+    styles: ['shopping', 'foodie', 'relaxed'],
+    notice: 'Premium luxury experience: 5-star hospitality, private transfers, and Michelin-starred dining recommendations.',
+  },
+  {
+    id: 'scenic-rail',
+    name: 'Scenic Rail & Nature',
+    icon: '🚆',
+    tagline: 'Panoramic trains & trails',
+    budget: 'moderate',
+    companion: 'friends',
+    styles: ['nature', 'adventure', 'photography'],
+    notice: 'Focuses on alpine trains, scenic high-speed lines, viewpoint terraces, and scenic nature day-trips.',
+  },
+];
+
+export const CURRENCY_LIST = [
+  { code: 'USD', symbol: '$', rate: 1.0, flag: '🇺🇸', label: 'USD ($)' },
+  { code: 'INR', symbol: '₹', rate: 86.0, flag: '🇮🇳', label: 'INR (₹)' },
+  { code: 'EUR', symbol: '€', rate: 0.92, flag: '🇪🇺', label: 'EUR (€)' },
+  { code: 'GBP', symbol: '£', rate: 0.79, flag: '🇬🇧', label: 'GBP (£)' },
+  { code: 'AED', symbol: 'AED ', rate: 3.67, flag: '🇦🇪', label: 'AED (د.إ)' },
+  { code: 'JPY', symbol: '¥', rate: 152.0, flag: '🇯🇵', label: 'JPY (¥)' },
+];
+
+export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip, prefillDestination }: TripFormProps) {
   const [destination, setDestination] = useState('Tokyo');
   const [budget, setBudget] = useState<BudgetTier>('moderate');
   const [companion, setCompanion] = useState<CompanionType>('couple');
@@ -198,6 +288,12 @@ export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip }: 
   const [specificInterests, setSpecificInterests] = useState('');
   const [loadingStep, setLoadingStep] = useState(0);
   const [isMapPickerOpen, setIsMapPickerOpen] = useState(false);
+  const [isVibeQuizOpen, setIsVibeQuizOpen] = useState(false);
+  const [activeModeId, setActiveModeId] = useState<string>('holiday');
+  const [selectedCurrency, setSelectedCurrency] = useState(CURRENCY_LIST[0]);
+  const [showCostBreakdown, setShowCostBreakdown] = useState(false);
+  const [isAudioOn, setIsAudioOn] = useState(!isMuted());
+
   const [activeTemplateId, setActiveTemplateId] = useState<string | null>(null);
 
   // GSAP Animation Refs
@@ -284,6 +380,83 @@ export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip }: 
     const days = Math.round(diffTime / (1000 * 60 * 60 * 24)) + 1;
     return Math.max(days, 1);
   }, [startDate, endDate]);
+
+  // Listen to external prefill (e.g. from hero destination cards)
+  useEffect(() => {
+    if (prefillDestination && prefillDestination.destination) {
+      setDestination(prefillDestination.destination);
+      if (prefillDestination.duration) {
+        setDuration(prefillDestination.duration);
+        if (startDate) {
+          const [y, m, d] = startDate.split('-').map(Number);
+          const end = new Date(y, m - 1, d + prefillDestination.duration - 1);
+          setEndDate(end.toISOString().split('T')[0]);
+        }
+      }
+      playChime();
+      setShowAutocomplete(false);
+    }
+  }, [prefillDestination, startDate]);
+
+  // Handle MakeMyTrip-Style Mode selection
+  const handleSelectTravelMode = (mode: TravelExperienceMode) => {
+    playWhoosh();
+    setActiveModeId(mode.id);
+    setBudget(mode.budget);
+    setCompanion(mode.companion);
+    setSelectedStyles(mode.styles);
+  };
+
+  // Handle Vibe Quiz apply
+  const handleApplyVibeQuiz = (res: VibeQuizResult) => {
+    setDestination(res.destination);
+    setDuration(res.duration);
+    setBudget(res.budget);
+    setCompanion(res.companion);
+    setSelectedStyles(res.styles);
+    setSpecificInterests(res.interests);
+    if (startDate) {
+      const [y, m, d] = startDate.split('-').map(Number);
+      const end = new Date(y, m - 1, d + res.duration - 1);
+      setEndDate(end.toISOString().split('T')[0]);
+    }
+    playChime();
+  };
+
+  // Query destination intelligence snapshot
+  const destinationSnapshot = useMemo(() => getDestinationSnapshot(destination), [destination]);
+
+  // Real-time Dynamic Trip Cost Calculation
+  const activeDays = dateMode === 'calendar' ? calculatedDuration : duration;
+  const estimatedCosts = useMemo(() => {
+    const basePerNightStay = budget === 'economy' ? 65 : budget === 'moderate' ? 140 : 360;
+    const baseDailyFoodSightseeing = budget === 'economy' ? 35 : budget === 'moderate' ? 75 : 190;
+    const baseFlightTransport = budget === 'economy' ? 360 : budget === 'moderate' ? 580 : 1150;
+
+    const companionMultiplier =
+      companion === 'solo' ? 1.0 : companion === 'couple' ? 1.7 : companion === 'family' ? 2.8 : 2.3;
+
+    const stayTotalUsd = Math.round(
+      basePerNightStay * Math.max(activeDays - 1, 1) * (companion === 'solo' ? 1 : companion === 'couple' ? 1.1 : 1.8)
+    );
+    const foodTotalUsd = Math.round(baseDailyFoodSightseeing * activeDays * companionMultiplier);
+    const flightTotalUsd = Math.round(baseFlightTransport * companionMultiplier);
+    const totalUsd = stayTotalUsd + foodTotalUsd + flightTotalUsd;
+
+    const rate = selectedCurrency.rate;
+    const formatVal = (val: number) => {
+      const converted = Math.round(val * rate);
+      return `${selectedCurrency.symbol}${converted.toLocaleString()}`;
+    };
+
+    return {
+      flight: formatVal(flightTotalUsd),
+      stay: formatVal(stayTotalUsd),
+      food: formatVal(foodTotalUsd),
+      total: formatVal(totalUsd),
+      perDay: formatVal(Math.round(totalUsd / Math.max(activeDays, 1))),
+    };
+  }, [budget, companion, activeDays, selectedCurrency]);
 
   const handleStartDateChange = (val: string) => {
     setStartDate(val);
@@ -576,6 +749,71 @@ export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip }: 
         </div>
       </div>
 
+      {/* MakeMyTrip-Style 6 Category Mode Navigation Tabs */}
+      <div className="mb-8 pt-2">
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-xs font-black uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+            <span>Curated Travel Experiences</span>
+          </span>
+          {/* Sound FX Toggle Pill */}
+          <button
+            type="button"
+            onClick={() => {
+              const muted = toggleAudioMute();
+              setIsAudioOn(!muted);
+              if (!muted) playPop();
+            }}
+            className={`text-[11px] font-bold px-3 py-1 rounded-full border transition-all flex items-center gap-1.5 cursor-pointer ${
+              isAudioOn
+                ? 'bg-indigo-500/15 border-indigo-500/30 text-indigo-300 hover:bg-indigo-500/25'
+                : 'bg-white/5 border-white/10 text-slate-400 hover:text-white'
+            }`}
+            title="Toggle interactive sound effects"
+          >
+            {isAudioOn ? <Volume2 className="w-3.5 h-3.5 text-indigo-400" /> : <VolumeX className="w-3.5 h-3.5" />}
+            <span>{isAudioOn ? 'Sound: ON' : 'Sound: OFF'}</span>
+          </button>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+          {TRAVEL_EXPERIENCE_MODES.map((mode) => {
+            const isSelected = activeModeId === mode.id;
+            return (
+              <button
+                key={mode.id}
+                type="button"
+                onClick={() => handleSelectTravelMode(mode)}
+                className={`p-3 rounded-2xl border text-left transition-all duration-200 cursor-pointer flex flex-col justify-between group ${
+                  isSelected
+                    ? 'bg-gradient-to-b from-indigo-600/30 to-violet-600/20 border-indigo-500 ring-2 ring-indigo-500/30 shadow-lg shadow-indigo-950/50'
+                    : 'bg-white/5 hover:bg-white/[0.08] border-white/10 text-slate-300 hover:border-white/20'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-2xl group-hover:scale-110 transition-transform">{mode.icon}</span>
+                  {isSelected && <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />}
+                </div>
+                <div className="mt-2">
+                  <div className={`font-black text-xs leading-snug ${isSelected ? 'text-white' : 'text-slate-200'}`}>
+                    {mode.name}
+                  </div>
+                  <div className="text-[10px] text-slate-400 mt-0.5 truncate">{mode.tagline}</div>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Active Mode Notice Banner */}
+        {activeModeId && (
+          <div className="mt-3 px-3.5 py-2 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-200 text-xs flex items-center gap-2 animate-in fade-in duration-300">
+            <Sparkles className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+            <span>{TRAVEL_EXPERIENCE_MODES.find(m => m.id === activeModeId)?.notice}</span>
+          </div>
+        )}
+      </div>
+
       <form onSubmit={handleSubmit} className="relative space-y-7">
         {/* 1. Worldwide Destination Search Input (100,000+ Global Cities) */}
         <div className="space-y-2 relative">
@@ -817,6 +1055,48 @@ export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip }: 
             </div>
           )}
 
+
+          {/* Live Destination Intelligence Snapshot */}
+          {destinationSnapshot && (
+            <div className="p-3.5 rounded-2xl bg-gradient-to-r from-indigo-950/60 via-slate-900/60 to-violet-950/60 border border-indigo-500/30 text-xs text-slate-300 backdrop-blur-sm animate-in fade-in slide-in-from-top-2 duration-300">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/10 pb-2 mb-2">
+                <div className="flex items-center gap-2">
+                  <span className="font-extrabold text-white text-sm">{destinationSnapshot.city}</span>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold">
+                    {destinationSnapshot.bestMonths}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    playPop();
+                    setDuration(destinationSnapshot.idealDuration);
+                    if (startDate) {
+                      const [y, m, d] = startDate.split('-').map(Number);
+                      const end = new Date(y, m - 1, d + destinationSnapshot.idealDuration - 1);
+                      setEndDate(end.toISOString().split('T')[0]);
+                    }
+                  }}
+                  className="px-2.5 py-1 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-[11px] transition-colors flex items-center gap-1 self-start sm:self-auto cursor-pointer"
+                >
+                  <span>⚡ Snap to Ideal {destinationSnapshot.idealDuration} Days</span>
+                </button>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
+                <div>
+                  <strong className="text-slate-200">Weather & Season:</strong> {destinationSnapshot.weather}
+                </div>
+                <div>
+                  <strong className="text-slate-200">Currency & Transit:</strong> {destinationSnapshot.currency}
+                </div>
+              </div>
+              <p className="mt-2 text-[11px] text-amber-200/90 flex items-start gap-1">
+                <span className="shrink-0">💡</span>
+                <span><strong>Pro Tip:</strong> {destinationSnapshot.proTip}</span>
+              </p>
+            </div>
+          )}
+
           {/* Trending Global Cities Chips & Map Quick-Button */}
           <div className="flex items-center gap-1.5 overflow-x-auto pt-1 pb-1 scrollbar-none">
             <button
@@ -826,6 +1106,18 @@ export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip }: 
             >
               <span>🗺️</span>
               <span>Open World Map</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                playPop();
+                setIsVibeQuizOpen(true);
+              }}
+              className="text-xs px-3.5 py-1 rounded-xl bg-gradient-to-r from-violet-600 via-indigo-600 to-sky-600 hover:from-violet-500 hover:to-sky-500 text-white font-extrabold flex items-center gap-1.5 shadow-sm transition-all shrink-0 cursor-pointer hover:scale-105 active:scale-95 ring-1 ring-violet-400/30"
+              title="Take a 3-question quiz to find your dream vacation!"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
+              <span>🎯 Match My Vibe</span>
             </button>
             <button
               type="button"
@@ -1026,6 +1318,94 @@ export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip }: 
           )}
         </div>
 
+
+        {/* Dynamic Real-Time Fare & Trip Cost Estimator */}
+        <div className="p-4 rounded-2xl bg-gradient-to-br from-indigo-950/40 via-slate-900/40 to-slate-900/60 border border-indigo-500/30 space-y-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <div className="flex items-center gap-2">
+                <DollarSign className="w-4 h-4 text-emerald-400" />
+                <span className="font-extrabold text-white text-xs uppercase tracking-wider">
+                  Real-Time Estimated Trip Budget
+                </span>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                  Live AI Index
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-400 mt-0.5">
+                Dynamic estimation for {activeDays} days ({companion} traveler{companion === 'solo' ? '' : 's'}) at {budget} tier
+              </p>
+            </div>
+
+            {/* Currency Switcher Pills */}
+            <div className="flex items-center gap-1 bg-white/5 p-1 rounded-xl border border-white/10 overflow-x-auto scrollbar-none">
+              {CURRENCY_LIST.map((cur) => {
+                const isCur = selectedCurrency.code === cur.code;
+                return (
+                  <button
+                    key={cur.code}
+                    type="button"
+                    onClick={() => {
+                      playPop();
+                      setSelectedCurrency(cur);
+                    }}
+                    className={`px-2 py-0.5 rounded-lg text-[10px] font-bold transition-all flex items-center gap-1 cursor-pointer shrink-0 ${
+                      isCur
+                        ? 'bg-indigo-600 text-white shadow-xs'
+                        : 'text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    <span>{cur.flag}</span>
+                    <span>{cur.code}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Cost Highlights Row */}
+          <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
+            <div className="flex items-baseline gap-2">
+              <span className="text-2xl sm:text-3xl font-black text-emerald-400 tracking-tight">
+                {estimatedCosts.total}
+              </span>
+              <span className="text-xs text-slate-400 font-medium">
+                (≈ {estimatedCosts.perDay} / day)
+              </span>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                playPop();
+                setShowCostBreakdown(!showCostBreakdown);
+              }}
+              className="text-xs font-bold text-indigo-300 hover:text-indigo-200 flex items-center gap-1 transition-colors cursor-pointer"
+            >
+              <span>{showCostBreakdown ? 'Hide Breakdown' : 'View Fare Breakdown'}</span>
+              {showCostBreakdown ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+            </button>
+          </div>
+
+          {/* Collapsible Breakdown */}
+          {showCostBreakdown && (
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-2 border-t border-white/10 text-xs animate-in fade-in duration-200">
+              <div className="p-2.5 rounded-xl bg-white/5 border border-white/5">
+                <span className="text-slate-400 block text-[10px] uppercase font-bold">✈️ Flights & Transit</span>
+                <span className="font-bold text-white text-sm">{estimatedCosts.flight}</span>
+              </div>
+              <div className="p-2.5 rounded-xl bg-white/5 border border-white/5">
+                <span className="text-slate-400 block text-[10px] uppercase font-bold">🏨 Stays ({Math.max(activeDays - 1, 1)} Nights)</span>
+                <span className="font-bold text-white text-sm">{estimatedCosts.stay}</span>
+              </div>
+              <div className="p-2.5 rounded-xl bg-white/5 border border-white/5">
+                <span className="text-slate-400 block text-[10px] uppercase font-bold">🍽️ Dining & Sightseeing</span>
+                <span className="font-bold text-white text-sm">{estimatedCosts.food}</span>
+              </div>
+            </div>
+          )}
+        </div>
+
         {/* 3. Budget Tier */}
         <div className="space-y-2">
           <label className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
@@ -1163,6 +1543,13 @@ export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip }: 
           setShowAutocomplete(false);
         }}
         initialDestination={destination}
+      />
+
+      {/* Interactive 3-Question Travel Vibe Matcher Modal */}
+      <TravelVibeQuizModal
+        isOpen={isVibeQuizOpen}
+        onClose={() => setIsVibeQuizOpen(false)}
+        onApplyResult={handleApplyVibeQuiz}
       />
     </div>
   );
