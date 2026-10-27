@@ -141,4 +141,5 @@ export interface TripGenerationRequest {
   travelStyles?: TravelStyle[];
   specificInterests?: string;
   customApiKey?: string;
+  originCity?: string;
 }

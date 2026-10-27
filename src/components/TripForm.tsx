@@ -8,6 +8,7 @@ import {
   TripGenerationRequest
 } from '@/types/travel';
 import {
+  Plane,
   MapPin,
   Calendar as CalendarIcon,
   DollarSign,
@@ -33,6 +34,7 @@ import DestinationMapPickerModal from '@/components/DestinationMapPickerModal';
 import TravelVibeQuizModal, { VibeQuizResult } from '@/components/TravelVibeQuizModal';
 import { playPop, playChime, playWhoosh, toggleAudioMute, isMuted } from '@/lib/interactiveAudio';
 import { getDestinationSnapshot, DestinationSnapshot } from '@/lib/destinationSnapshots';
+import { computeFlightTelemetry, FlightTelemetry } from '@/lib/flightTelemetry';
 import { Volume2, VolumeX, TrendingUp, HelpCircle, ChevronDown, ChevronUp, Sliders } from 'lucide-react';
 
 import { animateStaggerCards, animateSpringPop, attachMagneticHover } from '@/lib/gsapAnimations';
@@ -271,6 +273,26 @@ export const TRAVEL_EXPERIENCE_MODES: TravelExperienceMode[] = [
   },
 ];
 
+
+export const COMMON_ORIGIN_CITIES = [
+  { code: 'DEL', city: 'New Delhi', country: 'India', flag: '🇮🇳' },
+  { code: 'BOM', city: 'Mumbai', country: 'India', flag: '🇮🇳' },
+  { code: 'BLR', city: 'Bengaluru', country: 'India', flag: '🇮🇳' },
+  { code: 'JFK', city: 'New York', country: 'USA', flag: '🇺🇸' },
+  { code: 'LHR', city: 'London', country: 'UK', flag: '🇬🇧' },
+  { code: 'DXB', city: 'Dubai', country: 'UAE', flag: '🇦🇪' },
+  { code: 'SIN', city: 'Singapore', country: 'Singapore', flag: '🇸🇬' },
+  { code: 'SFO', city: 'San Francisco', country: 'USA', flag: '🇺🇸' },
+];
+
+export const SPECIAL_FARE_PASSES = [
+  { id: 'regular', label: 'Regular Tourist', icon: '🎫', note: 'Standard commercial tourist itinerary' },
+  { id: 'student', label: 'Student Pass', icon: '🎓', note: 'Free museum days, youth hostel vibes & student discounts' },
+  { id: 'senior', label: 'Senior Citizen', icon: '🧓', note: 'Elevator-friendly, minimum stairs & leisurely rest breaks' },
+  { id: 'workcation', label: 'Workcation Nomad', icon: '💻', note: 'Fast WiFi cafes (100+ Mbps), quiet laptop zones & coworkings' },
+  { id: 'stroller', label: 'Family with Stroller', icon: '👶', note: 'Wide flat sidewalks, kid-safe parks & family rest areas' },
+];
+
 export const CURRENCY_LIST = [
   { code: 'USD', symbol: '$', rate: 1.0, flag: '🇺🇸', label: 'USD ($)' },
   { code: 'INR', symbol: '₹', rate: 86.0, flag: '🇮🇳', label: 'INR (₹)' },
@@ -282,6 +304,24 @@ export const CURRENCY_LIST = [
 
 export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip, prefillDestination }: TripFormProps) {
   const [destination, setDestination] = useState('Tokyo');
+  const [originCity, setOriginCity] = useState('New Delhi (DEL)');
+  const [selectedFarePass, setSelectedFarePass] = useState('regular');
+  const [showFlightRadarDetails, setShowFlightRadarDetails] = useState(false);
+
+  // Compute live flight telemetry between Origin and Destination
+  const flightTelemetry = useMemo(
+    () => computeFlightTelemetry(originCity, destination),
+    [originCity, destination]
+  );
+
+  // Swap Origin and Destination
+  const handleSwapRoute = () => {
+    playWhoosh();
+    const temp = originCity;
+    setOriginCity(destination);
+    setDestination(temp);
+  };
+
   const [budget, setBudget] = useState<BudgetTier>('moderate');
   const [companion, setCompanion] = useState<CompanionType>('couple');
   const [selectedStyles, setSelectedStyles] = useState<TravelStyle[]>(['cultural', 'foodie', 'photography']);
@@ -639,6 +679,13 @@ export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip, pr
     }, 1200);
 
     try {
+      const passNote = SPECIAL_FARE_PASSES.find(p => p.id === selectedFarePass)?.note || '';
+      const combinedInterests = [
+        specificInterests.trim(),
+        selectedFarePass !== 'regular' ? `Special Pass: ${passNote}` : '',
+        originCity ? `Departing from ${originCity}` : ''
+      ].filter(Boolean).join('. ');
+
       await onGenerate({
         destination: destination.trim(),
         duration: finalDuration,
@@ -647,8 +694,9 @@ export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip, pr
         budget,
         companion,
         travelStyles: selectedStyles,
-        specificInterests: specificInterests.trim() || undefined,
+        specificInterests: combinedInterests || undefined,
         customApiKey: userSettings.openaiApiKey,
+        originCity: originCity.trim() || undefined,
       });
     } finally {
       clearInterval(stepInterval);
@@ -815,12 +863,12 @@ export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip, pr
       </div>
 
       <form onSubmit={handleSubmit} className="relative space-y-7">
-        {/* 1. Worldwide Destination Search Input (100,000+ Global Cities) */}
-        <div className="space-y-2 relative">
-          <div className="flex items-center justify-between">
+        {/* 1. MakeMyTrip Commercial Flight Cockpit (Origin ➔ Destination) */}
+        <div className="space-y-4 relative">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <label className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-              <Globe className="w-4 h-4 text-indigo-400" />
-              <span>Worldwide Destination (1 Lakh+ Cities, Towns & Islands)</span>
+              <Plane className="w-4 h-4 text-indigo-400 rotate-45" />
+              <span>Flight Route & Worldwide Destination</span>
             </label>
             <div className="flex items-center gap-2">
               <button
@@ -830,7 +878,7 @@ export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip, pr
                 title="Open interactive World Map to choose any city"
               >
                 <MapPin className="w-3.5 h-3.5" />
-                <span>🗺️ Choose from Map</span>
+                <span>🗺️ Choose on Map</span>
               </button>
               <span className="text-[11px] font-semibold text-indigo-400 hidden sm:flex items-center gap-1">
                 <Sparkles className="w-3 h-3 text-indigo-400" />
@@ -839,51 +887,187 @@ export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip, pr
             </div>
           </div>
 
-          <div className="relative">
-            <input
-              ref={inputRef}
-              type="text"
-              required
-              value={destination}
-              onFocus={() => setShowAutocomplete(true)}
-              onChange={(e) => {
-                setDestination(e.target.value);
-                setShowAutocomplete(true);
-              }}
-              placeholder="Search ANY city in the world: e.g. Udaipur, Kyoto, Interlaken, Rome, Barcelona, Bali, Queenstown..."
-              className="w-full pl-11 pr-32 py-3.5 rounded-2xl border border-white/10 bg-white/5 text-base font-semibold text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500/60 transition-all"
-            />
-            <Compass className="w-5 h-5 text-indigo-500 absolute left-3.5 top-4" />
+          {/* Two-Way Flight Pair Grid with Center Swap Button */}
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr] items-center gap-2 relative">
+            {/* Origin (From) */}
+            <div className="relative bg-white/5 border border-white/10 rounded-2xl p-3 focus-within:border-indigo-500/60 focus-within:ring-2 focus-within:ring-indigo-500/20 transition-all">
+              <span className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1 flex items-center justify-between">
+                <span>From (Departure City)</span>
+                <span className="text-[9px] px-1.5 py-0.5 rounded bg-white/10 text-slate-300 font-mono">ORIGIN</span>
+              </span>
+              <div className="flex items-center gap-2">
+                <Compass className="w-4 h-4 text-slate-400 shrink-0" />
+                <input
+                  type="text"
+                  value={originCity}
+                  onChange={(e) => setOriginCity(e.target.value)}
+                  placeholder="e.g. New Delhi (DEL), Mumbai (BOM), London (LHR)..."
+                  className="w-full bg-transparent text-sm sm:text-base font-bold text-white placeholder:text-slate-500 outline-none"
+                />
+              </div>
+              {/* Quick Origin Hub Pills */}
+              <div className="flex items-center gap-1 mt-2 overflow-x-auto scrollbar-none pt-1 border-t border-white/5">
+                <span className="text-[9px] text-slate-500 font-bold uppercase shrink-0">Hubs:</span>
+                {COMMON_ORIGIN_CITIES.map((hub) => (
+                  <button
+                    key={hub.code}
+                    type="button"
+                    onClick={() => {
+                      playPop();
+                      setOriginCity(`${hub.city} (${hub.code})`);
+                    }}
+                    className={`text-[10px] px-2 py-0.5 rounded-lg border font-bold transition-all shrink-0 cursor-pointer ${
+                      originCity.includes(hub.code)
+                        ? 'bg-indigo-600 text-white border-indigo-500'
+                        : 'bg-white/5 hover:bg-white/10 border-white/10 text-slate-300'
+                    }`}
+                  >
+                    <span>{hub.flag} {hub.code}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
 
-            {/* Quick Pick on Map Button inside input */}
-            <button
-              type="button"
-              onClick={() => setIsMapPickerOpen(true)}
-              className="absolute right-10 top-2.5 px-2.5 py-1.5 bg-gradient-to-r from-blue-600/20 to-indigo-600/20 hover:from-blue-600/30 hover:to-indigo-600/30 text-blue-300 hover:text-indigo-300 border border-blue-400/20 rounded-xl font-bold text-xs flex items-center gap-1 transition-all cursor-pointer"
-              title="Pick directly on interactive World Map"
-            >
-              <MapPin className="w-3.5 h-3.5 text-blue-400" />
-              <span className="hidden sm:inline font-bold">Pick on Map</span>
-            </button>
+            {/* Swap Button (⇄) */}
+            <div className="flex justify-center -my-1 lg:my-0 z-10">
+              <button
+                type="button"
+                onClick={handleSwapRoute}
+                className="w-10 h-10 rounded-2xl bg-indigo-600/30 hover:bg-indigo-600/50 border border-indigo-500/40 text-indigo-300 hover:text-white flex items-center justify-center transition-all duration-300 hover:scale-110 active:rotate-180 cursor-pointer shadow-lg shadow-indigo-950/60"
+                title="Swap Departure and Destination"
+              >
+                <Shuffle className="w-4 h-4" />
+              </button>
+            </div>
 
-            {/* Spinner or Clear */}
-            <div className="absolute right-3.5 top-3.5 flex items-center gap-1.5">
-              {isSearchingCities ? (
-                <Loader2 className="w-5 h-5 text-indigo-600 animate-spin" />
-              ) : destination ? (
+            {/* Destination (To) */}
+            <div className="relative bg-white/5 border border-white/10 rounded-2xl p-3 focus-within:border-indigo-500/60 focus-within:ring-2 focus-within:ring-indigo-500/20 transition-all">
+              <span className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1 flex items-center justify-between">
+                <span>To (Worldwide Destination)</span>
+                <span className="text-[9px] px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-mono font-bold">100K+ CITIES</span>
+              </span>
+              <div className="flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-indigo-400 shrink-0" />
+                <input
+                  ref={inputRef}
+                  type="text"
+                  required
+                  value={destination}
+                  onFocus={() => setShowAutocomplete(true)}
+                  onChange={(e) => {
+                    setDestination(e.target.value);
+                    setShowAutocomplete(true);
+                  }}
+                  placeholder="e.g. Tokyo, Paris, Bali, Dubai, Interlaken..."
+                  className="w-full bg-transparent text-sm sm:text-base font-bold text-white placeholder:text-slate-500 outline-none"
+                />
+                {isSearchingCities ? (
+                  <Loader2 className="w-4 h-4 text-indigo-400 animate-spin shrink-0" />
+                ) : destination ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setDestination('');
+                      inputRef.current?.focus();
+                    }}
+                    className="p-1 text-slate-400 hover:text-white"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                ) : null}
+              </div>
+              {/* Quick Pick on Map Button inside destination */}
+              <div className="flex items-center justify-between mt-2 pt-1 border-t border-white/5">
+                <span className="text-[10px] text-slate-400 truncate">
+                  {destination || 'Select any worldwide destination'}
+                </span>
                 <button
                   type="button"
-                  onClick={() => {
-                    setDestination('');
-                    inputRef.current?.focus();
-                  }}
-                  className="p-1 text-slate-500 hover:text-slate-300"
+                  onClick={() => setIsMapPickerOpen(true)}
+                  className="text-[10px] font-bold text-indigo-300 hover:text-white flex items-center gap-1 cursor-pointer"
                 >
-                  <X className="w-4 h-4" />
+                  <span>Pick on Map</span>
+                  <ChevronRight className="w-3 h-3" />
                 </button>
-              ) : null}
+              </div>
             </div>
           </div>
+
+          {/* Interactive Live Flight Telemetry Cockpit Radar */}
+          <div className="p-3.5 rounded-2xl bg-gradient-to-r from-slate-900/90 via-indigo-950/70 to-slate-900/90 border border-indigo-500/30 text-xs text-slate-300 backdrop-blur-md space-y-2.5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/10 pb-2">
+              <div className="flex items-center gap-2 flex-wrap">
+                <div className="flex items-center gap-1.5 font-mono font-black text-white text-sm">
+                  <span>{originCity.split(' ')[0] || 'Origin'}</span>
+                  <Plane className="w-3.5 h-3.5 text-indigo-400 rotate-90" />
+                  <span>{destination.split(',')[0] || 'Destination'}</span>
+                </div>
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-bold">
+                  {flightTelemetry.routeType}
+                </span>
+              </div>
+              <div className="flex items-center gap-3 text-xs">
+                <span className="text-emerald-400 font-bold font-mono">
+                  ⏱️ {flightTelemetry.flightTimeFormatted}
+                </span>
+                <span className="text-slate-400">
+                  🛫 {flightTelemetry.distanceKm.toLocaleString()} km
+                </span>
+              </div>
+            </div>
+
+            {/* Telemetry Metrics Row */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
+              <div className="bg-white/5 p-2 rounded-xl border border-white/5">
+                <span className="text-slate-400 block text-[9px] uppercase font-bold">Recommended Airlines</span>
+                <span className="text-white font-bold truncate block">{flightTelemetry.airlines[0] || 'Commercial'}</span>
+              </div>
+              <div className="bg-white/5 p-2 rounded-xl border border-white/5">
+                <span className="text-slate-400 block text-[9px] uppercase font-bold">Flight Fare Benchmark</span>
+                <span className="text-emerald-400 font-bold block">${flightTelemetry.economyFareUsd} - ${flightTelemetry.businessFareUsd}</span>
+              </div>
+              <div className="bg-white/5 p-2 rounded-xl border border-white/5">
+                <span className="text-slate-400 block text-[9px] uppercase font-bold">Visa & Entry Status</span>
+                <span className="text-indigo-300 font-bold truncate block">{flightTelemetry.visaSummary}</span>
+              </div>
+              <div className="bg-white/5 p-2 rounded-xl border border-white/5">
+                <span className="text-slate-400 block text-[9px] uppercase font-bold">Jetlag Index & Plug</span>
+                <span className="text-amber-300 font-bold truncate block">+{flightTelemetry.timeDifferenceHours}h ({flightTelemetry.jetlagRisk})</span>
+              </div>
+            </div>
+          </div>
+
+          {/* MakeMyTrip Special Fare Passes */}
+          <div className="space-y-1.5 pt-1">
+            <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+              Special Traveler Fare Pass (Optional):
+            </span>
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+              {SPECIAL_FARE_PASSES.map((pass) => {
+                const isSelected = selectedFarePass === pass.id;
+                return (
+                  <button
+                    key={pass.id}
+                    type="button"
+                    onClick={() => {
+                      playPop();
+                      setSelectedFarePass(pass.id);
+                    }}
+                    className={`px-3 py-1.5 rounded-xl border text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 cursor-pointer ${
+                      isSelected
+                        ? 'bg-indigo-600 text-white border-indigo-500 shadow-md ring-1 ring-indigo-400/40'
+                        : 'bg-white/5 hover:bg-white/10 border-white/10 text-slate-300'
+                    }`}
+                  >
+                    <span>{pass.icon}</span>
+                    <span>{pass.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
 
           {/* 250+ World Cities Directory & Live Geocoding Dropdown */}
           {showAutocomplete && (
