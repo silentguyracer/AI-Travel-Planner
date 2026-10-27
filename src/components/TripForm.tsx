@@ -484,22 +484,22 @@ export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip }: 
   };
 
   return (
-    <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-200/80 p-6 sm:p-10 relative overflow-hidden">
+    <div className="bg-transparent p-6 sm:p-10 relative overflow-hidden">
       {/* Ambient background glow */}
       <div className="absolute -top-24 -right-24 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute -bottom-24 -left-24 w-80 h-80 bg-sky-500/10 rounded-full blur-3xl pointer-events-none" />
 
       {/* Hero Heading */}
       <div className="relative mb-8 text-center max-w-2xl mx-auto">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-200/80 text-indigo-700 text-xs font-bold mb-3 shadow-xs">
-          <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/15 border border-indigo-500/30 text-indigo-300 text-xs font-bold mb-3">
+          <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
           <span>Next-Generation AI Travel Curator • 100,000+ Global Cities</span>
         </div>
-        <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight leading-tight">
+        <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight leading-tight">
           Where would you like to travel?
         </h1>
-        <p className="mt-2 text-xs sm:text-sm text-slate-600 leading-relaxed">
-          Search literally <strong>any city, town, or village on Earth</strong>. Set your travel dates on the visual calendar, customize your vibe, and let AI build a comprehensive commercial itinerary.
+        <p className="mt-2 text-xs sm:text-sm text-slate-400 leading-relaxed">
+          Search literally <strong className="text-slate-200">any city, town, or village on Earth</strong>. Set your travel dates on the visual calendar, customize your vibe, and let AI build a comprehensive commercial itinerary.
         </p>
 
         {/* Quick Sample Selector */}
@@ -508,14 +508,14 @@ export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip }: 
           <button
             type="button"
             onClick={() => onSelectSampleTrip('sample-tokyo-5d')}
-            className="text-xs bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 font-semibold text-slate-700 px-3 py-1 rounded-full border border-slate-200 transition-colors inline-flex items-center gap-1.5"
+            className="text-xs bg-white/5 hover:bg-indigo-500/20 hover:text-indigo-300 font-semibold text-slate-300 px-3 py-1 rounded-full border border-white/10 transition-colors inline-flex items-center gap-1.5"
           >
             <span>🗼 Tokyo (5 Days)</span>
           </button>
           <button
             type="button"
             onClick={() => onSelectSampleTrip('sample-paris-4d')}
-            className="text-xs bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 font-semibold text-slate-700 px-3 py-1 rounded-full border border-slate-200 transition-colors inline-flex items-center gap-1.5"
+            className="text-xs bg-white/5 hover:bg-indigo-500/20 hover:text-indigo-300 font-semibold text-slate-300 px-3 py-1 rounded-full border border-white/10 transition-colors inline-flex items-center gap-1.5"
           >
             <span>🥐 Paris (4 Days)</span>
           </button>
@@ -523,28 +523,28 @@ export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip }: 
 
         {/* User-Friendly 3-Step Flow Pills */}
         <div className="mt-5 grid grid-cols-3 gap-2 max-w-md mx-auto text-[11px] font-bold">
-          <div className="bg-indigo-50 text-indigo-700 py-1.5 px-2 rounded-xl border border-indigo-200/80 flex items-center justify-center gap-1.5 shadow-2xs">
+          <div className="bg-indigo-500/20 text-indigo-300 py-1.5 px-2 rounded-xl border border-indigo-500/30 flex items-center justify-center gap-1.5">
             <span className="w-4 h-4 rounded-full bg-indigo-600 text-white text-[9px] flex items-center justify-center font-black">1</span>
             <span>Pick City</span>
           </div>
-          <div className="bg-slate-50 text-slate-600 py-1.5 px-2 rounded-xl border border-slate-200 flex items-center justify-center gap-1.5">
-            <span className="w-4 h-4 rounded-full bg-slate-300 text-slate-700 text-[9px] flex items-center justify-center font-black">2</span>
+          <div className="bg-white/5 text-slate-400 py-1.5 px-2 rounded-xl border border-white/10 flex items-center justify-center gap-1.5">
+            <span className="w-4 h-4 rounded-full bg-slate-600 text-slate-300 text-[9px] flex items-center justify-center font-black">2</span>
             <span>Dates & Style</span>
           </div>
-          <div className="bg-slate-50 text-slate-600 py-1.5 px-2 rounded-xl border border-slate-200 flex items-center justify-center gap-1.5">
-            <span className="w-4 h-4 rounded-full bg-slate-300 text-slate-700 text-[9px] flex items-center justify-center font-black">3</span>
+          <div className="bg-white/5 text-slate-400 py-1.5 px-2 rounded-xl border border-white/10 flex items-center justify-center gap-1.5">
+            <span className="w-4 h-4 rounded-full bg-slate-600 text-slate-300 text-[9px] flex items-center justify-center font-black">3</span>
             <span>1-Click Plan</span>
           </div>
         </div>
 
         {/* Instant 1-Click Vacation Starters */}
-        <div className="mt-5 pt-4 border-t border-slate-200/70 text-left">
+        <div className="mt-5 pt-4 border-t border-white/10 text-left">
           <div className="flex flex-wrap items-center justify-between gap-1 mb-2">
-            <span className="text-[11px] font-extrabold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+            <span className="text-[11px] font-extrabold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5 text-amber-500" />
               Instant 1-Click Vacation Starters:
             </span>
-            <span className="text-[10px] text-slate-400 font-medium">Click to pre-fill complete vacation recipe</span>
+            <span className="text-[10px] text-slate-500 font-medium">Click to pre-fill complete vacation recipe</span>
           </div>
           <div ref={templatesContainerRef} className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
             {STARTER_VACATION_TEMPLATES.map((tpl) => {
@@ -557,12 +557,12 @@ export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip }: 
                   className={`px-3 py-2 rounded-2xl border text-left transition-all shrink-0 cursor-pointer flex items-center gap-2.5 shadow-2xs hover:scale-102 ${
                     isSelected
                       ? 'bg-indigo-600 text-white border-indigo-600 shadow-md ring-2 ring-indigo-400/40'
-                      : 'bg-white hover:bg-indigo-50/80 border-slate-200/90 text-slate-800 hover:border-indigo-300'
+                      : 'bg-white/5 hover:bg-white/10 border-white/10 text-slate-200 hover:border-white/20'
                   }`}
                 >
                   <span className="text-xl shrink-0">{tpl.flag}</span>
                   <div>
-                    <div className={`font-bold text-xs leading-tight ${isSelected ? 'text-white' : 'text-slate-900'}`}>
+                    <div className={`font-bold text-xs leading-tight ${isSelected ? 'text-white' : 'text-slate-200'}`}>
                       {tpl.name}
                     </div>
                     <div className={`text-[10px] font-medium mt-0.5 ${isSelected ? 'text-indigo-100' : 'text-slate-500'}`}>
@@ -580,8 +580,8 @@ export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip }: 
         {/* 1. Worldwide Destination Search Input (100,000+ Global Cities) */}
         <div className="space-y-2 relative">
           <div className="flex items-center justify-between">
-            <label className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-              <Globe className="w-4 h-4 text-indigo-600" />
+            <label className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+              <Globe className="w-4 h-4 text-indigo-400" />
               <span>Worldwide Destination (1 Lakh+ Cities, Towns & Islands)</span>
             </label>
             <div className="flex items-center gap-2">
@@ -594,8 +594,8 @@ export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip }: 
                 <MapPin className="w-3.5 h-3.5" />
                 <span>🗺️ Choose from Map</span>
               </button>
-              <span className="text-[11px] font-semibold text-indigo-600 hidden sm:flex items-center gap-1">
-                <Sparkles className="w-3 h-3 text-indigo-500" />
+              <span className="text-[11px] font-semibold text-indigo-400 hidden sm:flex items-center gap-1">
+                <Sparkles className="w-3 h-3 text-indigo-400" />
                 Global Geocoded
               </span>
             </div>
@@ -613,7 +613,7 @@ export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip }: 
                 setShowAutocomplete(true);
               }}
               placeholder="Search ANY city in the world: e.g. Udaipur, Kyoto, Interlaken, Rome, Barcelona, Bali, Queenstown..."
-              className="w-full pl-11 pr-32 py-3.5 rounded-2xl border border-slate-200 text-base font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-600 shadow-sm transition-all"
+              className="w-full pl-11 pr-32 py-3.5 rounded-2xl border border-white/10 bg-white/5 text-base font-semibold text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500/60 transition-all"
             />
             <Compass className="w-5 h-5 text-indigo-500 absolute left-3.5 top-4" />
 
@@ -621,10 +621,10 @@ export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip }: 
             <button
               type="button"
               onClick={() => setIsMapPickerOpen(true)}
-              className="absolute right-10 top-2.5 px-2.5 py-1.5 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 text-blue-700 hover:text-indigo-800 border border-blue-200/90 rounded-xl font-bold text-xs flex items-center gap-1 transition-all shadow-xs cursor-pointer"
+              className="absolute right-10 top-2.5 px-2.5 py-1.5 bg-gradient-to-r from-blue-600/20 to-indigo-600/20 hover:from-blue-600/30 hover:to-indigo-600/30 text-blue-300 hover:text-indigo-300 border border-blue-400/20 rounded-xl font-bold text-xs flex items-center gap-1 transition-all cursor-pointer"
               title="Pick directly on interactive World Map"
             >
-              <MapPin className="w-3.5 h-3.5 text-blue-600" />
+              <MapPin className="w-3.5 h-3.5 text-blue-400" />
               <span className="hidden sm:inline font-bold">Pick on Map</span>
             </button>
 
@@ -639,7 +639,7 @@ export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip }: 
                     setDestination('');
                     inputRef.current?.focus();
                   }}
-                  className="p-1 text-slate-400 hover:text-slate-600"
+                  className="p-1 text-slate-500 hover:text-slate-300"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -651,17 +651,17 @@ export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip }: 
           {showAutocomplete && (
             <div
               ref={dropdownRef}
-              className="absolute left-0 right-0 top-full mt-2 bg-white rounded-2xl shadow-2xl border border-slate-200 z-50 overflow-hidden divide-y divide-slate-100 animate-in fade-in"
+              className="absolute left-0 right-0 top-full mt-2 bg-slate-900/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/10 z-50 overflow-hidden divide-y divide-white/5 animate-in fade-in"
             >
               {/* Region Tabs Header */}
-              <div className="p-3 bg-slate-50/90 border-b border-slate-200 backdrop-blur-sm">
+              <div className="p-3 bg-slate-800/80 border-b border-white/10 backdrop-blur-sm">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-black uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
+                    <span className="text-xs font-black uppercase tracking-wider text-slate-200 flex items-center gap-1.5">
                       <Globe className="w-3.5 h-3.5 text-indigo-600" />
                       250+ World Cities Directory
                     </span>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700">
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300">
                       Instant 0ms
                     </span>
                   </div>
@@ -689,7 +689,7 @@ export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip }: 
                         className={`text-xs px-2.5 py-1 rounded-full font-bold whitespace-nowrap transition-all flex items-center gap-1 shrink-0 ${
                           isActive
                             ? 'bg-indigo-600 text-white shadow-xs'
-                            : 'bg-white text-slate-700 border border-slate-200/90 hover:bg-slate-100'
+                            : 'bg-white/5 text-slate-400 border border-white/10 hover:bg-white/10'
                         }`}
                       >
                         <span>{tab.icon}</span>
@@ -701,7 +701,7 @@ export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip }: 
               </div>
 
               {/* Cities List */}
-              <div className="max-h-80 overflow-y-auto divide-y divide-slate-100">
+              <div className="max-h-80 overflow-y-auto divide-y divide-white/5">
                 {/* 1. Curated 250+ Database Cities */}
                 {filteredCuratedCities.map((item, idx) => (
                   <div
@@ -710,24 +710,24 @@ export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip }: 
                       setDestination(`${item.name}, ${item.country}`);
                       setShowAutocomplete(false);
                     }}
-                    className="p-3 hover:bg-indigo-50/80 cursor-pointer flex items-center justify-between text-xs transition-colors group"
+                    className="p-3 hover:bg-indigo-500/15 cursor-pointer flex items-center justify-between text-xs transition-colors group"
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       <span className="text-2xl shrink-0">{item.flag || '📍'}</span>
                       <div className="min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="font-bold text-slate-900 text-sm group-hover:text-indigo-600 transition-colors">
+                          <span className="font-bold text-white text-sm group-hover:text-indigo-300 transition-colors">
                             {item.name}
                           </span>
                           {item.admin1 && (
-                            <span className="text-[10px] font-semibold text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded">
+                            <span className="text-[10px] font-semibold text-slate-400 bg-white/5 px-1.5 py-0.5 rounded">
                               {item.admin1}
                             </span>
                           )}
                           <span className="text-[10px] font-medium text-slate-400">
                             {item.country}
                           </span>
-                          <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.2 rounded-full bg-slate-100 text-slate-500">
+                          <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.2 rounded-full bg-white/5 text-slate-400">
                             {item.continent}
                           </span>
                         </div>
@@ -744,12 +744,12 @@ export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip }: 
                 {/* 2. Live Global Geocoded Results (Open-Meteo 1,000,000+ worldwide) */}
                 {citySuggestions.length > 0 && (
                   <>
-                    <div className="p-2 bg-slate-100/80 text-[10px] font-bold text-slate-600 uppercase tracking-wider flex items-center justify-between">
+                    <div className="p-2 bg-slate-800/60 text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center justify-between">
                       <span className="flex items-center gap-1.5">
                         <Globe className="w-3 h-3 text-indigo-600" />
                         Worldwide Geocoded Results (1,000,000+ Global Database)
                       </span>
-                      <span className="text-indigo-600 font-bold">{citySuggestions.length} found</span>
+                      <span className="text-indigo-400 font-bold">{citySuggestions.length} found</span>
                     </div>
                     {citySuggestions.map((item, idx) => (
                       <div
@@ -758,17 +758,17 @@ export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip }: 
                           setDestination(item.displayName || `${item.name}, ${item.country}`);
                           setShowAutocomplete(false);
                         }}
-                        className="p-3 hover:bg-indigo-50/80 cursor-pointer flex items-center justify-between text-xs transition-colors group"
+                        className="p-3 hover:bg-indigo-500/15 cursor-pointer flex items-center justify-between text-xs transition-colors group"
                       >
                         <div className="flex items-center gap-3">
                           <span className="text-xl shrink-0">{item.flag || '📍'}</span>
                           <div>
                             <div className="flex items-center gap-2">
-                              <span className="font-bold text-slate-900 text-sm group-hover:text-indigo-600 transition-colors">
+                              <span className="font-bold text-white text-sm group-hover:text-indigo-300 transition-colors">
                                 {item.name}
                               </span>
                               {item.admin1 && (
-                                <span className="text-[10px] font-semibold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">
+                                <span className="text-[10px] font-semibold text-slate-400 bg-white/5 px-1.5 py-0.5 rounded">
                                   {item.admin1}
                                 </span>
                               )}
@@ -788,7 +788,7 @@ export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip }: 
                 {filteredCuratedCities.length === 0 && citySuggestions.length === 0 && (
                   <div className="p-6 text-center space-y-3">
                     <p className="text-sm font-semibold text-slate-700">
-                      No exact match found in <span className="text-indigo-600">{activeRegionFilter}</span>
+                      No exact match found in <span className="text-indigo-400">{activeRegionFilter}</span>
                     </p>
                     <div className="flex flex-wrap items-center justify-center gap-2">
                       <button
@@ -797,7 +797,7 @@ export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip }: 
                           setActiveRegionFilter('All');
                           setDestination('');
                         }}
-                        className="px-3 py-1.5 rounded-xl bg-indigo-50 text-indigo-600 hover:bg-indigo-100 font-bold text-xs"
+                        className="px-3 py-1.5 rounded-xl bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30 font-bold text-xs"
                       >
                         Browse all 248 world cities
                       </button>
@@ -805,7 +805,7 @@ export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip }: 
                         <button
                           type="button"
                           onClick={() => setShowAutocomplete(false)}
-                          className="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 font-bold text-xs"
+                          className="px-3 py-1.5 rounded-xl bg-white/5 text-slate-300 hover:bg-white/10 font-bold text-xs"
                         >
                           Use &ldquo;{destination}&rdquo; as destination
                         </button>
@@ -836,7 +836,7 @@ export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip }: 
               <Dices className="w-3.5 h-3.5 text-white" />
               <span>🎲 Surprise Me!</span>
             </button>
-            <span className="text-[11px] text-slate-400 font-bold shrink-0 flex items-center gap-1 ml-1">
+            <span className="text-[11px] text-slate-500 font-bold shrink-0 flex items-center gap-1 ml-1">
               <Flame className="w-3.5 h-3.5 text-amber-500" /> Trending:
             </span>
             {TRENDING_DESTINATIONS.map((dest) => (
@@ -850,7 +850,7 @@ export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip }: 
                 className={`text-xs px-2.5 py-1 rounded-xl border transition-all shrink-0 font-semibold flex items-center gap-1.5 ${
                   destination.toLowerCase().includes(dest.name.toLowerCase())
                     ? 'bg-indigo-600 text-white border-indigo-600 shadow-xs'
-                    : 'bg-slate-50 text-slate-700 border-slate-200/80 hover:bg-slate-100'
+                    : 'bg-white/5 text-slate-300 border-white/10 hover:bg-white/10'
                 }`}
               >
                 <span>{dest.flag}</span>
@@ -861,22 +861,22 @@ export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip }: 
         </div>
 
         {/* 2. Interactive Travel Dates Calendar & Duration Engine */}
-        <div className="bg-slate-50/80 rounded-2xl p-5 border border-slate-200/80 space-y-4">
+        <div className="bg-white/5 rounded-2xl p-5 border border-white/10 space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <label className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-2">
-              <CalendarIcon className="w-4 h-4 text-indigo-600" />
+            <label className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+              <CalendarIcon className="w-4 h-4 text-indigo-400" />
               <span>Travel Dates & Trip Calendar</span>
             </label>
 
             {/* Mode Switcher */}
-            <div className="flex bg-white p-1 rounded-xl border border-slate-200 text-xs font-bold shadow-xs">
+            <div className="flex bg-white/5 p-1 rounded-xl border border-white/10 text-xs font-bold">
               <button
                 type="button"
                 onClick={() => setDateMode('calendar')}
                 className={`px-3 py-1 rounded-lg transition-all flex items-center gap-1.5 ${
                   dateMode === 'calendar'
                     ? 'bg-indigo-600 text-white shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
+                    : 'text-slate-400 hover:text-slate-200'
                 }`}
               >
                 <CalendarIcon className="w-3.5 h-3.5" />
@@ -888,7 +888,7 @@ export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip }: 
                 className={`px-3 py-1 rounded-lg transition-all flex items-center gap-1.5 ${
                   dateMode === 'duration'
                     ? 'bg-indigo-600 text-white shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
+                    : 'text-slate-400 hover:text-slate-200'
                 }`}
               >
                 <Clock className="w-3.5 h-3.5" />
@@ -902,21 +902,21 @@ export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip }: 
             <div className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {/* Departure Date */}
-                <div className="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs">
-                  <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">
+                <div className="bg-white/5 p-3.5 rounded-2xl border border-white/10">
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">
                     Departure Date (Start)
                   </label>
                   <input
                     type="date"
                     value={startDate}
                     onChange={(e) => handleStartDateChange(e.target.value)}
-                    className="w-full text-sm font-bold text-slate-900 outline-none bg-transparent cursor-pointer"
+                    className="w-full text-sm font-bold text-white outline-none bg-transparent cursor-pointer [color-scheme:dark]"
                   />
                 </div>
 
                 {/* Return Date */}
-                <div className="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs">
-                  <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">
+                <div className="bg-white/5 p-3.5 rounded-2xl border border-white/10">
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">
                     Return Date (End)
                   </label>
                   <input
@@ -924,20 +924,20 @@ export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip }: 
                     value={endDate}
                     min={startDate}
                     onChange={(e) => handleEndDateChange(e.target.value)}
-                    className="w-full text-sm font-bold text-slate-900 outline-none bg-transparent cursor-pointer"
+                    className="w-full text-sm font-bold text-white outline-none bg-transparent cursor-pointer [color-scheme:dark]"
                   />
                 </div>
               </div>
 
               {/* Calculated Travel Span Banner */}
-              <div className="bg-indigo-50/70 p-3.5 rounded-xl border border-indigo-100 flex flex-wrap items-center justify-between gap-2 text-xs">
+              <div className="bg-indigo-500/10 p-3.5 rounded-xl border border-indigo-500/20 flex flex-wrap items-center justify-between gap-2 text-xs">
                 <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="font-extrabold text-indigo-900">
+                  <span className="font-extrabold text-indigo-200">
                     Total Duration: {calculatedDuration} {calculatedDuration === 1 ? 'Day' : 'Days'}
                   </span>
                   <span className="text-indigo-600">•</span>
-                  <span className="font-semibold text-slate-600">
+                  <span className="font-semibold text-slate-400">
                     {daysUntilTrip > 0
                       ? `Departs in ${daysUntilTrip} days`
                       : daysUntilTrip === 0
@@ -948,32 +948,32 @@ export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip }: 
 
                 {/* Date Presets */}
                 <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase">Presets:</span>
+                  <span className="text-[10px] font-bold text-slate-500 uppercase">Presets:</span>
                   <button
                     type="button"
                     onClick={() => applyDatePreset('weekend')}
-                    className="px-2 py-0.5 bg-white hover:bg-indigo-100 text-indigo-800 rounded font-bold text-[10px] border border-indigo-200 transition-colors"
+                    className="px-2 py-0.5 bg-white/5 hover:bg-indigo-500/20 text-indigo-300 rounded font-bold text-[10px] border border-white/10 transition-colors"
                   >
                     Weekend (3D)
                   </button>
                   <button
                     type="button"
                     onClick={() => applyDatePreset('7days')}
-                    className="px-2 py-0.5 bg-white hover:bg-indigo-100 text-indigo-800 rounded font-bold text-[10px] border border-indigo-200 transition-colors"
+                    className="px-2 py-0.5 bg-white/5 hover:bg-indigo-500/20 text-indigo-300 rounded font-bold text-[10px] border border-white/10 transition-colors"
                   >
                     1 Week (7D)
                   </button>
                   <button
                     type="button"
                     onClick={() => applyDatePreset('14days')}
-                    className="px-2 py-0.5 bg-white hover:bg-indigo-100 text-indigo-800 rounded font-bold text-[10px] border border-indigo-200 transition-colors"
+                    className="px-2 py-0.5 bg-white/5 hover:bg-indigo-500/20 text-indigo-300 rounded font-bold text-[10px] border border-white/10 transition-colors"
                   >
                     2 Weeks (14D)
                   </button>
                   <button
                     type="button"
                     onClick={() => applyDatePreset('30days')}
-                    className="px-2 py-0.5 bg-white hover:bg-indigo-100 text-indigo-800 rounded font-bold text-[10px] border border-indigo-200 transition-colors"
+                    className="px-2 py-0.5 bg-white/5 hover:bg-indigo-500/20 text-indigo-300 rounded font-bold text-[10px] border border-white/10 transition-colors"
                   >
                     1 Month (30D)
                   </button>
@@ -982,7 +982,7 @@ export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip }: 
 
               {/* Informative notice if duration exceeds 30 days */}
               {calculatedDuration > 30 && (
-                <div className="p-3 bg-amber-50 rounded-2xl border border-amber-200 text-amber-900 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 animate-in fade-in">
+                <div className="p-3 bg-amber-500/10 rounded-2xl border border-amber-500/20 text-amber-300 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 animate-in fade-in">
                   <div className="flex items-center gap-2">
                     <Info className="w-4 h-4 text-amber-600 shrink-0" />
                     <span>
@@ -1003,8 +1003,8 @@ export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip }: 
             /* Mode 2: Duration Slider */
             <div className="space-y-2 pt-1">
               <div className="flex justify-between items-center text-xs">
-                <span className="font-bold text-slate-600">Select Days Count</span>
-                <span className="text-sm font-extrabold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-200">
+                <span className="font-bold text-slate-300">Select Days Count</span>
+                <span className="text-sm font-extrabold text-indigo-300 bg-indigo-500/15 px-3 py-1 rounded-full border border-indigo-500/30">
                   {duration} {duration === 1 ? 'Day' : 'Days'}
                 </span>
               </div>
@@ -1014,9 +1014,9 @@ export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip }: 
                 max="30"
                 value={duration}
                 onChange={(e) => setDuration(parseInt(e.target.value))}
-                className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-indigo-500"
               />
-              <div className="flex justify-between text-[10px] font-bold text-slate-400">
+              <div className="flex justify-between text-[10px] font-bold text-slate-500">
                 <span>1 Day</span>
                 <span>7 Days (1 Wk)</span>
                 <span>14 Days (2 Wks)</span>
@@ -1028,7 +1028,7 @@ export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip }: 
 
         {/* 3. Budget Tier */}
         <div className="space-y-2">
-          <label className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+          <label className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
             <DollarSign className="w-4 h-4 text-emerald-600" />
             <span>Budget Tier</span>
           </label>
@@ -1039,16 +1039,16 @@ export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip }: 
                 onClick={() => setBudget(opt.id)}
                 className={`p-4 rounded-2xl border-2 cursor-pointer transition-all ${
                   budget === opt.id
-                    ? 'border-indigo-600 bg-indigo-50/30 shadow-xs'
-                    : 'border-slate-200 hover:border-slate-300 bg-white'
+                    ? 'border-indigo-500 bg-indigo-500/20 shadow-xs ring-1 ring-indigo-500/30'
+                    : 'border-white/10 hover:border-white/20 bg-white/5'
                 }`}
               >
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-xl">{opt.icon}</span>
-                  <span className="text-xs font-bold text-slate-600">{opt.range}</span>
+                  <span className="text-xs font-bold text-slate-400">{opt.range}</span>
                 </div>
-                <div className="font-bold text-slate-900 text-sm">{opt.label}</div>
-                <p className="text-xs text-slate-500 mt-0.5 leading-snug">{opt.desc}</p>
+                <div className="font-bold text-white text-sm">{opt.label}</div>
+                <p className="text-xs text-slate-400 mt-0.5 leading-snug">{opt.desc}</p>
               </div>
             ))}
           </div>
@@ -1056,7 +1056,7 @@ export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip }: 
 
         {/* 4. Travel Companion */}
         <div className="space-y-2">
-          <label className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+          <label className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
             <Users className="w-4 h-4 text-sky-600" />
             <span>Who is traveling?</span>
           </label>
@@ -1067,8 +1067,8 @@ export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip }: 
                 onClick={() => setCompanion(c.id)}
                 className={`p-3 rounded-2xl border cursor-pointer transition-all flex items-center gap-2.5 ${
                   companion === c.id
-                    ? 'border-indigo-600 bg-indigo-50 text-indigo-950 font-bold shadow-xs'
-                    : 'border-slate-200 hover:border-slate-300 bg-white text-slate-700'
+                    ? 'border-indigo-500 bg-indigo-500/20 text-indigo-200 font-bold shadow-xs ring-1 ring-indigo-500/30'
+                    : 'border-white/10 hover:border-white/20 bg-white/5 text-slate-300'
                 }`}
               >
                 <span className="text-lg">{c.icon}</span>
@@ -1080,7 +1080,7 @@ export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip }: 
 
         {/* 5. Travel Styles & Vibes */}
         <div className="space-y-2">
-          <label className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+          <label className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
             <Sparkles className="w-4 h-4 text-amber-500" />
             <span>Travel Styles & Vibes (Select all that apply)</span>
           </label>
@@ -1094,8 +1094,8 @@ export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip }: 
                   onClick={() => toggleStyle(style.id)}
                   className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 border ${
                     isSelected
-                      ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
-                      : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+                      ? 'bg-indigo-600 text-white border-indigo-500 shadow-xs ring-1 ring-indigo-400/30'
+                      : 'bg-white/5 text-slate-300 border-white/10 hover:border-white/20 hover:bg-white/10'
                   }`}
                 >
                   <span>{style.icon}</span>
@@ -1109,7 +1109,7 @@ export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip }: 
 
         {/* 6. Specific Interests or Requirements */}
         <div className="space-y-1.5">
-          <label className="text-xs font-bold uppercase tracking-wider text-slate-700">
+          <label className="text-xs font-bold uppercase tracking-wider text-slate-300">
             Special Interests or Custom Requests (Optional)
           </label>
           <textarea
@@ -1117,7 +1117,7 @@ export default function TripForm({ onGenerate, isLoading, onSelectSampleTrip }: 
             onChange={(e) => setSpecificInterests(e.target.value)}
             rows={2}
             placeholder="e.g. Vegetarian food options, anime shopping in Akihabara, avoiding stairs, early morning photography, rooftop bars..."
-            className="w-full p-3 rounded-2xl border border-slate-200 text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-600 transition-all resize-none shadow-xs"
+            className="w-full p-3 rounded-2xl border border-white/10 bg-white/5 text-xs sm:text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500/60 transition-all resize-none"
           />
         </div>
 
