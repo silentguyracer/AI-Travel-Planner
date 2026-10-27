@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { getUserSettings, saveUserSettings } from '@/lib/storage';
-import { Key, MapPin, Check, X, Shield, ExternalLink } from 'lucide-react';
+import { Key, MapPin, Check, X, Shield, ExternalLink, Sparkles } from 'lucide-react';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -54,7 +54,7 @@ export default function SettingsModal({ isOpen, onClose, onSaved }: SettingsModa
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-in fade-in">
-      <div className="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-100 overflow-hidden">
+      <div className="bg-[#0e0e28] rounded-3xl max-w-lg w-full shadow-2xl border border-white/15 overflow-hidden text-white relative">
         {/* Header */}
         <div className="p-5 bg-gradient-to-r from-slate-900 to-indigo-950 text-white flex items-center justify-between">
           <div className="flex items-center gap-2.5">
@@ -76,16 +76,24 @@ export default function SettingsModal({ isOpen, onClose, onSaved }: SettingsModa
 
         {/* Form Body */}
         <form onSubmit={handleSave} className="p-6 space-y-5">
-          <div className="p-3 bg-amber-50 rounded-xl border border-amber-200/80 text-xs text-amber-900 flex items-start gap-2.5">
-            <Shield className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                    {/* 100% Free / Optional Notice */}
+          <div className="p-3.5 bg-emerald-500/15 rounded-2xl border border-emerald-500/30 text-xs text-emerald-200 flex items-start gap-2.5">
+            <Sparkles className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
             <p>
-              <strong>Privacy Notice:</strong> Keys entered here are stored strictly in your browser’s local storage. They are never sent to third-party databases. You can also define them in <code className="bg-amber-100 px-1 py-0.5 rounded font-mono">.env.local</code>.
+              <strong>API Keys are 100% Optional!</strong> WanderAI already includes built-in offline generation and pre-curated global destinations that work completely free without entering any key. You only need a custom key if you want direct real-time OpenAI or Groq model calling.
+            </p>
+          </div>
+
+          <div className="p-3 bg-white/5 rounded-2xl border border-white/10 text-xs text-slate-300 flex items-start gap-2.5">
+            <Shield className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" />
+            <p>
+              <strong>Privacy Notice:</strong> Keys entered here are stored strictly in your browser’s local storage. They are never sent to third-party databases. You can also define them in <code className="bg-white/10 px-1.5 py-0.5 rounded font-mono text-indigo-200">.env.local</code>.
             </p>
           </div>
 
           {/* AI Key */}
           <div className="space-y-1.5">
-            <label className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center justify-between">
+            <label className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center justify-between">
               <span>AI API Key (Groq or OpenAI)</span>
               <div className="flex items-center gap-2">
                 <a
@@ -112,7 +120,7 @@ export default function SettingsModal({ isOpen, onClose, onSaved }: SettingsModa
               placeholder="gsk_... or sk-..."
               value={openaiKey}
               onChange={(e) => setOpenaiKey(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 font-mono transition-all"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-white/10 bg-white/5 text-white placeholder:text-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500 font-mono transition-all"
             />
             <p className="text-[11px] text-slate-400">
               Powers ultra-fast live AI itinerary generation with 120B model intelligence. Also configured in <code className="font-mono text-slate-600">.env.local</code>.
@@ -121,7 +129,7 @@ export default function SettingsModal({ isOpen, onClose, onSaved }: SettingsModa
 
           {/* Google Maps API Key */}
           <div className="space-y-1.5">
-            <label className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center justify-between">
+            <label className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center justify-between">
               <span>Google Maps JavaScript API Key</span>
               <a
                 href="https://console.cloud.google.com/google/maps-apis/overview"
@@ -138,7 +146,7 @@ export default function SettingsModal({ isOpen, onClose, onSaved }: SettingsModa
                 placeholder="AIzaSy..."
                 value={googleKey}
                 onChange={(e) => setGoogleKey(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 font-mono transition-all"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-white/10 bg-white/5 text-white placeholder:text-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500 font-mono transition-all"
               />
               <MapPin className="w-4 h-4 text-slate-400 absolute right-3.5 top-3" />
             </div>
@@ -148,11 +156,11 @@ export default function SettingsModal({ isOpen, onClose, onSaved }: SettingsModa
           </div>
 
           {/* Actions */}
-          <div className="pt-2 flex items-center justify-end gap-3 border-t border-slate-100">
+          <div className="pt-2 flex items-center justify-end gap-3 border-t border-white/10">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors"
+              className="px-4 py-2 text-sm font-semibold text-slate-400 hover:text-white hover:bg-white/5 rounded-xl transition-colors cursor-pointer"
             >
               Cancel
             </button>
