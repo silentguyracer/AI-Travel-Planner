@@ -43,6 +43,86 @@ WanderAI transforms any destination, travel duration (1–14 days), group size, 
 
 ---
 
+## 🔰 New User Guide — Everything You Need to Know
+
+Welcome to **WanderAI**! Whether you are exploring for the first time or planning a dream trip, here is a complete walkthrough of how the platform works and what you can do:
+
+### 1. 🚀 Zero Setup — Works 100% Free Out of the Box
+- **No Login / Account Required**: Your trips, favorites, and customizations are securely saved in your browser's `localStorage`.
+- **No API Key Required**: WanderAI includes built-in offline generation algorithms, curated landmarks for 250+ world cities, and pre-packaged sample itineraries (Tokyo, Paris, Bali, Dubai, Santorini, Interlaken, etc.) that work completely free without entering any payment or API key.
+- **Optional AI Keys**: If you want real-time custom generation for any small town on Earth using OpenAI `GPT-4o` or Groq, click **`API Keys (Optional)`** in the header to enter your personal key.
+
+---
+
+### 2. 🌙 / ☀️ Theme Switcher (Dark ↔ Light Mode)
+- In the top-right corner of the navigation bar, click the **`🌙 Dark` / `☀️ Light`** button.
+- **Deep-Space Dark Mode**: Deep `#0a0a1a` canvas with glowing aurora lights, star grid overlay, and frosted acrylic dark glass cards.
+- **Clean Light Mode**: Crisp, airy background with soft indigo & sky mesh gradients.
+- Your theme choice is automatically saved and remembered across sessions.
+
+---
+
+### 3. 🛫 Two-Way Flight Cockpit (Origin ➔ Destination)
+- **From (Departure City)**: Select your home departure airport (`DEL`, `BOM`, `BLR`, `JFK`, `LHR`, `DXB`, `SIN`, `SFO`) or type any custom departure city.
+- **⇄ Route Swap Button**: Click the shuffle icon between the two inputs to flip departure and arrival routes instantly with audio feedback.
+- **To (Worldwide Destination)**: Search across 100,000+ cities with live instant geocoding or click **"🗺️ Choose on Map"** to drop a pin anywhere on the 3D globe.
+- **Live Flight Telemetry Radar**: Automatically calculates Great-Circle distance (km), non-stop flight duration, recommended airlines (ANA, Air India, Emirates, Lufthansa, etc.), live fare estimates, visa rules, and jetlag index.
+
+---
+
+### 4. 🏖️ 6 Curated Travel Experience Modes
+Inspired by commercial travel portals, click any mode tab across the top of the planner to auto-tune your trip recipe:
+1. **🏖️ Complete Holiday**: Balanced iconic sights, museums, and relaxed culinary evenings.
+2. **🎒 Solo Backpacker**: Budget-friendly hostels, metro transit routes, and legendary street food.
+3. **💑 Couples & Romance**: Boutique hotels, golden hour viewpoints, candlelight dining & sunsets.
+4. **👨‍👩‍👧 Family & Kids**: Stroller-friendly routes, theme parks, and spacious rest breaks.
+5. **💎 Luxury & VIP**: 5-star suites, private transfers, and Michelin-starred recommendations.
+6. **🚆 Scenic Rail & Nature**: High-speed bullet trains (Shinkansen / TGV), alpine trails & panoramic passes.
+
+---
+
+### 5. 🎯 "Match My Vibe" 3-Question Quiz
+- Indecisive about where to go? Click the **`🎯 Match My Vibe`** button next to *Surprise Me!*.
+- Answer 3 quick visual questions:
+  1. *What is your travel rhythm?* (Neon Metropolis, Tropical Sanctuary, Alpine Wonderland, Timeless Heritage)
+  2. *Who is traveling with you?* (Solo, Couple, Family, Friends)
+  3. *What is your spend tier?* (Smart Backpacker, Sweet Spot Comfort, VIP Splurge)
+- WanderAI matches your dream destination with a percentage match score (e.g. 99% Match) and a 1-click **"Apply to Planner"** button.
+
+---
+
+### 6. 💰 Real-Time Fare & Multi-Currency Calculator
+- As you adjust the visual travel calendar, change trip duration (1 to 30 days), or switch budget tiers, the live budget meter recalculates instantaneously.
+- **Multi-Currency Support**: Toggle between **`USD ($)`**, **`INR (₹)`**, **`EUR (€)`**, **`GBP (£)`**, **`AED (د.إ)`**, and **`JPY (¥)`**.
+- Click **"View Fare Breakdown"** to inspect separate costs for Flights & Transit, Hotel Stays, and Dining & Sightseeing.
+
+---
+
+### 7. 🗓️ Action-Packed 6–8 Stops Daily Schedules
+- When you click **"Generate Plan"**, WanderAI builds a full day-by-day itinerary with **6 to 8 events per day** spanning from 08:00 AM to 11:00 PM:
+  - Morning sunrise vantage / bakery
+  - Historic landmark / sacred shrine
+  - Food market / lunch crawl
+  - World-class museum / cultural palace
+  - Scenic golden hour viewpoint / rooftop
+  - Celebrated local dinner feast
+  - Night illumination walk / speakeasy
+- Each stop includes GPS coordinates, recommended durations, estimated costs, and insider secrets.
+
+---
+
+### 8. 🎛️ 34 Smart Built-in Travel Modules
+After generating or opening a trip, access 34 tools directly from the itinerary or bottom floating dock:
+- **AI Day Doctor**: 1-click day remix for Rain Rescue, Foodie Deep Dive, Adventure, or Night Owl.
+- **Interactive Google Maps / Leaflet**: Color-coded attraction markers and walking polylines.
+- **Flight Price Predictor & Radar**: Machine-learning "Wait vs Buy" verdict and live aircraft telemetry.
+- **Suitcase Tetris**: Interactive 3D luggage packing with center-of-gravity balance checks.
+- **Safety Shield & Scam Radar**: Local emergency dialer (`tel:` links) and common tourist scam alerts.
+- **Native Audio Speech Tour**: Multilingual voice narration of daily landmarks with speed controls.
+- **Offline Pocket Travel Booklet**: Printable A4 pocket booklet with taxi cards in local characters.
+
+---
+
 ## 🧩 All 34 Built-In Travel Modules
 
 ### 1. Intelligent Itinerary & Planning

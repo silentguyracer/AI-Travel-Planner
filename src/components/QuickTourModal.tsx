@@ -11,16 +11,16 @@ import {
   Calendar,
   DollarSign,
   Sparkles,
-  CheckCircle2,
-  Navigation,
-  Bot,
-  Camera,
+  Plane,
   Layers,
   ArrowRight,
   ShieldCheck,
   Dices,
-  Play
+  Play,
+  Moon,
+  Shuffle
 } from 'lucide-react';
+import { playPop, playChime } from '@/lib/interactiveAudio';
 
 interface QuickTourModalProps {
   isOpen: boolean;
@@ -40,8 +40,10 @@ export default function QuickTourModal({
     if (!isOpen) return;
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'ArrowRight' || e.key === ' ') {
+        playPop();
         setCurrentSlide((prev) => Math.min(prev + 1, 3));
       } else if (e.key === 'ArrowLeft') {
+        playPop();
         setCurrentSlide((prev) => Math.max(prev - 1, 0));
       } else if (e.key === 'Escape') {
         onClose();
@@ -56,147 +58,150 @@ export default function QuickTourModal({
   const slides = [
     {
       badge: 'Step 1 of 4',
-      badgeColor: 'bg-blue-100 text-blue-700 border-blue-200',
-      title: 'Pick Any Destination on Earth',
-      subtitle: 'From world capitals to hidden villages',
-      icon: Globe,
-      iconColor: 'text-blue-600 bg-blue-50',
+      badgeColor: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30',
+      title: 'Commercial Flight Cockpit & 100K+ Geocoder',
+      subtitle: 'From your local airport to any city on Earth',
+      icon: Plane,
+      iconColor: 'text-indigo-400 bg-indigo-500/20',
       description:
-        'WanderAI lets you search literally any city, town, or island across the globe, or pick directly using an interactive world map.',
+        'WanderAI connects your home departure airport to any destination on Earth with real-time geodesic flight telemetry, distance calculation, visa status, and live geocoding.',
       features: [
         {
-          icon: '🔍',
-          title: 'Live Worldwide Geocoder',
-          desc: 'Type any town (e.g. Tokyo, Paris, Betul, Udaipur, Rome) — it auto-resolves state, country, and GPS coordinates.',
+          icon: '🛫',
+          title: 'Two-Way Route Cockpit',
+          desc: 'Select Departure Hub (DEL, BOM, JFK, LHR, DXB) and Destination, or hit "⇄" to swap routes instantly.',
+        },
+        {
+          icon: '📡',
+          title: 'Live Flight Telemetry Radar',
+          desc: 'Instant great-circle distance (km), non-stop flight times, recommended airlines, and fare benchmarks.',
         },
         {
           icon: '🗺️',
-          title: 'Interactive World Map Pin Drop',
-          desc: 'Click "Choose from Map" to view the 3D globe and click anywhere on Earth to drop an exact pinpoint.',
-        },
-        {
-          icon: '🎲',
-          title: 'Surprise Me! Wanderlust Roulette',
-          desc: 'Indecisive? Click the dice button to instantly roll a handpicked dream destination.',
+          title: 'Interactive 3D Map Pin Drop',
+          desc: 'Open the interactive world map to pick any city, town, or island directly with zero typing.',
         },
       ],
       previewContent: (
-        <div className="bg-slate-900 rounded-2xl p-4 text-white space-y-3 border border-slate-800 shadow-inner text-xs">
+        <div className="bg-slate-900/90 rounded-2xl p-4 text-white space-y-3 border border-white/10 shadow-inner text-xs">
           <div className="flex items-center justify-between text-[11px] text-slate-400">
-            <span>Destination Search & Geocoding</span>
-            <span className="text-emerald-400 font-bold">● 1,000,000+ Global Database</span>
-          </div>
-          <div className="bg-slate-800 p-2.5 rounded-xl border border-slate-700 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="text-base">📍</span>
-              <span className="font-bold text-white">Betul, Madhya Pradesh, India</span>
-            </div>
-            <span className="text-[10px] bg-blue-600/80 text-white px-2 py-0.5 rounded-full font-bold">
-              GPS: 21.90° N, 77.90° E
+            <span className="flex items-center gap-1.5 font-bold text-white">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              Live Flight Telemetry Radar
             </span>
+            <span className="text-emerald-400 font-mono font-bold">DEL ➔ HND (5,860 km)</span>
           </div>
-          <div className="flex items-center gap-2 text-[10px] text-slate-400">
-            <span className="bg-slate-800 px-2 py-1 rounded-lg">🗼 Tokyo</span>
-            <span className="bg-slate-800 px-2 py-1 rounded-lg">🥐 Paris</span>
-            <span className="bg-slate-800 px-2 py-1 rounded-lg">🏝️ Bali</span>
-            <span className="bg-slate-800 px-2 py-1 rounded-lg">🏛️ Rome</span>
-            <span className="text-indigo-400 font-bold ml-auto">+ 250 curated pins</span>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[10px]">
+            <div className="bg-white/5 p-2 rounded-xl border border-white/5">
+              <span className="text-slate-400 block font-bold">NON-STOP FLIGHT</span>
+              <span className="text-white font-bold">7h 35m</span>
+            </div>
+            <div className="bg-white/5 p-2 rounded-xl border border-white/5">
+              <span className="text-slate-400 block font-bold">PARTNER AIRLINES</span>
+              <span className="text-white font-bold">ANA · JAL · Air India</span>
+            </div>
+            <div className="bg-white/5 p-2 rounded-xl border border-white/5">
+              <span className="text-slate-400 block font-bold">VISA STATUS</span>
+              <span className="text-indigo-300 font-bold">eVisa / 90D Waiver</span>
+            </div>
+            <div className="bg-white/5 p-2 rounded-xl border border-white/5">
+              <span className="text-slate-400 block font-bold">JETLAG RISK</span>
+              <span className="text-amber-300 font-bold">+3.5h (Mild)</span>
+            </div>
           </div>
         </div>
       ),
     },
     {
       badge: 'Step 2 of 4',
-      badgeColor: 'bg-indigo-100 text-indigo-700 border-indigo-200',
-      title: 'Dates, Budget & Travel Crew',
-      subtitle: 'Tailored specifically to your trip style',
-      icon: Calendar,
-      iconColor: 'text-indigo-600 bg-indigo-50',
+      badgeColor: 'bg-violet-500/20 text-violet-300 border-violet-500/30',
+      title: '6 Curated Travel Modes & Vibe Matcher',
+      subtitle: 'Tune your journey with MakeMyTrip-style experience tabs',
+      icon: Compass,
+      iconColor: 'text-violet-400 bg-violet-500/20',
       description:
-        'Set your exact travel calendar or trip duration, choose your budget tier, and personalize your travel companions and vibe.',
+        'Switch between curated vacation categories with 1 click, or let the 3-question "Match My Vibe" quiz discover your dream destination.',
       features: [
         {
-          icon: '📅',
-          title: 'Interactive Travel Calendar',
-          desc: 'Select exact start/end dates with visual duration counters, or pick quick presets (3, 5, 7, 14, 30 days).',
+          icon: '🏖️',
+          title: '6 Curated Travel Modes',
+          desc: 'Complete Holiday, Solo Backpacker, Romance & Couples, Family & Kids, Luxury VIP, and Scenic Rail Tour.',
         },
         {
-          icon: '💰',
-          title: '3 Smart Budget Tiers',
-          desc: 'Backpacker ($50–$100/day), Moderate ($150–$250/day), or Luxury ($350+/day) with real-time currency conversion.',
+          icon: '🎯',
+          title: '3-Question Vibe Matcher',
+          desc: 'Pick your rhythm, travel crew, and spend style to get an instant tailored destination match with 98% accuracy.',
         },
         {
-          icon: '👥',
-          title: 'Companions & Travel Vibes',
-          desc: 'Solo Traveler, Couple, Family with Kids, or Friends Group with custom vibes (Culture, Foodie, Photography, Nature).',
+          icon: '🎓',
+          title: 'Special Traveler Fare Passes',
+          desc: 'Toggle Student Pass, Senior Citizen, Digital Nomad, or Family with Stroller for tailored perks.',
         },
       ],
       previewContent: (
         <div className="grid grid-cols-3 gap-2 text-center text-xs">
-          <div className="bg-indigo-50 border border-indigo-200 p-2.5 rounded-xl">
+          <div className="bg-white/5 border border-white/10 p-2.5 rounded-xl">
             <span className="text-lg block">🎒</span>
-            <span className="font-bold text-slate-800 block text-[11px] mt-1">Backpacker</span>
-            <span className="text-[10px] text-slate-500">$50–$100 / day</span>
+            <span className="font-bold text-white block text-[11px] mt-1">Solo Backpacker</span>
+            <span className="text-[10px] text-slate-400">Hostels & Street Eats</span>
           </div>
-          <div className="bg-indigo-600 text-white p-2.5 rounded-xl shadow-md scale-105">
-            <span className="text-lg block">✨</span>
-            <span className="font-bold block text-[11px] mt-1">Moderate</span>
-            <span className="text-[10px] text-indigo-100">$150–$250 / day</span>
+          <div className="bg-gradient-to-br from-indigo-600 to-violet-600 text-white p-2.5 rounded-xl shadow-md scale-105 border border-indigo-400/40">
+            <span className="text-lg block">🏖️</span>
+            <span className="font-bold block text-[11px] mt-1">Complete Holiday</span>
+            <span className="text-[10px] text-indigo-100">Top Sights & Dining</span>
           </div>
-          <div className="bg-amber-50 border border-amber-200 p-2.5 rounded-xl">
-            <span className="text-lg block">💎</span>
-            <span className="font-bold text-slate-800 block text-[11px] mt-1">Luxury</span>
-            <span className="text-[10px] text-slate-500">$350+ / day</span>
+          <div className="bg-white/5 border border-white/10 p-2.5 rounded-xl">
+            <span className="text-lg block">💑</span>
+            <span className="font-bold text-white block text-[11px] mt-1">Couples & Romance</span>
+            <span className="text-[10px] text-slate-400">Boutique & Sunsets</span>
           </div>
         </div>
       ),
     },
     {
       badge: 'Step 3 of 4',
-      badgeColor: 'bg-emerald-100 text-emerald-700 border-emerald-200',
-      title: 'Full Day-by-Day AI Generation',
-      subtitle: 'Packed with 6–8 activities every single day',
-      icon: Sparkles,
-      iconColor: 'text-emerald-600 bg-emerald-50',
+      badgeColor: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
+      title: 'Real-Time Fare & Multi-Currency Calculator',
+      subtitle: 'Dynamic budgeting before you pack your bags',
+      icon: DollarSign,
+      iconColor: 'text-emerald-400 bg-emerald-500/20',
       description:
-        'Unlike basic planners that only give 2–3 items, WanderAI builds an exhaustive morning, afternoon, evening, and night itinerary.',
+        'As you adjust your calendar dates, duration slider, budget tier, or travel crew, WanderAI recalculates your estimated trip expenses in real time.',
       features: [
         {
-          icon: '⏰',
-          title: 'Complete Hourly Schedules',
-          desc: 'Morning coffee & historical monuments, afternoon highlights, scenic viewpoints, dinner spots, and night walks.',
+          icon: '💱',
+          title: '6 Global Currencies',
+          desc: 'Instant 1-click toggling between USD ($), INR (₹), EUR (€), GBP (£), AED (د.إ), and JPY (¥).',
         },
         {
-          icon: '📸',
-          title: 'Real Photos & Street View',
-          desc: 'Automated high-resolution imagery from Wikimedia Commons and Google Places with 360° interactive Street View.',
+          icon: '📊',
+          title: 'Itemized Fare Breakdown',
+          desc: 'Inspect estimated costs separated into Flights & Transit, Hotel Stays, and Dining & Sightseeing.',
         },
         {
-          icon: '🍽️',
-          title: 'Daily Culinary Blueprint',
-          desc: 'Curated breakfast spots, midday lunch spots, afternoon cafés, and evening dinner recommendations.',
+          icon: '💡',
+          title: 'Daily Average Index',
+          desc: 'See daily estimated spend per traveler to ensure your trip fits your exact financial comfort zone.',
         },
       ],
       previewContent: (
-        <div className="bg-white border border-slate-200 rounded-2xl p-3 shadow-xs space-y-2 text-xs">
-          <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-            <span className="font-extrabold text-slate-900">Day 1: Historic Castles & Night Markets</span>
-            <span className="text-[10px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full font-bold">
-              8 Stops
-            </span>
+        <div className="bg-white/5 border border-white/10 rounded-2xl p-3 shadow-inner space-y-2 text-xs">
+          <div className="flex items-center justify-between pb-2 border-b border-white/10">
+            <span className="font-extrabold text-white">Estimated 5-Day Couple Trip</span>
+            <span className="text-sm font-black text-emerald-400 font-mono">$1,250 / ₹1,04,500</span>
           </div>
-          <div className="space-y-1.5 text-[11px]">
-            <div className="flex items-center gap-2 text-slate-700">
-              <span className="font-bold text-indigo-600 shrink-0">09:00 AM</span>
-              <span className="truncate">Morning Castle Tour & Imperial Gardens</span>
+          <div className="grid grid-cols-3 gap-2 text-[10px]">
+            <div className="bg-white/5 p-1.5 rounded-lg">
+              <span className="text-slate-400 block">✈️ Flights</span>
+              <span className="text-white font-bold">$550</span>
             </div>
-            <div className="flex items-center gap-2 text-slate-700">
-              <span className="font-bold text-indigo-600 shrink-0">12:30 PM</span>
-              <span className="truncate">Artisan Ramen & Traditional Tea House</span>
+            <div className="bg-white/5 p-1.5 rounded-lg">
+              <span className="text-slate-400 block">🏨 4 Nights</span>
+              <span className="text-white font-bold">$420</span>
             </div>
-            <div className="flex items-center gap-2 text-slate-700">
-              <span className="font-bold text-indigo-600 shrink-0">06:30 PM</span>
-              <span className="truncate">Illuminated Skyline Observatory & Night Walk</span>
+            <div className="bg-white/5 p-1.5 rounded-lg">
+              <span className="text-slate-400 block">🍽️ Dining & Sights</span>
+              <span className="text-white font-bold">$280</span>
             </div>
           </div>
         </div>
@@ -204,47 +209,51 @@ export default function QuickTourModal({
     },
     {
       badge: 'Step 4 of 4',
-      badgeColor: 'bg-purple-100 text-purple-700 border-purple-200',
-      title: '25+ Smart Travel Companion Tools',
-      subtitle: 'Everything you need during your trip',
-      icon: Compass,
-      iconColor: 'text-purple-600 bg-purple-50',
+      badgeColor: 'bg-rose-500/20 text-rose-300 border-rose-500/30',
+      title: 'Action-Packed Schedules & 34 Smart Modules',
+      subtitle: '6 to 8 events per day with AI Day Doctor remixing',
+      icon: Sparkles,
+      iconColor: 'text-rose-400 bg-rose-500/20',
       description:
-        'Once generated, your trip becomes a comprehensive digital command center equipped with 25+ specialized tools.',
+        'WanderAI generates a comprehensive day-by-day plan packed with morning sunrise vantages, food markets, museums, golden hour viewpoints, and evening night walks.',
       features: [
         {
-          icon: '🗺️',
-          title: 'Google Maps Routes & Navigation',
-          desc: 'Turn-by-turn route directions, day-by-day map waypoints, terrain/satellite layers, and dual Leaflet engine.',
+          icon: '🪄',
+          title: 'AI Day Doctor Remix',
+          desc: 'Rainy forecast? Foodie craving? Remix any individual day into a Rain Rescue or Night Owl plan without regenerating.',
         },
         {
-          icon: '✈️',
-          title: 'Flight Radar Telemetry & Trains',
-          desc: 'Simulated cockpit flight telemetry HUD, airport terminal wayfinding, and Shinkansen / bullet train schedules.',
+          icon: '🌙',
+          title: 'Dark & Light Theme Switcher',
+          desc: 'Switch between Cinematic Deep-Space Dark Mode and Clean Light Mode anytime from the top navigation bar.',
         },
         {
-          icon: '🎧',
-          title: 'Audio Guide & 24/7 AI Concierge',
-          desc: 'Listen to narrated audio guides for each day and ask the AI Concierge for instant local advice on the fly.',
+          icon: '📱',
+          title: 'Zero-Login Offline Export',
+          desc: 'Printable A4 pocket travel booklets with taxi cards, QR boarding passes, and instant URL hash sharing.',
         },
       ],
       previewContent: (
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
-          <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-center">
-            <span className="text-base block">🗺️</span>
-            <span className="font-bold text-slate-800 text-[11px] block mt-1">Google Maps</span>
+        <div className="bg-slate-900/90 border border-white/10 rounded-2xl p-3 shadow-xs space-y-2 text-xs">
+          <div className="flex items-center justify-between pb-2 border-b border-white/10">
+            <span className="font-extrabold text-white">Day 1: Historic Castles & Night Markets</span>
+            <span className="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full font-bold">
+              8 Stops Scheduled
+            </span>
           </div>
-          <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-center">
-            <span className="text-base block">✈️</span>
-            <span className="font-bold text-slate-800 text-[11px] block mt-1">Flight Radar</span>
-          </div>
-          <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-center">
-            <span className="text-base block">🤖</span>
-            <span className="font-bold text-slate-800 text-[11px] block mt-1">AI Concierge</span>
-          </div>
-          <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-center">
-            <span className="text-base block">📱</span>
-            <span className="font-bold text-slate-800 text-[11px] block mt-1">Digital Pass</span>
+          <div className="space-y-1 text-[11px]">
+            <div className="flex items-center gap-2 text-slate-300">
+              <span className="font-bold text-indigo-400 shrink-0">08:00 AM</span>
+              <span className="truncate">Meiji Jingu Shrine & Morning Forest Walk</span>
+            </div>
+            <div className="flex items-center gap-2 text-slate-300">
+              <span className="font-bold text-indigo-400 shrink-0">12:30 PM</span>
+              <span className="truncate">Tsukiji Outer Market Seafood Tasting Crawl</span>
+            </div>
+            <div className="flex items-center gap-2 text-slate-300">
+              <span className="font-bold text-indigo-400 shrink-0">06:30 PM</span>
+              <span className="truncate">Shibuya Sky Golden Hour Panoramic Observatory</span>
+            </div>
           </div>
         </div>
       ),
@@ -255,68 +264,80 @@ export default function QuickTourModal({
   const IconComponent = slide.icon;
 
   const handleStartPlanning = () => {
+    playChime();
     onClose();
-    // Scroll to trip form
-    window.scrollTo({ top: 100, behavior: 'smooth' });
+    setTimeout(() => {
+      document.getElementById('planner')?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
   };
 
   const handleDemo = () => {
-    onClose();
+    playChime();
     if (onSelectSample) {
       onSelectSample('sample-tokyo-5d');
     }
+    onClose();
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/80 backdrop-blur-md animate-in fade-in">
-      <div className="bg-white rounded-3xl max-w-2xl w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col relative max-h-[90vh]">
-        {/* Top Header Bar */}
-        <div className="px-6 py-4 bg-slate-900 text-white flex items-center justify-between border-b border-slate-800 shrink-0">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
+      <div className="relative w-full max-w-2xl bg-[#0f0f2a] border border-white/15 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh] text-white">
+        {/* Glow ambient background */}
+        <div className="absolute -top-24 -right-24 w-72 h-72 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-violet-600/20 rounded-full blur-3xl pointer-events-none" />
+
+        {/* Modal Header */}
+        <div className="p-4 sm:p-5 border-b border-white/10 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-black">
-              <Compass className="w-4 h-4" />
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-500 to-violet-500 flex items-center justify-center shadow-md">
+              <Sparkles className="w-4 h-4 text-white" />
             </div>
             <div>
-              <h3 className="font-black text-sm sm:text-base tracking-tight">
-                How WanderAI Works • 1-Minute Visual Tour
+              <h3 className="font-extrabold text-sm sm:text-base text-white flex items-center gap-2">
+                <span>Welcome to WanderAI</span>
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${slide.badgeColor}`}>
+                  {slide.badge}
+                </span>
               </h3>
-              <p className="text-[11px] text-slate-400">
-                Learn how to plan custom trips anywhere in seconds
-              </p>
+              <p className="text-[11px] text-slate-400">1-Minute Visual Walkthrough</p>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-colors cursor-pointer"
+            className="p-2 text-slate-400 hover:text-white rounded-xl hover:bg-white/10 transition-colors cursor-pointer"
+            title="Close Tour (Esc)"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Progress Bar Dots */}
-        <div className="px-6 pt-4 pb-1 bg-slate-50 border-b border-slate-200/80 flex items-center justify-between">
+        {/* Step Indicator Progress Bar */}
+        <div className="px-6 pt-3 pb-1 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-1.5">
             {slides.map((_, idx) => (
               <button
                 key={idx}
-                onClick={() => setCurrentSlide(idx)}
+                onClick={() => {
+                  playPop();
+                  setCurrentSlide(idx);
+                }}
                 className={`h-2 rounded-full transition-all cursor-pointer ${
                   currentSlide === idx
-                    ? 'w-8 bg-indigo-600'
-                    : 'w-2 bg-slate-300 hover:bg-slate-400'
+                    ? 'w-8 bg-indigo-500'
+                    : 'w-2 bg-white/20 hover:bg-white/40'
                 }`}
                 title={`Go to slide ${idx + 1}`}
               />
             ))}
           </div>
-          <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+          <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
             {slide.badge}
           </span>
         </div>
 
         {/* Slide Body */}
-        <div className="p-6 overflow-y-auto space-y-5 flex-1">
+        <div className="p-5 sm:p-6 overflow-y-auto space-y-4 flex-1">
           {/* Slide Header */}
           <div className="flex items-start gap-4">
             <div
@@ -325,18 +346,16 @@ export default function QuickTourModal({
               <IconComponent className="w-6 h-6" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-                  {slide.title}
-                </h2>
-              </div>
-              <p className="text-xs sm:text-sm text-slate-500 font-medium mt-0.5">
+              <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+                {slide.title}
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-400 font-medium mt-0.5">
                 {slide.subtitle}
               </p>
             </div>
           </div>
 
-          <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
             {slide.description}
           </p>
 
@@ -344,17 +363,17 @@ export default function QuickTourModal({
           <div className="pt-1">{slide.previewContent}</div>
 
           {/* 3 Key Feature Bullets */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-2">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1">
             {slide.features.map((feat, idx) => (
               <div
                 key={idx}
-                className="bg-slate-50 p-3 rounded-2xl border border-slate-200/80 space-y-1"
+                className="bg-white/5 p-3 rounded-2xl border border-white/10 space-y-1"
               >
                 <div className="text-base">{feat.icon}</div>
-                <h4 className="font-bold text-xs text-slate-900 leading-tight">
+                <h4 className="font-bold text-xs text-white leading-tight">
                   {feat.title}
                 </h4>
-                <p className="text-[11px] text-slate-500 leading-snug">
+                <p className="text-[11px] text-slate-400 leading-snug">
                   {feat.desc}
                 </p>
               </div>
@@ -363,22 +382,22 @@ export default function QuickTourModal({
         </div>
 
         {/* Footer Navigation Bar */}
-        <div className="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between gap-3 shrink-0">
+        <div className="p-4 bg-white/[0.03] border-t border-white/10 flex items-center justify-between gap-3 shrink-0">
           <div className="flex items-center gap-2">
             {onSelectSample && (
               <button
                 type="button"
                 onClick={handleDemo}
-                className="px-3 py-2 rounded-xl text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 flex items-center gap-1.5 transition-colors cursor-pointer"
+                className="px-3 py-2 rounded-xl text-xs font-bold text-indigo-300 bg-indigo-500/15 hover:bg-indigo-500/25 border border-indigo-500/30 flex items-center gap-1.5 transition-colors cursor-pointer"
                 title="View fully loaded Tokyo 5-Day demo itinerary"
               >
-                <Play className="w-3.5 h-3.5 fill-indigo-600 text-indigo-600" />
+                <Play className="w-3.5 h-3.5 fill-indigo-400 text-indigo-400" />
                 <span className="hidden sm:inline">Try Demo Itinerary</span>
               </button>
             )}
             <button
               onClick={handleStartPlanning}
-              className="px-3 py-2 text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-200/70 rounded-xl transition-colors cursor-pointer"
+              className="px-3 py-2 text-xs font-bold text-slate-400 hover:text-white hover:bg-white/5 rounded-xl transition-colors cursor-pointer"
             >
               Skip Tour
             </button>
@@ -387,8 +406,11 @@ export default function QuickTourModal({
           <div className="flex items-center gap-2">
             {currentSlide > 0 && (
               <button
-                onClick={() => setCurrentSlide((prev) => Math.max(prev - 1, 0))}
-                className="px-3 py-2 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-xs font-bold text-slate-700 flex items-center gap-1 transition-colors cursor-pointer"
+                onClick={() => {
+                  playPop();
+                  setCurrentSlide((prev) => Math.max(prev - 1, 0));
+                }}
+                className="px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold text-slate-300 flex items-center gap-1 transition-colors cursor-pointer"
               >
                 <ChevronLeft className="w-4 h-4" />
                 <span>Back</span>
@@ -397,8 +419,11 @@ export default function QuickTourModal({
 
             {currentSlide < slides.length - 1 ? (
               <button
-                onClick={() => setCurrentSlide((prev) => Math.min(prev + 1, slides.length - 1))}
-                className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold flex items-center gap-1.5 transition-all shadow-md shadow-indigo-500/25 cursor-pointer hover:scale-105 active:scale-95"
+                onClick={() => {
+                  playPop();
+                  setCurrentSlide((prev) => Math.min(prev + 1, slides.length - 1));
+                }}
+                className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold flex items-center gap-1.5 transition-all shadow-md shadow-indigo-600/30 cursor-pointer hover:scale-105 active:scale-95"
               >
                 <span>Next Step</span>
                 <ChevronRight className="w-4 h-4" />
