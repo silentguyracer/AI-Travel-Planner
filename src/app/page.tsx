@@ -42,6 +42,39 @@ export default function Home() {
   const [isSampleModalOpen, setIsSampleModalOpen] = useState<boolean>(false);
   const [isTourOpen, setIsTourOpen] = useState<boolean>(false);
   const [activeDestIdx, setActiveDestIdx] = useState(0);
+  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('wanderai_theme');
+      if (saved === 'light' || saved === 'dark') {
+        setTheme(saved);
+        if (saved === 'dark') {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      } else {
+        document.documentElement.classList.add('dark');
+      }
+    }
+  }, []);
+
+  const handleToggleTheme = () => {
+    setTheme((prev) => {
+      const next = prev === 'dark' ? 'light' : 'dark';
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('wanderai_theme', next);
+        if (next === 'dark') {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      }
+      return next;
+    });
+  };
+
   const [prefillDestination, setPrefillDestination] = useState<{ destination: string; duration?: number } | null>(null);
 
   const handleSelectHeroDestination = (dest: typeof HERO_DESTINATIONS[0]) => {
@@ -119,24 +152,39 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col font-sans text-slate-900 selection:bg-indigo-500 selection:text-white relative overflow-x-hidden bg-[#0a0a1a]">
+    <div className={`min-h-screen flex flex-col font-sans selection:bg-indigo-500 selection:text-white relative overflow-x-hidden transition-colors duration-500 ${theme === 'dark' ? 'bg-[#0a0a1a] text-white' : 'bg-slate-50 text-slate-900'}`}>
       <InteractiveBackground />
 
       {/* ─── Animated star/particle background ─── */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a1a] via-[#0f0f2e] to-[#0a0f2e]" />
-        {/* Aurora blobs */}
-        <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-indigo-700/20 rounded-full blur-[120px] animate-pulse" />
-        <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-violet-700/20 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '1.5s' }} />
-        <div className="absolute top-1/2 left-0 w-[400px] h-[400px] bg-sky-600/10 rounded-full blur-[100px] animate-pulse" style={{ animationDelay: '3s' }} />
-        {/* Grid overlay */}
-        <div
-          className="absolute inset-0 opacity-[0.04]"
-          style={{
-            backgroundImage: `linear-gradient(rgba(99,102,241,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.5) 1px, transparent 1px)`,
-            backgroundSize: '60px 60px'
-          }}
-        />
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0 transition-opacity duration-700">
+        {theme === 'dark' ? (
+          <>
+            <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a1a] via-[#0f0f2e] to-[#0a0f2e]" />
+            <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-indigo-700/20 rounded-full blur-[120px] animate-pulse" />
+            <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-violet-700/20 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '1.5s' }} />
+            <div className="absolute top-1/2 left-0 w-[400px] h-[400px] bg-sky-600/10 rounded-full blur-[100px] animate-pulse" style={{ animationDelay: '3s' }} />
+            <div
+              className="absolute inset-0 opacity-[0.04]"
+              style={{
+                backgroundImage: `linear-gradient(rgba(99,102,241,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.5) 1px, transparent 1px)`,
+                backgroundSize: '60px 60px'
+              }}
+            />
+          </>
+        ) : (
+          <>
+            <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-indigo-50/30 to-sky-50/40" />
+            <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-indigo-300/15 rounded-full blur-[100px]" />
+            <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-sky-300/15 rounded-full blur-[100px]" />
+            <div
+              className="absolute inset-0 opacity-[0.02]"
+              style={{
+                backgroundImage: `linear-gradient(rgba(99,102,241,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.3) 1px, transparent 1px)`,
+                backgroundSize: '40px 40px'
+              }}
+            />
+          </>
+        )}
       </div>
 
       {/* ─── Header ─── */}
@@ -149,6 +197,8 @@ export default function Home() {
           savedCount={savedTrips.length}
           onGoHome={() => setCurrentTrip(null)}
           isTripActive={Boolean(currentTrip)}
+          theme={theme}
+          onToggleTheme={handleToggleTheme}
         />
       </div>
 
@@ -196,7 +246,7 @@ export default function Home() {
                   </div>
 
                   {/* Headline */}
-                  <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.05] text-white">
+                  <h1 className={`text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.05] ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
                     Your Dream{' '}
                     <span className="relative inline-block">
                       <span className="bg-gradient-to-r from-indigo-400 via-violet-400 to-sky-400 bg-clip-text text-transparent">
@@ -209,7 +259,7 @@ export default function Home() {
                   </h1>
 
                   {/* Subtext */}
-                  <p className="text-slate-400 text-sm sm:text-base leading-relaxed max-w-lg mx-auto lg:mx-0">
+                  <p className={`text-sm sm:text-base leading-relaxed max-w-lg mx-auto lg:mx-0 ${theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}`}>
                     Pick any city, set your budget, and get a complete{' '}
                     <span className="text-white font-semibold">day-by-day itinerary</span> with attractions,
                     dining, maps, and 34 smart travel tools — all in seconds.
@@ -367,7 +417,7 @@ export default function Home() {
             <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mt-14 sm:mt-20 pb-16">
               <div className="text-center mb-8">
                 <span className="text-xs font-bold uppercase tracking-widest text-indigo-400">Why WanderAI</span>
-                <h2 className="mt-2 text-2xl sm:text-3xl font-black text-white tracking-tight">
+                <h2 className={`mt-2 text-2xl sm:text-3xl font-black tracking-tight ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
                   Everything a traveler needs
                 </h2>
                 <p className="mt-2 text-sm text-slate-500 max-w-lg mx-auto">
